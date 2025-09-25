@@ -1,0 +1,25 @@
+{
+	"name": "PHP in Docker",
+	"build": {
+         "dockerfile": "Dockerfile"
+     },
+	 "features": {
+ 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+ 			"version": "latest",
+ 			"enableNonRootDocker": "true",
+ 			"moby": "true"
+ 		}
+ 	},
+	"forwardPorts": [
+		3306,
+		80
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"zobo.php-intellisense"
+			]
+		}
+	},
+	"postCreateCommand": "composer update && docker compose up -d"
+}

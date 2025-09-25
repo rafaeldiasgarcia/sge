@@ -1,0 +1,26 @@
+services:
+  apache:
+    build: .
+    image: 'php-8-apache-mc'
+    container_name: php
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    
+  db:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: application
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - ./assets/data:/docker-entrypoint-initdb.d
+    ports:
+      - '3306:3306'
