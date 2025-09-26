@@ -17,6 +17,7 @@ use Application\Core\Auth;
     <!-- Caminhos para os assets agora são diretos na raiz de public -->
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/calendar.css">
+    <link rel="stylesheet" href="/css/template.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 

@@ -1,39 +1,52 @@
 <?php
 #
-# View com o formulário para o usuário definir uma nova senha.
-# Esta página só é acessível através de um link com um token válido.
+# View de "Redefinir Senha" com o novo template.
+# O usuário define a nova senha nesta página.
 #
 ?>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-3">Redefinir Senha</h2>
-                <p class="text-center text-muted">Crie uma nova senha para sua conta.</p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($title ?? 'Redefinir Senha - SGE UNIFIO'); ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/template.css">
+</head>
+<body>
+    <div class="background-players">
+        <img src="/images/Jogador 1.png" alt="Jogador" class="player player-left">
+        <img src="/images/Jogador 2.png" alt="Jogador" class="player player-right">
+    </div>
+    
+    <div class="login-container">
+        <div class="login-box">
+            <img src="/images/Logo unifio 2.png" alt="Logo" class="logo">
+            <h1 class="titulo">REDEFINIR SENHA</h1>
+            <p class="subtitulo">Crie uma nova senha para sua conta.</p>
+            
+            <?php if (isset($_SESSION['error_message'])): ?>
+                <div class="alert alert-danger" style="width:100%; text-align:center; padding:10px; border-radius:6px; background-color:#f8d7da; color:#721c24; border:1px solid #f5c6cb; margin-bottom:15px;">
+                    <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+                </div>
+            <?php endif; ?>
 
-                <?php if (isset($_SESSION['error_message'])): ?>
-                    <div class="alert alert-danger">
-                        <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
-                    </div>
-                <?php endif; ?>
+            <form action="/redefinir-senha" method="post">
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
-                <form action="/redefinir-senha" method="post">
-                    <!-- O token é enviado de forma oculta para ser validado no backend -->
-                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-
-                    <div class="mb-3">
-                        <label for="nova_senha" class="form-label">Nova Senha</label>
-                        <input type="password" name="nova_senha" id="nova_senha" class="form-control" required minlength="6">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmar_nova_senha" class="form-label">Confirmar Nova Senha</label>
-                        <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="form-control" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
-                    </div>
-                </form>
-            </div>
+                <label for="nova_senha">Nova Senha</label>
+                <input type="password" name="nova_senha" id="nova_senha" placeholder="*********" required minlength="6">
+                
+                <label for="confirmar_nova_senha">Confirmar Nova Senha</label>
+                <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" placeholder="*********" required>
+                
+                <button type="submit" class="btn-entrar">Salvar Nova Senha</button>
+            </form>
         </div>
     </div>
-</div>
+
+    <div style="width: 100%; text-align: center; position: relative; z-index: 5;">
+        <img src="/images/creditos .png" alt="Créditos UNIFIO" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+    </div>
+</body>
+</html>
