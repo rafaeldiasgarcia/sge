@@ -27,9 +27,6 @@
                     <select name="periodo" id="periodo" class="form-select" required>
                         <option value="primeiro" <?php if($agendamento['periodo'] == 'primeiro') echo 'selected'; ?>>1º Período (19:15 - 20:55)</option>
                         <option value="segundo" <?php if($agendamento['periodo'] == 'segundo') echo 'selected'; ?>>2º Período (21:10 - 22:50)</option>
-                        <option value="manha" <?php if($agendamento['periodo'] == 'manha') echo 'selected'; ?>>Manhã</option>
-                        <option value="tarde" <?php if($agendamento['periodo'] == 'tarde') echo 'selected'; ?>>Tarde</option>
-                        <option value="noite" <?php if($agendamento['periodo'] == 'noite') echo 'selected'; ?>>Noite</option>
                     </select>
                 </div>
             </div>

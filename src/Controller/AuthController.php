@@ -2,7 +2,7 @@
 #
 # Controller de Autenticação.
 # Gerencia todo o fluxo de autenticação de usuários: login, verificação em
-# duas etapas (simulada), logout, registro e futuras funcionalidades como
+# duas etapas (simulada), logout, registro e a funcionalidade de
 # recuperação de senha.
 #
 namespace Application\Controller;
@@ -200,8 +200,97 @@ class AuthController extends BaseController
         }
     }
 
-    public function showForgotPasswordForm() { echo "Página Esqueci Senha (em construção)"; }
-    public function sendRecoveryLink() { echo "Enviando Link (em construção)"; }
-    public function showResetPasswordForm() { echo "Página Redefinir Senha (em construção)"; }
-    public function resetPassword() { echo "Processando Redefinição (em construção)"; }
+    public function showForgotPasswordForm()
+    {
+        view('auth/esqueci-senha', ['title' => 'Recuperar Senha']);
+    }
+
+    public function sendRecoveryLink()
+    {
+        $email = $_POST['email'] ?? '';
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error_message'] = "Por favor, insira um e-mail válido.";
+            redirect('/esqueci-senha');
+        }
+
+        $userRepo = $this->repository('UsuarioRepository');
+        $user = $userRepo->findByEmail($email);
+
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+            $userRepo->updateResetToken($user['id'], $token, $expires);
+
+            // SIMULAÇÃO DE ENVIO DE E-MAIL
+            // Em um ambiente real, você usaria uma biblioteca como PHPMailer aqui.
+            $baseUrl = getenv('APP_URL') ?: "http://" . $_SERVER['HTTP_HOST'];
+            $recoveryLink = $baseUrl . "/redefinir-senha?token=" . $token;
+            $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.<br><br><strong>[AMBIENTE DE TESTE]</strong><br>Seu link é: <a href='{$recoveryLink}'>{$recoveryLink}</a>";
+        } else {
+            // Mensagem genérica para não confirmar se um e-mail existe ou não.
+            $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.";
+        }
+
+        redirect('/esqueci-senha');
+    }
+
+    public function showResetPasswordForm()
+    {
+        $token = $_GET['token'] ?? '';
+        if (empty($token)) {
+            die('Token de redefinição não fornecido.');
+        }
+
+        $userRepo = $this->repository('UsuarioRepository');
+        $user = $userRepo->findUserByResetToken($token);
+
+        if (!$user) {
+            $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
+            redirect('/esqueci-senha');
+        }
+
+        view('auth/redefinir-senha', [
+            'title' => 'Redefinir Senha',
+            'token' => $token
+        ]);
+    }
+
+    public function resetPassword()
+    {
+        $token = $_POST['token'] ?? '';
+        $novaSenha = $_POST['nova_senha'] ?? '';
+        $confirmarNovaSenha = $_POST['confirmar_nova_senha'] ?? '';
+
+        if (empty($token) || empty($novaSenha) || empty($confirmarNovaSenha)) {
+            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
+            redirect('/redefinir-senha?token=' . $token);
+        }
+        if (strlen($novaSenha) < 6) {
+            $_SESSION['error_message'] = "A nova senha deve ter no mínimo 6 caracteres.";
+            redirect('/redefinir-senha?token=' . $token);
+        }
+        if ($novaSenha !== $confirmarNovaSenha) {
+            $_SESSION['error_message'] = "As senhas não coincidem.";
+            redirect('/redefinir-senha?token=' . $token);
+        }
+
+        $userRepo = $this->repository('UsuarioRepository');
+        $user = $userRepo->findUserByResetToken($token);
+
+        if (!$user) {
+            $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
+            redirect('/esqueci-senha');
+        }
+
+        $newHashedPassword = password_hash($novaSenha, PASSWORD_DEFAULT);
+        $success = $userRepo->updatePasswordAndClearToken($user['id'], $newHashedPassword);
+
+        if ($success) {
+            $_SESSION['success_message'] = "Senha redefinida com sucesso! Você já pode fazer o login.";
+            redirect('/login');
+        } else {
+            $_SESSION['error_message'] = "Ocorreu um erro ao redefinir sua senha. Tente novamente.";
+            redirect('/redefinir-senha?token=' . $token);
+        }
+    }
 }

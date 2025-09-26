@@ -62,6 +62,43 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+    /**
+     * Salva o token de redefinição de senha e sua data de expiração no banco.
+     */
+    public function updateResetToken(int $userId, string $token, string $expires): bool
+    {
+        $sql = "UPDATE usuarios SET reset_token = :token, reset_token_expires = :expires WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':token', $token);
+        $stmt->bindValue(':expires', $expires);
+        $stmt->bindValue(':id', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Busca um usuário por um token de redefinição válido (não expirado).
+     */
+    public function findUserByResetToken(string $token)
+    {
+        $sql = "SELECT * FROM usuarios WHERE reset_token = :token AND reset_token_expires > NOW()";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':token', $token);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    /**
+     * Atualiza a senha do usuário e limpa os campos de token de redefinição.
+     */
+    public function updatePasswordAndClearToken(int $userId, string $newPasswordHash): bool
+    {
+        $sql = "UPDATE usuarios SET senha = :senha, reset_token = NULL, reset_token_expires = NULL WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':senha', $newPasswordHash);
+        $stmt->bindValue(':id', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
     public function findById(int $id)
     {
         $sql = "SELECT u.*, c.atletica_id, a.nome as atletica_nome 

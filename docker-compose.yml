@@ -1,9 +1,5 @@
-#
-# Define os serviços que compõem a aplicação: um para o PHP/Apache e outro para o banco de dados MySQL.
-# Gerencia a rede, volumes e variáveis de ambiente para que os contêineres funcionem juntos.
-#
 services:
-  # Serviço do servidor web e PHP
+  # Serviço do servidor web e PHP (sem alterações aqui)
   sge-php:
     build: .
     image: 'sge-php-8-apache'
@@ -15,11 +11,10 @@ services:
       - .:/var/www/html
     depends_on:
       - sge-db
-    # Carrega as variáveis de ambiente a partir do arquivo .env
     env_file:
       - .env
 
-  # Serviço do banco de dados
+  # Serviço do banco de dados (COM A ALTERAÇÃO)
   sge-db:
     image: mysql
     container_name: sge-db
@@ -29,8 +24,8 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: rootpass
+      TZ: America/Sao_Paulo
     volumes:
-      # Monta o arquivo .sql para inicializar o banco de dados na primeira vez que o contêiner é criado
       - ./assets/data:/docker-entrypoint-initdb.d
     ports:
       - '3306:3306'
