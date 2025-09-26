@@ -34,8 +34,8 @@ class UsuarioRepository
     {
         $sql = "UPDATE usuarios SET login_code = :code, login_code_expires = :expires WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':code', $code);
-        $stmt->bindValue(':expires', $expires);
+        $stmt->bindValue(':code', $code, PDO::PARAM_STR);
+        $stmt->bindValue(':expires', $expires, PDO::PARAM_STR);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -47,10 +47,12 @@ class UsuarioRepository
                 WHERE email = :email 
                   AND login_code = :code 
                   AND login_code_expires > NOW()";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':code', $code);
         $stmt->execute();
+
         return $stmt->fetch();
     }
 

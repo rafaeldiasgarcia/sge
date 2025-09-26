@@ -1,39 +1,50 @@
 <?php
 #
-# View com o formulário para o usuário definir uma nova senha.
-# Esta página só é acessível através de um link com um token válido.
+# View com o formulário de redefinição de senha.
 #
 ?>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-3">Redefinir Senha</h2>
-                <p class="text-center text-muted">Crie uma nova senha para sua conta.</p>
+<div class="auth-card">
+    <h1 class="auth-title">Redefinir Senha</h1>
+    <p class="auth-subtitle">Insira sua nova senha</p>
 
-                <?php if (isset($_SESSION['error_message'])): ?>
-                    <div class="alert alert-danger">
-                        <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
-                    </div>
-                <?php endif; ?>
-
-                <form action="/redefinir-senha" method="post">
-                    <!-- O token é enviado de forma oculta para ser validado no backend -->
-                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-
-                    <div class="mb-3">
-                        <label for="nova_senha" class="form-label">Nova Senha</label>
-                        <input type="password" name="nova_senha" id="nova_senha" class="form-control" required minlength="6">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmar_nova_senha" class="form-label">Confirmar Nova Senha</label>
-                        <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="form-control" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
-                    </div>
-                </form>
-            </div>
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-auth">
+            <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
         </div>
-    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-auth">
+            <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+        </div>
+    <?php endif; ?>
+
+    <form action="/redefinir-senha" method="post" class="auth-form">
+        <?php if (isset($_GET['token'])): ?>
+            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token']); ?>">
+        <?php endif; ?>
+
+        <div class="mb-3">
+            <label for="senha" class="form-label">Nova Senha</label>
+            <input type="password" name="senha" id="senha" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+            <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-auth-primary">Redefinir Senha</button>
+
+        <div class="auth-links">
+            <a href="/login">Voltar ao Login</a>
+        </div>
+
+        <div class="auth-help-text">
+            Precisa de ajuda?<br>
+            Entre em contato com a universidade
+        </div>
+
+        <div class="unifio-logo">UniFio</div>
+    </form>
 </div>

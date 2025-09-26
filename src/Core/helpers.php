@@ -17,6 +17,9 @@ function view(string $view, array $data = [])
     // Transforma as chaves do array $data em variáveis
     extract($data);
 
+    // Detecta se é uma página de autenticação baseada no caminho
+    $isAuthPage = strpos($view, 'auth/') === 0;
+
     // Constrói o caminho completo para o arquivo da view usando a constante ROOT_PATH
     $viewPath = ROOT_PATH . '/views/' . str_replace('.', '/', $view) . '.view.php';
 

@@ -36,12 +36,21 @@ class AuthController extends BaseController
                     redirect('/');
                 }
 
-                $code = rand(100000, 999999);
+                // Gerar código como string para evitar problemas de tipo
+                $code = (string) rand(100000, 999999);
                 $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-                $userRepository->updateLoginCode($user['id'], $code, $expires);
+
+                // Verificar se a atualização foi bem-sucedida
+                $updateSuccess = $userRepository->updateLoginCode($user['id'], $code, $expires);
+
+                if (!$updateSuccess) {
+                    $_SESSION['error_message'] = "Erro ao gerar código de verificação. Tente novamente.";
+                    redirect('/login');
+                }
 
                 $_SESSION['login_email'] = $user['email'];
                 $_SESSION['login_code_simulado'] = $code;
+                $_SESSION['verification_code'] = $code; // Para exibir na tela de verificação
 
                 redirect('/login/verify');
             } else {
@@ -77,7 +86,7 @@ class AuthController extends BaseController
 
             if ($user) {
                 $userRepository->clearLoginCode($user['id']);
-                unset($_SESSION['login_email'], $_SESSION['login_code_simulado']);
+                unset($_SESSION['login_email'], $_SESSION['login_code_simulado'], $_SESSION['verification_code']);
                 $this->createSession($user);
                 redirect('/');
             } else {
@@ -294,3 +303,4 @@ class AuthController extends BaseController
         }
     }
 }
+
