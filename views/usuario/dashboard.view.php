@@ -1,107 +1,112 @@
 <?php
 #
-# View do Dashboard do Usuário com o novo template.
-# A estrutura foi adaptada do 07-dashboard.html, mas o conteúdo é dinâmico,
-# vindo do backend (calendário, links de gerenciamento, etc.).
+# View do Dashboard do Usuário.
+# É a página inicial para usuários logados, mostrando atalhos para as
+# principais funcionalidades e uma lista de eventos onde ele marcou presença.
 #
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($title ?? 'Dashboard - SGE UNIFIO'); ?></title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/template.css">
-</head>
-<body>
-    <header class="header">
-        <div class="header-left">
-            <div class="menu-icon">☰</div>
-            <div class="header-title">
-                <div class="title-main">GERENCIAMENTO DE QUADRA</div>
-                <div class="title-sub">UNIFIO 2025</div>
-            </div>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Bem-vindo, <?php echo htmlspecialchars($user['nome']); ?>!</h1>
+            <p class="text-muted">Este é o seu painel de controle.</p>
         </div>
-        <div class="header-center">
-            <img src="/images/Logo da qudra poliesportiva.png" alt="Logo Quadra Poliesportiva" class="header-logo">
+        <div>
+        <span class="badge bg-primary fs-6">
+            Perfil: <?php echo htmlspecialchars(ucfirst($user['role'])); ?>
+        </span>
         </div>
-        <div class="header-right">
-            <div class="user-info">
-                <div class="user-name"><?php echo htmlspecialchars($user['nome']); ?></div>
-                <a href="/perfil" class="profile-link">Meu Perfil</a>
-            </div>
-            <div class="profile-avatar"><?php echo strtoupper(substr($user['nome'], 0, 1)); ?></div>
-        </div>
-    </header>
+    </div>
 
-    <main class="main-content">
-        <section class="welcome-section">
-            <div class="welcome-text">
-                <div class="welcome-title">SEJA BEM-VINDO</div>
-                <div class="welcome-subtitle">A NOSSA SALA DE EVENTOS!!!</div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><i class="bi bi-calendar-check-fill text-primary"></i> Agenda da Quadra</h5>
+                    <p class="card-text">Confira os próximos eventos e marque sua presença.</p>
+                    <a href="/agenda" class="btn btn-primary mt-auto">Ver Agenda</a>
+                </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Aqui você pode integrar o calendário dinâmico ou outras informações do dashboard -->
-        
-        <section class="management-wrapper">
-            <div class="management-card">
-                <div class="management-content">
-                    <div class="management-text">
-                        <h3 class="management-title">LOGO ABAIXO</h3>
-                        <div class="management-subtitle">
-                            <div class="subtitle-line"><span class="text-normal">GERENCIE SEU </span><span class="text-highlight-espaco">ESPAÇO</span><span class="text-comma">,</span></div>
-                            <div class="subtitle-line"><span class="text-normal">SEU </span><span class="text-highlight-esporte">ESPORTE</span><span class="text-normal"> E</span></div>
-                            <div class="subtitle-line"><span class="text-normal">SUA </span><span class="text-highlight-reserva">RESERVA</span></div>
-                        </div>
-                    </div>
-                    <div class="management-character">
-                        <img src="/images/Jogador 4.png" alt="Jogador" class="player-image">
+        <?php if ($user['tipo_usuario'] === 'Professor'): ?>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-warning">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title"><i class="bi bi-building text-warning"></i> Aluguel da Quadra</h5>
+                        <p class="card-text">Solicite o uso da quadra esportiva para suas atividades acadêmicas.</p>
+                        <a href="/agendar-evento" class="btn btn-warning mt-auto">Solicitar Aluguel</a>
                     </div>
                 </div>
             </div>
-        </section>
+        <?php endif; ?>
 
-        <section class="event-cards">
-            <div class="event-wrapper">
-                <a href="/agenda" class="card sports-card" style="text-decoration: none; color: inherit;">
-                    <div class="card-icons">
-                        <img src="/images/bola de basquete.png" alt="Basquete" class="card-icon">
-                        <img src="/images/bola de futebol.png" alt="Futebol" class="card-icon">
-                        <img src="/images/bola de volei.png" alt="Vôlei" class="card-icon">
-                    </div>
-                    <div class="card-divider"></div>
-                    <h4 class="card-title">Agenda de Eventos</h4>
-                </a>
-            </div>
-            
-            <?php if ($can_schedule): ?>
-            <div class="event-wrapper non-sports-wrapper">
-                <a href="/agendar-evento" class="card non-sports-card" style="text-decoration: none; color: inherit;">
-                    <div class="card-icons">
-                        <img src="/images/Icone doas eventos não esportivos.jpg" alt="Agendar" class="card-icon">
-                    </div>
-                    <div class="card-divider orange"></div>
-                    <h4 class="card-title">Agendar Evento</h4>
-                </a>
-            </div>
-            <?php endif; ?>
-            
-            <div class="event-wrapper">
-                <a href="/meus-agendamentos" class="card regulations-card" style="text-decoration: none; color: inherit;">
-                    <div class="card-icons">
-                        <img src="/images/Icone dos regulamentos.png" alt="Meus Agendamentos" class="card-icon">
-                    </div>
-                    <div class="card-divider black"></div>
-                    <h4 class="card-title">Meus Agendamentos</h4>
-                </a>
-            </div>
-        </section>
-    </main>
+        <?php
+        $tipo_usuario = $user['tipo_usuario'] ?? '';
+        $role = $user['role'] ?? '';
+        $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin' && $tipo_usuario === 'Membro das Atléticas');
 
-    <div style="width: 100%; text-align: center;">
-        <img src="/images/creditos .png" alt="Créditos UNIFIO" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+        if ($can_schedule): ?>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>
+                        <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
+                        <a href="/meus-agendamentos" class="btn btn-success mt-auto">Ver Solicitações</a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
-</body>
-</html>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Meus Eventos (Presença Marcada)</h5>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($eventos_presenca)): ?>
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                            <p class="mt-2">Você ainda não marcou presença em nenhum evento.</p>
+                            <a href="/agenda" class="btn btn-outline-primary">Ver Agenda de Eventos</a>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Evento</th>
+                                        <th>Data</th>
+                                        <th>Período</th>
+                                        <th>Responsável</th>
+                                        <th>Tipo</th>
+                                        <th>Atlética</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($eventos_presenca as $evento): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?php echo htmlspecialchars($evento['titulo']); ?></strong>
+                                                <?php if ($evento['esporte_tipo']): ?>
+                                                    <br><small class="text-muted"><?php echo htmlspecialchars($evento['esporte_tipo']); ?></small>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></td>
+                                            <td><span class="badge bg-secondary"><?php echo ucfirst($evento['periodo']); ?></span></td>
+                                            <td><?php echo htmlspecialchars($evento['responsavel']); ?></td>
+                                            <td><span class="badge <?php echo $evento['tipo_agendamento'] === 'esportivo' ? 'bg-success' : 'bg-primary'; ?>"><?php echo ucfirst($evento['tipo_agendamento']); ?></span></td>
+                                            <td><?php echo $evento['atletica_nome'] ? htmlspecialchars($evento['atletica_nome']) : '-'; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
