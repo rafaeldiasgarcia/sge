@@ -15,12 +15,9 @@ services:
       - .:/var/www/html
     depends_on:
       - sge-db
-    # Variáveis de ambiente para a conexão com o banco de dados
-    environment:
-      DB_HOST: sge-db
-      DB_NAME: sge_db
-      DB_USER: root
-      DB_PASS: rootpass
+    # Carrega as variáveis de ambiente a partir do arquivo .env
+    env_file:
+      - .env
 
   # Serviço do banco de dados
   sge-db:
@@ -29,7 +26,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: sge_db
-      MYSQL_USER: user # Este usuário é criado, mas a aplicação usará o root
+      MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: rootpass
     volumes:
