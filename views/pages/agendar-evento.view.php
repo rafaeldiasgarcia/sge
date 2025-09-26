@@ -1,0 +1,303 @@
+<?php
+#
+# View com o formulário completo para agendamento de eventos.
+# Inclui o calendário interativo e campos dinâmicos que mudam
+# conforme o tipo de evento selecionado.
+#
+?>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> Agendamento de Evento na Quadra</h4>
+                </div>
+                <div class="card-body">
+                    <?php if (isset($_SESSION['success_message'])): ?>
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (isset($_SESSION['error_message'])): ?>
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="/agendar-evento" method="post" enctype="multipart/form-data" id="agendamentoForm">
+                        <input type="hidden" name="data_agendamento" id="data_agendamento">
+                        <input type="hidden" name="periodo" id="periodo">
+
+                        <div id="calendar-wrapper">
+                            <?php
+                            // Inclui a view parcial do calendário. As variáveis necessárias
+                            // são passadas pelo controller que renderiza esta página.
+                            require ROOT_PATH . '/views/_partials/calendar.php';
+                            ?>
+                        </div>
+
+                        <div class="mb-4">
+                            <strong>Horário Selecionado:</strong>
+                            <span id="selecionado" class="text-primary fw-bold">Nenhum horário selecionado</span>
+                        </div>
+
+                        <div class="row mb-4" id="form-fields-wrapper">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2">
+                                    <i class="bi bi-info-circle"></i> Informações Básicas
+                                </h5>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="titulo" class="form-label">Título do Evento *</label>
+                                <input type="text" name="titulo" id="titulo" class="form-control"
+                                       placeholder="Ex: Treino de Futsal - Atlética X" required maxlength="255">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo_agendamento" class="form-label">Categoria do Evento *</label>
+                                <select name="tipo_agendamento" id="tipo_agendamento" class="form-select" required>
+                                    <option value="">-- Selecione a categoria --</option>
+                                    <option value="esportivo">Evento Esportivo (Treino/Campeonato)</option>
+                                    <option value="nao_esportivo">Evento Não Esportivo (Palestra/Workshop/etc)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="responsavel_evento" class="form-label">Responsável pelo Evento *</label>
+                                <input type="text" name="responsavel_evento" id="responsavel_evento"
+                                       class="form-control" placeholder="Nome completo do responsável" required>
+                            </div>
+                        </div>
+
+                        <div id="campos_esportivos" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-success border-bottom pb-2">
+                                        <i class="bi bi-trophy"></i> Informações do Evento Esportivo
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="subtipo_evento" class="form-label">Tipo de Evento *</label>
+                                    <select name="subtipo_evento" id="subtipo_evento" class="form-select">
+                                        <option value="">-- Selecione --</option>
+                                        <option value="treino">Treino</option>
+                                        <option value="campeonato">Campeonato</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="esporte_tipo" class="form-label">Esporte *</label>
+                                    <select name="esporte_tipo" id="esporte_tipo" class="form-select">
+                                        <option value="">-- Selecione --</option>
+                                        <?php foreach ($modalidades as $modalidade): ?>
+                                            <option value="<?php echo strtolower($modalidade['nome']); ?>">
+                                                <?php echo htmlspecialchars($modalidade['nome']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Possui materiais esportivos? *</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="possui_materiais" id="materiais_sim" value="1">
+                                            <label class="form-check-label" for="materiais_sim">Sim</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="possui_materiais" id="materiais_nao" value="0">
+                                            <label class="form-check-label" for="materiais_nao">Não</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3" id="campo_arbitro">
+                                    <label for="arbitro_partida" class="form-label">Árbitro da Partida</label>
+                                    <input type="text" name="arbitro_partida" id="arbitro_partida" class="form-control" placeholder="Nome do árbitro (opcional)">
+                                </div>
+                                <div id="campos_sem_materiais" style="display: none;">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="materiais_necessarios" class="form-label">Materiais Necessários *</label>
+                                        <textarea name="materiais_necessarios" id="materiais_necessarios" class="form-control" rows="3" placeholder="Descreva os materiais que serão necessários..."></textarea>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="responsabiliza_devolucao" id="responsabiliza_devolucao" value="1">
+                                            <label class="form-check-label" for="responsabiliza_devolucao">
+                                                <strong>Eu me responsabilizo pela devolução dos materiais *</strong>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="lista_participantes" class="form-label">Lista de Participantes (RAs) *</label>
+                                    <textarea name="lista_participantes" id="lista_participantes" class="form-control" rows="4" placeholder="Digite os RAs dos participantes (um por linha)&#10;Ex:&#10;12345&#10;67890&#10;54321"></textarea>
+                                    <div class="form-text">Digite apenas os RAs dos participantes, um por linha. O sistema buscará automaticamente os nomes.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="campos_nao_esportivos" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-info border-bottom pb-2">
+                                        <i class="bi bi-people"></i> Informações do Evento Não Esportivo
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="subtipo_evento_nao_esp" class="form-label">Tipo de Evento *</label>
+                                    <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select">
+                                        <option value="">-- Selecione --</option>
+                                        <option value="palestra">Palestra</option>
+                                        <option value="workshop">Workshop</option>
+                                        <option value="formatura">Formatura</option>
+                                        <option value="seminario">Seminário</option>
+                                        <option value="conferencia">Conferência</option>
+                                        <option value="outro">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="estimativa_participantes" class="form-label">Estimativa de Participantes *</label>
+                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes" class="form-control" min="1" max="500" placeholder="Ex: 100">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Evento aberto ao público? *</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_sim" value="1">
+                                            <label class="form-check-label" for="publico_sim">Sim</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_nao" value="0">
+                                            <label class="form-check-label" for="publico_nao">Não (Fechado)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3" id="campo_publico_alvo" style="display: none;">
+                                    <label for="descricao_publico_alvo" class="form-label">Quem pode participar?</label>
+                                    <input type="text" name="descricao_publico_alvo" id="descricao_publico_alvo" class="form-control" placeholder="Ex: Alunos do curso de Engenharia">
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <strong>Importante:</strong> A supervisão do acesso é responsabilidade do organizador.
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="infraestrutura_adicional" class="form-label">Infraestrutura Adicional</label>
+                                    <textarea name="infraestrutura_adicional" id="infraestrutura_adicional" class="form-control" rows="3" placeholder="Ex: som, palco, decoração, projetor..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label for="observacoes" class="form-label">Observações</label>
+                                <textarea name="observacoes" id="observacoes" class="form-control" rows="3" placeholder="Informações adicionais sobre o evento..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> Regras Importantes:</h6>
+                            <ul class="mb-0">
+                                <li>A seleção da data e período é feita pelo calendário acima.</li>
+                                <li>Cada atlética pode agendar apenas 1 treino por esporte por semana.</li>
+                                <li>A solicitação será analisada pelo Coordenador de Educação Física.</li>
+                                <li>Você será notificado sobre a aprovação ou rejeição.</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/dashboard" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-success" id="btnEnviarSolicitacao" disabled>
+                                <i class="bi bi-send"></i> Enviar Solicitação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoAgendamento = document.getElementById('tipo_agendamento');
+        const camposEsportivos = document.getElementById('campos_esportivos');
+        const camposNaoEsportivos = document.getElementById('campos_nao_esportivos');
+        const possuiMateriais = document.getElementsByName('possui_materiais');
+        const camposSemMateriais = document.getElementById('campos_sem_materiais');
+        const eventoAberto = document.getElementsByName('evento_aberto_publico');
+        const campoPublicoAlvo = document.getElementById('campo_publico_alvo');
+
+        tipoAgendamento.addEventListener('change', function() {
+            const subtipo1 = document.getElementById('subtipo_evento');
+            const subtipo2 = document.getElementById('subtipo_evento_nao_esp');
+
+            if (this.value === 'esportivo') {
+                camposEsportivos.style.display = 'block';
+                camposNaoEsportivos.style.display = 'none';
+                subtipo1.required = true;
+                document.getElementById('esporte_tipo').required = true;
+                document.getElementById('lista_participantes').required = true;
+                subtipo2.required = false;
+                document.getElementById('estimativa_participantes').required = false;
+            } else if (this.value === 'nao_esportivo') {
+                camposEsportivos.style.display = 'none';
+                camposNaoEsportivos.style.display = 'block';
+                subtipo2.required = true;
+                document.getElementById('estimativa_participantes').required = true;
+                subtipo1.required = false;
+                document.getElementById('esporte_tipo').required = false;
+                document.getElementById('lista_participantes').required = false;
+            } else {
+                camposEsportivos.style.display = 'none';
+                camposNaoEsportivos.style.display = 'none';
+            }
+        });
+
+        possuiMateriais.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === '0') {
+                    camposSemMateriais.style.display = 'block';
+                    document.getElementById('materiais_necessarios').required = true;
+                    document.getElementById('responsabiliza_devolucao').required = true;
+                } else {
+                    camposSemMateriais.style.display = 'none';
+                    document.getElementById('materiais_necessarios').required = false;
+                    document.getElementById('responsabiliza_devolucao').required = false;
+                }
+            });
+        });
+
+        eventoAberto.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === '0') {
+                    campoPublicoAlvo.style.display = 'block';
+                } else {
+                    campoPublicoAlvo.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('agendamentoForm').addEventListener('submit', function() {
+            const tipoSelecionado = tipoAgendamento.value;
+            if (tipoSelecionado === 'esportivo') {
+                const subtipoEsp = document.getElementById('subtipo_evento').value;
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'subtipo_evento';
+                hiddenInput.value = subtipoEsp;
+                this.appendChild(hiddenInput);
+            } else if (tipoSelecionado === 'nao_esportivo') {
+                const subtipoNaoEsp = document.getElementById('subtipo_evento_nao_esp').value;
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'subtipo_evento';
+                hiddenInput.value = subtipoNaoEsp;
+                this.appendChild(hiddenInput);
+            }
+        });
+    });
+</script>

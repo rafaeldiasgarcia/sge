@@ -1,0 +1,68 @@
+/*
+ * Lógica JavaScript para o calendário interativo.
+ * Controla a seleção de datas, a navegação entre meses via AJAX
+ * e a interação com os campos do formulário de agendamento.
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    const calendarContainer = document.getElementById('calendar-wrapper');
+    if (!calendarContainer) return;
+
+    // Função principal que anexa todos os eventos ao calendário
+    const initializeCalendarLogic = () => {
+        const dataInput = document.getElementById('data_agendamento');
+        const perInput = document.getElementById('periodo');
+        const labelSel = document.getElementById('selecionado');
+        const salvar = document.getElementById('btnEnviarSolicitacao');
+        const formFields = document.getElementById('form-fields-wrapper');
+
+        // Lógica para os botões de período (slots)
+        document.querySelectorAll('.slot').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled || btn.classList.contains('disabled')) return;
+
+                document.querySelectorAll('.slot.selected').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+
+                if (dataInput) dataInput.value = btn.dataset.date;
+                if (perInput) perInput.value = (btn.dataset.periodo === 'P1' ? 'primeiro' : 'segundo');
+
+                if (labelSel) {
+                    const [year, month, day] = btn.dataset.date.split('-');
+                    const dataFormatada = `${day}/${month}/${year}`;
+                    labelSel.textContent = dataFormatada + ' • ' + (btn.dataset.periodo === 'P1' ? '19:15 às 20:55' : '21:10 às 22:50');
+                }
+
+                if (salvar) salvar.disabled = false;
+
+                // REQUISITO 3: Rolar a página para baixo até o formulário
+                if (formFields) {
+                    formFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // REQUISITO 2: Lógica para os botões de navegação de mês (AJAX)
+        document.querySelectorAll('.nav-cal').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const mes = btn.dataset.mes;
+                calendarContainer.style.opacity = '0.5'; // Feedback visual de carregamento
+
+                try {
+                    // O caminho da requisição AJAX agora é absoluto, sem subpastas.
+                    const response = await fetch(`/calendario-partial?mes=${mes}`);
+                    const html = await response.text();
+                    calendarContainer.innerHTML = html;
+                } catch (e) {
+                    calendarContainer.innerHTML = '<div class="alert alert-danger">Erro ao carregar o calendário.</div>';
+                } finally {
+                    calendarContainer.style.opacity = '1';
+                    // Re-inicializa a lógica para o novo HTML que foi carregado
+                    initializeCalendarLogic();
+                }
+            });
+        });
+    };
+
+    // Chama a função pela primeira vez para a carga inicial da página
+    initializeCalendarLogic();
+});
