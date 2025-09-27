@@ -51,6 +51,11 @@ class AgendaController extends BaseController
     {
         Auth::protect();
 
+        // Verificar se é uma requisição AJAX
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                  strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        // Processar dados do $_POST (funciona tanto para AJAX com FormData quanto para formulários normais)
         $agendamentoId = (int)($_POST['agendamento_id'] ?? 0);
         $action = $_POST['action'] ?? '';
 
@@ -63,11 +68,42 @@ class AgendaController extends BaseController
                 } elseif ($action === 'desmarcar') {
                     $agendamentoRepo->desmarcarPresenca(Auth::id(), $agendamentoId);
                 }
+
+                // Resposta para AJAX
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => true, 'action' => $action]);
+                    return;
+                }
+
+                $_SESSION['success_message'] = $action === 'marcar' ?
+                    'Presença marcada com sucesso!' :
+                    'Presença desmarcada com sucesso!';
+
             } catch (\Exception $e) {
+                // Resposta para AJAX em caso de erro
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'message' => 'Erro ao processar solicitação']);
+                    return;
+                }
+
                 $_SESSION['error_message'] = "Ocorreu um erro ao processar sua solicitação.";
             }
+        } else {
+            // Resposta para AJAX em caso de dados inválidos
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Dados inválidos']);
+                return;
+            }
+
+            $_SESSION['error_message'] = "Dados inválidos.";
         }
 
-        redirect('/agenda');
+        // Redirect apenas para requisições não-AJAX
+        if (!$isAjax) {
+            redirect('/agenda');
+        }
     }
 }

@@ -53,10 +53,6 @@ use Application\Core\Auth;
                         <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> Agendar Evento</a></li>
                     <?php endif; ?>
 
-                    <?php if (Auth::get('tipo_usuario_detalhado') === 'Membro das Atléticas'): ?>
-                        <li class="nav-item"><a class="nav-link" href="/inscricoes">Minhas Inscrições</a></li>
-                    <?php endif; ?>
-
                     <?php if (Auth::role() === 'superadmin'): ?>
                         <li class="nav-item"><a class="nav-link" href="/superadmin/dashboard">Painel Super Admin</a></li>
                         <li class="nav-item"><a class="nav-link" href="/superadmin/relatorios">Relatórios</a></li>

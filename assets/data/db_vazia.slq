@@ -1,0 +1,434 @@
+--
+-- Arquivo SQL para recriação do esquema de banco de dados 'sge_db'
+-- Este arquivo define a estrutura das tabelas e insere apenas o registro do Super Admin.
+--
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Criação/Seleção do Banco de dados: `sge_db`
+--
+CREATE DATABASE IF NOT EXISTS `sge_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `sge_db`;
+
+-- --------------------------------------------------------
+
+--
+-- Remoção das tabelas existentes para garantir um estado limpo
+--
+DROP TABLE IF EXISTS `presencas`;
+DROP TABLE IF EXISTS `inscricoes_eventos`;
+DROP TABLE IF EXISTS `equipe_membros`;
+DROP TABLE IF EXISTS `equipes`;
+DROP TABLE IF EXISTS `inscricoes_modalidade`;
+DROP TABLE IF EXISTS `agendamentos`;
+DROP TABLE IF EXISTS `professores_cursos`;
+DROP TABLE IF EXISTS `cursos`;
+DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `atleticas`;
+DROP TABLE IF EXISTS `modalidades`;
+DROP TABLE IF EXISTS `eventos`;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `atleticas`
+--
+
+CREATE TABLE `atleticas` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `logo_url` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `atleticas`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `atleticas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `usuarios`
+--
+-- Criada antes de `cursos` para permitir Foreign Key em `cursos` (coordenador_id)
+
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `ra` varchar(20) DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `curso_id` int(11) DEFAULT NULL,
+  `role` enum('usuario','admin','superadmin') NOT NULL DEFAULT 'usuario',
+  `atletica_id` int(11) DEFAULT NULL,
+  `tipo_usuario_detalhado` enum('Membro das Atléticas','Professor','Aluno','Comunidade Externa') DEFAULT NULL,
+  `is_coordenador` tinyint(1) NOT NULL DEFAULT 0,
+  `atletica_join_status` enum('none','pendente','aprovado') NOT NULL DEFAULT 'none',
+  `login_code` varchar(6) DEFAULT NULL,
+  `login_code_expires` datetime DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `usuarios` (Apenas Super Admin)
+--
+
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `ra`, `data_nascimento`, `curso_id`, `role`, `atletica_id`, `tipo_usuario_detalhado`, `is_coordenador`, `atletica_join_status`, `login_code`, `login_code_expires`, `reset_token`, `reset_token_expires`) VALUES
+(1, 'Super Admin', 'super@admin.com', '$2y$10$d8SoY8sdOkYci2Q/de.uye4c6j7Cu.CUYVxEm55Lk43l4Am7KBbqi', NULL, NULL, NULL, 'superadmin', NULL, NULL, 0, 'none', NULL, NULL, NULL, NULL);
+
+--
+-- Índices e AUTO_INCREMENT para `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `ra` (`ra`),
+  ADD KEY `curso_id` (`curso_id`),
+  ADD KEY `atletica_id` (`atletica_id`);
+ALTER TABLE `usuarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2; -- Próximo ID será 2
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `cursos`
+--
+
+CREATE TABLE `cursos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `atletica_id` int(11) DEFAULT NULL,
+  `coordenador_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `atletica_id` (`atletica_id`),
+  ADD KEY `coordenador_id` (`coordenador_id`);
+ALTER TABLE `cursos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `agendamentos`
+--
+
+CREATE TABLE `agendamentos` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `titulo` varchar(255) NOT NULL,
+  `tipo_agendamento` enum('esportivo','nao_esportivo') NOT NULL,
+  `esporte_tipo` varchar(100) DEFAULT NULL,
+  `data_agendamento` date NOT NULL,
+  `periodo` enum('primeiro','segundo','manha','tarde','noite') NOT NULL COMMENT 'primeiro: 19:15-20:55, segundo: 21:10-22:50',
+  `descricao` text DEFAULT NULL,
+  `status` enum('aprovado','pendente','rejeitado','cancelado') NOT NULL DEFAULT 'pendente',
+  `motivo_rejeicao` text DEFAULT NULL,
+  `data_solicitacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atletica_confirmada` tinyint(1) NOT NULL DEFAULT 0,
+  `atletica_id_confirmada` int(11) DEFAULT NULL,
+  `quantidade_atletica` int(11) DEFAULT 0,
+  `quantidade_pessoas` int(11) DEFAULT 0,
+  `subtipo_evento` varchar(100) DEFAULT NULL COMMENT 'treino/campeonato para esportivos, palestra/workshop/formatura para nao_esportivos',
+  `responsavel_evento` varchar(255) NOT NULL DEFAULT '',
+  `possui_materiais` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
+  `materiais_necessarios` text DEFAULT NULL,
+  `responsabiliza_devolucao` tinyint(1) DEFAULT NULL,
+  `lista_participantes` text DEFAULT NULL,
+  `arquivo_participantes` varchar(255) DEFAULT NULL,
+  `arbitro_partida` varchar(255) DEFAULT NULL,
+  `estimativa_participantes` int(11) DEFAULT NULL,
+  `evento_aberto_publico` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
+  `descricao_publico_alvo` text DEFAULT NULL,
+  `infraestrutura_adicional` text DEFAULT NULL,
+  `observacoes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `agendamentos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `atletica_id_confirmada` (`atletica_id_confirmada`);
+ALTER TABLE `agendamentos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `equipes`
+--
+
+CREATE TABLE `equipes` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `modalidade_id` int(11) NOT NULL,
+  `atletica_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `equipes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `modalidade_id` (`modalidade_id`),
+  ADD KEY `atletica_id` (`atletica_id`);
+ALTER TABLE `equipes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `equipe_membros`
+--
+
+CREATE TABLE `equipe_membros` (
+  `id` int(11) NOT NULL,
+  `equipe_id` int(11) NOT NULL,
+  `aluno_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `equipe_membros`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `equipe_id` (`equipe_id`,`aluno_id`),
+  ADD KEY `aluno_id` (`aluno_id`);
+ALTER TABLE `equipe_membros`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `eventos`
+--
+
+CREATE TABLE `eventos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
+  `data_inicio` date NOT NULL,
+  `data_fim` date NOT NULL,
+  `ativo` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `eventos`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `eventos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `inscricoes_eventos`
+--
+
+CREATE TABLE `inscricoes_eventos` (
+  `id` int(11) NOT NULL,
+  `aluno_id` int(11) NOT NULL,
+  `evento_id` int(11) NOT NULL,
+  `atletica_id` int(11) NOT NULL,
+  `status` enum('pendente','aprovado','recusado') NOT NULL DEFAULT 'aprovado',
+  `data_inscricao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `observacoes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `inscricoes_eventos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `aluno_evento_unique` (`aluno_id`,`evento_id`),
+  ADD KEY `idx_evento` (`evento_id`),
+  ADD KEY `idx_atletica` (`atletica_id`),
+  ADD KEY `idx_status` (`status`);
+ALTER TABLE `inscricoes_eventos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `inscricoes_modalidade`
+--
+
+CREATE TABLE `inscricoes_modalidade` (
+  `id` int(11) NOT NULL,
+  `aluno_id` int(11) NOT NULL,
+  `modalidade_id` int(11) NOT NULL,
+  `atletica_id` int(11) NOT NULL,
+  `status` enum('pendente','aprovado','recusado') NOT NULL DEFAULT 'pendente',
+  `data_inscricao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `inscricoes_modalidade`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `aluno_id` (`aluno_id`,`modalidade_id`),
+  ADD KEY `modalidade_id` (`modalidade_id`),
+  ADD KEY `atletica_id` (`atletica_id`);
+ALTER TABLE `inscricoes_modalidade`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `modalidades`
+--
+
+CREATE TABLE `modalidades` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `modalidades`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `modalidades`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `presencas`
+--
+
+CREATE TABLE `presencas` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `agendamento_id` int(11) NOT NULL,
+  `data_presenca` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `presencas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario_id` (`usuario_id`,`agendamento_id`),
+  ADD KEY `agendamento_id` (`agendamento_id`);
+ALTER TABLE `presencas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `professores_cursos`
+--
+
+CREATE TABLE `professores_cursos` (
+  `id` int(11) NOT NULL,
+  `professor_id` int(11) NOT NULL,
+  `curso_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Resetando AUTO_INCREMENT e índices
+--
+ALTER TABLE `professores_cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `professor_id` (`professor_id`,`curso_id`),
+  ADD KEY `curso_id` (`curso_id`);
+ALTER TABLE `professores_cursos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1; -- Volta para 1
+
+
+--
+-- Restrições (Foreign Keys) para tabelas
+--
+
+--
+-- Restrições para tabelas `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `agendamentos_ibfk_2` FOREIGN KEY (`atletica_id_confirmada`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `cursos`
+--
+ALTER TABLE `cursos`
+  ADD CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `cursos_ibfk_2` FOREIGN KEY (`coordenador_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `equipes`
+--
+ALTER TABLE `equipes`
+  ADD CONSTRAINT `equipes_ibfk_1` FOREIGN KEY (`modalidade_id`) REFERENCES `modalidades` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `equipes_ibfk_2` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `equipe_membros`
+--
+ALTER TABLE `equipe_membros`
+  ADD CONSTRAINT `equipe_membros_ibfk_1` FOREIGN KEY (`equipe_id`) REFERENCES `equipes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `equipe_membros_ibfk_2` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `inscricoes_eventos`
+--
+ALTER TABLE `inscricoes_eventos`
+  ADD CONSTRAINT `fk_inscricoes_eventos_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inscricoes_eventos_atletica` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inscricoes_eventos_evento` FOREIGN KEY (`evento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `inscricoes_modalidade`
+--
+ALTER TABLE `inscricoes_modalidade`
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_1` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_2` FOREIGN KEY (`modalidade_id`) REFERENCES `modalidades` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_3` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `presencas`
+--
+ALTER TABLE `presencas`
+  ADD CONSTRAINT `presencas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `presencas_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `professores_cursos`
+--
+ALTER TABLE `professores_cursos`
+  ADD CONSTRAINT `professores_cursos_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `professores_cursos_ibfk_2` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`),
+  ADD CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

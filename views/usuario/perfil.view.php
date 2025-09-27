@@ -61,6 +61,92 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Nova Seção: Vínculo com Atlética -->
+            <div class="card mt-4">
+                <div class="card-header"><strong>Vínculo com Atlética</strong></div>
+                <div class="card-body">
+                    <?php if (!$user['curso_id']): ?>
+                        <!-- Usuário sem curso definido -->
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Defina seu curso primeiro</strong><br>
+                            Para verificar se há uma atlética disponível, você precisa definir seu curso no formulário acima.
+                        </div>
+
+                    <?php elseif (!$atletica_info): ?>
+                        <!-- Curso sem atlética -->
+                        <div class="alert alert-secondary">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Seu curso não possui atlética</strong><br>
+                            O curso <strong><?php
+                                $cursoNome = '';
+                                foreach ($cursos as $curso) {
+                                    if ($curso['id'] == $user['curso_id']) {
+                                        $cursoNome = $curso['nome'];
+                                        break;
+                                    }
+                                }
+                                echo htmlspecialchars($cursoNome);
+                            ?></strong> ainda não possui uma atlética associada.
+                        </div>
+
+                    <?php elseif ($user['atletica_join_status'] === 'aprovado'): ?>
+                        <!-- Usuário já é membro da atlética -->
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <strong>Você é membro da atlética!</strong><br>
+                            <strong>Atlética:</strong> <?php echo htmlspecialchars($atletica_info['nome']); ?><br>
+                            <small class="text-muted">Status: Membro ativo</small>
+                        </div>
+
+                    <?php elseif ($user['atletica_join_status'] === 'pendente'): ?>
+                        <!-- Solicitação pendente (para Membros das Atléticas que se cadastraram) -->
+                        <div class="alert alert-warning">
+                            <i class="bi bi-clock-history"></i>
+                            <strong>Solicitação em análise</strong><br>
+                            Sua solicitação para entrar na <strong><?php echo htmlspecialchars($atletica_info['nome']); ?></strong>
+                            está sendo analisada pelo administrador da atlética.
+                            <br><small class="text-muted">Aguarde a resposta do administrador.</small>
+                        </div>
+
+                    <?php else: ?>
+                        <!-- Usuário pode solicitar entrada (apenas se for Aluno ou não faz parte) -->
+                        <div class="mb-3">
+                            <h6><i class="bi bi-people-fill text-primary"></i> Atlética Disponível</h6>
+                            <p class="mb-2">
+                                <strong>Atlética:</strong> <?php echo htmlspecialchars($atletica_info['nome']); ?><br>
+                                <small class="text-muted">Baseado no seu curso atual</small>
+                            </p>
+                            <p class="mb-3">
+                                <strong>Status atual:</strong>
+                                <span class="badge bg-secondary">Não é membro</span>
+                            </p>
+                        </div>
+
+                        <?php if ($user['tipo_usuario_detalhado'] === 'Aluno'): ?>
+                            <!-- Apenas alunos podem solicitar manualmente -->
+                            <form action="/perfil/solicitar-atletica" method="post" onsubmit="return confirm('Tem certeza que deseja solicitar entrada nesta atlética?')">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-person-plus-fill"></i> Solicitar Entrada na Atlética
+                                </button>
+                            </form>
+
+                            <small class="text-muted mt-2 d-block">
+                                Sua solicitação será enviada para o administrador da atlética para aprovação.
+                            </small>
+                        <?php else: ?>
+                            <!-- Outros tipos de usuário não podem solicitar -->
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Não é possível solicitar entrada</strong><br>
+                                Apenas usuários do tipo "Aluno" podem solicitar entrada em atléticas manualmente.
+                                Usuários "Membro das Atléticas" são enviados automaticamente para aprovação durante o cadastro.
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <div class="col-lg-5">

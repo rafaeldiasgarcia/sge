@@ -137,12 +137,21 @@ class UsuarioRepository
         return $stmt->fetchColumn();
     }
 
-    public function updatePassword(int $id, string $newHashedPassword): bool
+    public function updatePassword(int $id, string $newPassword): bool
     {
-        $sql = "UPDATE usuarios SET senha = :senha WHERE id = :id";
+        $sql = "UPDATE usuarios SET senha = :password WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':senha', $newHashedPassword);
+        $stmt->bindValue(':password', $newPassword);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function updateAtleticaJoinStatus(int $userId, string $status): bool
+    {
+        $sql = "UPDATE usuarios SET atletica_join_status = :status WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':status', $status);
+        $stmt->bindValue(':id', $userId, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
@@ -194,7 +203,8 @@ class UsuarioRepository
         $sql = "UPDATE usuarios 
                 SET nome = :nome, email = :email, ra = :ra, role = :role, 
                     tipo_usuario_detalhado = :tipo_usuario_detalhado, curso_id = :curso_id, 
-                    atletica_id = :atletica_id, is_coordenador = :is_coordenador
+                    atletica_id = :atletica_id, is_coordenador = :is_coordenador,
+                    atletica_join_status = :atletica_join_status
                 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':nome', $data['nome']);
@@ -205,6 +215,7 @@ class UsuarioRepository
         $stmt->bindValue(':curso_id', $data['curso_id'], PDO::PARAM_INT);
         $stmt->bindValue(':atletica_id', $data['atletica_id'], PDO::PARAM_INT);
         $stmt->bindValue(':is_coordenador', $data['is_coordenador'], PDO::PARAM_INT);
+        $stmt->bindValue(':atletica_join_status', $data['atletica_join_status'] ?? 'none');
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }

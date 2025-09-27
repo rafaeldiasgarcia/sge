@@ -25,13 +25,13 @@
         <?php endif; ?>
 
         <div class="mb-3">
-            <label for="senha" class="form-label">Nova Senha</label>
-            <input type="password" name="senha" id="senha" class="form-control" placeholder="••••••••" required>
+            <label for="nova_senha" class="form-label">Nova Senha</label>
+            <input type="password" name="nova_senha" id="nova_senha" class="form-control" placeholder="••••••••" required>
         </div>
 
         <div class="mb-3">
-            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
-            <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" placeholder="••••••••" required>
+            <label for="confirmar_nova_senha" class="form-label">Confirmar Nova Senha</label>
+            <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="form-control" placeholder="••••••••" required>
         </div>
 
         <button type="submit" class="btn btn-auth-primary">Redefinir Senha</button>

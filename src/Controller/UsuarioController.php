@@ -38,6 +38,8 @@ class UsuarioController extends BaseController
             $userId = Auth::id();
             $userRepository = $this->repository('UsuarioRepository');
             $cursoRepository = $this->repository('CursoRepository');
+            $atleticaRepository = $this->repository('AtleticaRepository');
+
             $user = $userRepository->findById($userId);
             $cursos = $cursoRepository->findAll();
 
@@ -45,10 +47,17 @@ class UsuarioController extends BaseController
                 redirect('/dashboard');
             }
 
+            // Buscar informações da atlética do curso do usuário
+            $atleticaInfo = null;
+            if ($user['curso_id']) {
+                $atleticaInfo = $atleticaRepository->findAtleticaByCursoId($user['curso_id']);
+            }
+
             view('usuario/perfil', [
                 'title' => 'Editar Perfil',
                 'user' => $user,
-                'cursos' => $cursos
+                'cursos' => $cursos,
+                'atletica_info' => $atleticaInfo
             ]);
         } catch (\Exception $e) {
             $_SESSION['error_message'] = "Ocorreu um erro ao carregar seu perfil.";
@@ -201,5 +210,28 @@ class UsuarioController extends BaseController
             $_SESSION['success_message'] = "Inscrição cancelada com sucesso.";
         }
         redirect('/inscricoes');
+    }
+
+    public function solicitarEntradaAtletica()
+    {
+        Auth::protect();
+
+        try {
+            $userId = Auth::id();
+            $userRepository = $this->repository('UsuarioRepository');
+
+            // Atualizar status para 'pendente'
+            $success = $userRepository->updateAtleticaJoinStatus($userId, 'pendente');
+
+            if ($success) {
+                $_SESSION['success_message'] = "Solicitação enviada com sucesso! Aguarde a aprovação do administrador da atlética.";
+            } else {
+                $_SESSION['error_message'] = "Erro ao enviar solicitação. Tente novamente.";
+            }
+        } catch (\Exception $e) {
+            $_SESSION['error_message'] = "Ocorreu um erro ao processar sua solicitação.";
+        }
+
+        redirect('/perfil');
     }
 }

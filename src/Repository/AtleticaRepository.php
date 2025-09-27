@@ -65,4 +65,15 @@ class AtleticaRepository
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function findAtleticaByCursoId(int $cursoId)
+    {
+        $sql = "SELECT a.* FROM atleticas a 
+                JOIN cursos c ON a.id = c.atletica_id 
+                WHERE c.id = :curso_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':curso_id', $cursoId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
 }

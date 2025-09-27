@@ -17,7 +17,11 @@
         </div>
         <div>
         <span class="badge bg-primary fs-6">
-            Perfil: <?php echo htmlspecialchars(ucfirst($user['role'])); ?>
+            Perfil: <?php
+                // Mostrar o tipo específico de usuário ao invés do role genérico
+                $tipoExibir = $user['tipo_usuario'] ?? 'Usuário';
+                echo htmlspecialchars($tipoExibir);
+            ?>
         </span>
         </div>
     </div>
@@ -60,6 +64,35 @@
                     </div>
                 </div>
             </div>
+        <?php endif; ?>
+
+        <?php if ($role === 'admin'): ?>
+            <?php
+            // Debug: verificar se o usuário tem atletica_id
+            $atleticaId = $_SESSION['atletica_id'] ?? null;
+            ?>
+
+            <?php if ($atleticaId): ?>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm border-info">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title"><i class="bi bi-people-fill text-info"></i> Painel da Atlética</h5>
+                            <p class="card-text">Gerencie os membros, inscrições e participações da sua atlética.</p>
+                            <a href="/admin/atletica/dashboard" class="btn btn-info mt-auto text-white">Acessar Painel</a>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm border-warning">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title"><i class="bi bi-exclamation-triangle-fill text-warning"></i> Configuração Pendente</h5>
+                            <p class="card-text">Sua conta de administrador ainda não foi associada a uma atlética. Entre em contato com o super administrador.</p>
+                            <small class="text-muted mt-auto">Aguardando configuração do sistema</small>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 

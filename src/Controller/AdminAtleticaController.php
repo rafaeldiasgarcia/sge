@@ -1,4 +1,4 @@
- <?php
+<?php
 #
 # Controller para o Painel do Administrador da Atlética.
 # Gerencia todas as ações relacionadas à administração de uma atlética específica,
@@ -14,6 +14,14 @@ class AdminAtleticaController extends BaseController
     {
         Auth::protectAdmin();
         $atleticaId = Auth::get('atletica_id');
+
+        // Verificar se o usuário tem uma atlética associada
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
+            redirect('/dashboard');
+            return;
+        }
+
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
         $stats = [
@@ -31,8 +39,18 @@ class AdminAtleticaController extends BaseController
     public function gerenciarMembros()
     {
         Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
+            redirect('/dashboard');
+            return;
+        }
+
         $adminRepo = $this->repository('AdminAtleticaRepository');
-        $pendentes = $adminRepo->findMembrosPendentes(Auth::get('atletica_id'));
+        $pendentes = $adminRepo->findMembrosPendentes($atleticaId);
+
+
         view('admin_atletica/gerenciar-membros', [
             'title' => 'Gerenciar Membros',
             'pendentes' => $pendentes
@@ -42,12 +60,20 @@ class AdminAtleticaController extends BaseController
     public function handleMembroAction()
     {
         Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
+            redirect('/dashboard');
+            return;
+        }
+
         $alunoId = (int)($_POST['aluno_id'] ?? 0);
         $action = $_POST['acao'] ?? '';
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
         if ($action === 'aprovar') {
-            $adminRepo->aprovarMembro($alunoId, Auth::get('atletica_id'));
+            $adminRepo->aprovarMembro($alunoId, $atleticaId);
             $_SESSION['success_message'] = "Aluno aprovado e adicionado à atlética!";
         } elseif ($action === 'recusar') {
             $adminRepo->recusarMembro($alunoId);
@@ -59,8 +85,15 @@ class AdminAtleticaController extends BaseController
     public function gerenciarInscricoes()
     {
         Auth::protectAdmin();
-        $adminRepo = $this->repository('AdminAtleticaRepository');
         $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
+            redirect('/dashboard');
+            return;
+        }
+
+        $adminRepo = $this->repository('AdminAtleticaRepository');
         view('admin_atletica/gerenciar-inscricoes', [
             'title' => 'Gerenciar Inscrições',
             'pendentes' => $adminRepo->findInscricoesPendentes($atleticaId),
@@ -86,11 +119,18 @@ class AdminAtleticaController extends BaseController
     public function gerenciarEventos()
     {
         Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
+            redirect('/dashboard');
+            return;
+        }
+
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $eventos = $agendamentoRepo->findFutureEsportivoEvents();
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
-        $atleticaId = Auth::get('atletica_id');
         foreach ($eventos as $key => $evento) {
             $eventos[$key]['inscritos'] = $adminRepo->findAlunosInscritosEmEvento($evento['id'], $atleticaId);
             $eventos[$key]['disponiveis'] = $adminRepo->findMembrosDisponiveisParaEvento($evento['id'], $atleticaId);
@@ -105,10 +145,18 @@ class AdminAtleticaController extends BaseController
     public function inscreverEmEvento()
     {
         Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
+            redirect('/dashboard');
+            return;
+        }
+
         $alunoId = (int)($_POST['aluno_id'] ?? 0);
         $eventoId = (int)($_POST['evento_id'] ?? 0);
         $adminRepo = $this->repository('AdminAtleticaRepository');
-        $adminRepo->inscreverAlunoEmEvento($alunoId, $eventoId, Auth::get('atletica_id'));
+        $adminRepo->inscreverAlunoEmEvento($alunoId, $eventoId, $atleticaId);
         $_SESSION['success_message'] = "Aluno inscrito com sucesso no evento!";
         redirect('/admin/atletica/eventos?open_evento=' . $eventoId);
     }

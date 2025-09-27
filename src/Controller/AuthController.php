@@ -110,7 +110,14 @@ class AuthController extends BaseController
         $_SESSION['curso_id'] = $user['curso_id'];
 
         if ($user['role'] === 'admin') {
-            $_SESSION['atletica_id'] = $user['atletica_id'];
+            // Se atletica_id não estiver presente, buscar no banco de dados
+            if (empty($user['atletica_id'])) {
+                $userRepo = $this->repository('UsuarioRepository');
+                $userDetails = $userRepo->findById($user['id']);
+                $_SESSION['atletica_id'] = $userDetails['atletica_id'] ?? null;
+            } else {
+                $_SESSION['atletica_id'] = $user['atletica_id'];
+            }
         }
     }
 
@@ -182,12 +189,18 @@ class AuthController extends BaseController
         }
 
         $data['atletica_id'] = null;
-        $data['atletica_join_status'] = 'none';
+        $data['atletica_join_status'] = 'none'; // Por padrão, ninguém vai para pending
+
         if ($data['curso_id']) {
             $cursoRepository = $this->repository('CursoRepository');
-            $data['atletica_id'] = $cursoRepository->findAtleticaIdByCursoId($data['curso_id']);
-            if ($data['atletica_id']) {
-                $data['atletica_join_status'] = 'pendente';
+            $atletica_do_curso = $cursoRepository->findAtleticaIdByCursoId($data['curso_id']);
+
+            if ($atletica_do_curso) {
+                // Apenas "Membro das Atléticas" vai direto para pending (aprovação do admin)
+                if ($data['tipo_usuario_detalhado'] === 'Membro das Atléticas') {
+                    $data['atletica_join_status'] = 'pendente';
+                }
+                // "Aluno" fica como 'none' - terá que solicitar manualmente no perfil
             }
         }
 
@@ -303,4 +316,3 @@ class AuthController extends BaseController
         }
     }
 }
-

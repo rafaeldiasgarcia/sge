@@ -38,12 +38,18 @@ class AdminAtleticaRepository
 
     public function findMembrosPendentes(int $atleticaId): array
     {
-        $sql = "SELECT u.id, u.nome, c.nome as curso_nome 
-                FROM usuarios u JOIN cursos c ON u.curso_id = c.id
-                WHERE c.atletica_id = :id AND u.atletica_join_status = 'pendente'";
+        $sql = "SELECT u.id, u.nome, 
+                       COALESCE(c.nome, 'Curso não definido') as curso_nome
+                FROM usuarios u 
+                LEFT JOIN cursos c ON u.curso_id = c.id
+                WHERE u.atletica_join_status = 'pendente' 
+                AND (c.atletica_id = :id OR c.atletica_id IS NULL)
+                ORDER BY u.nome ASC";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $atleticaId, PDO::PARAM_INT);
         $stmt->execute();
+        
         return $stmt->fetchAll();
     }
 

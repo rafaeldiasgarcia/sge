@@ -1,5 +1,4 @@
 services:
-  # Serviço do servidor web e PHP (sem alterações aqui)
   sge-php:
     build: .
     image: 'sge-php-8-apache'
@@ -14,7 +13,6 @@ services:
     env_file:
       - .env
 
-  # Serviço do banco de dados (COM A ALTERAÇÃO)
   sge-db:
     image: mysql
     container_name: sge-db
@@ -29,3 +27,16 @@ services:
       - ./assets/data:/docker-entrypoint-initdb.d
     ports:
       - '3306:3306'
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: sge-db
+      PMA_USER: root
+      PMA_PASSWORD: rootpass
+    depends_on:
+      - sge-db

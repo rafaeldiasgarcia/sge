@@ -64,20 +64,18 @@
                                 <?php endif; ?>
 
                                 <div class="mt-2">
-                                    <form method="post" action="/agenda/presenca" class="d-inline">
-                                        <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
+                                    <button type="button" class="btn btn-sm presenca-btn"
+                                            data-agendamento-id="<?php echo $evento['id']; ?>"
+                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
                                         <?php if ($evento['presenca_id']): ?>
-                                            <input type="hidden" name="action" value="desmarcar">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                            </button>
+                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
                                         <?php else: ?>
-                                            <input type="hidden" name="action" value="marcar">
-                                            <button type="submit" class="btn btn-sm btn-outline-success">
-                                                <i class="bi bi-check-circle"></i> Marcar Presença
-                                            </button>
+                                            <i class="bi bi-check-circle"></i> Marcar Presença
                                         <?php endif; ?>
-                                    </form>
+                                    </button>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -116,20 +114,20 @@
                                     </div>
                                 </div>
 
-                                <form method="post" action="/agenda/presenca" class="mt-2">
-                                    <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
-                                    <?php if ($evento['presenca_id']): ?>
-                                        <input type="hidden" name="action" value="desmarcar">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm presenca-btn"
+                                            data-agendamento-id="<?php echo $evento['id']; ?>"
+                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                        <?php if ($evento['presenca_id']): ?>
                                             <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                        </button>
-                                    <?php else: ?>
-                                        <input type="hidden" name="action" value="marcar">
-                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <?php else: ?>
                                             <i class="bi bi-check-circle"></i> Marcar Presença
-                                        </button>
-                                    <?php endif; ?>
-                                </form>
+                                        <?php endif; ?>
+                                    </button>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -238,13 +236,7 @@ function toggleEventos(tipo) {
         document.getElementById('btnEventosNaoEsportivos').classList.add('active');
     }
 
-    // Scroll suave para a seção
-    setTimeout(() => {
-        document.querySelector('.eventos-section[style*="block"]').scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }, 100);
+    // Removi o scroll automático - agora a página fica no lugar
 }
 
 function toggleEventosPassados() {
@@ -270,5 +262,61 @@ function toggleEventosPassados() {
 // Inicializar mostrando eventos esportivos por padrão
 document.addEventListener('DOMContentLoaded', function() {
     toggleEventos('esportivos');
+});
+
+// Gerenciar cliques nos botões de presença
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.presenca-btn')) {
+        const btn = event.target.closest('.presenca-btn');
+        const agendamentoId = btn.getAttribute('data-agendamento-id');
+        const action = btn.getAttribute('data-action');
+        const spinner = btn.nextElementSibling;
+
+        // Mostrar spinner e desabilitar botão
+        if (spinner) spinner.classList.remove('d-none');
+        btn.setAttribute('disabled', 'true');
+
+        // Criar FormData como se fosse um formulário tradicional
+        const formData = new FormData();
+        formData.append('agendamento_id', agendamentoId);
+        formData.append('action', action);
+
+        // Fazer requisição AJAX para marcar/desmarcar presença
+        fetch('/agenda/presenca', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Atualizar interface com base na resposta
+            if (data.success) {
+                if (action === 'marcar') {
+                    btn.setAttribute('data-action', 'desmarcar');
+                    btn.innerHTML = '<i class="bi bi-x-circle-fill"></i> Desmarcar Presença';
+                    btn.classList.remove('btn-outline-success');
+                    btn.classList.add('btn-outline-danger');
+                } else {
+                    btn.setAttribute('data-action', 'marcar');
+                    btn.innerHTML = '<i class="bi bi-check-circle"></i> Marcar Presença';
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-outline-success');
+                }
+            } else {
+                alert('Erro ao atualizar presença. Tente novamente mais tarde.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao atualizar presença. Tente novamente mais tarde.');
+        })
+        .finally(() => {
+            // Esconder spinner e habilitar botão novamente
+            if (spinner) spinner.classList.add('d-none');
+            btn.removeAttribute('disabled');
+        });
+    }
 });
 </script>

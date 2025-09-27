@@ -11,30 +11,72 @@
     <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
 <?php endif; ?>
 
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+<?php endif; ?>
+
 <div class="card">
-    <div class="card-header">Solicitações Pendentes</div>
+    <div class="card-header">
+        <strong>Solicitações Pendentes</strong>
+        <span class="badge bg-warning ms-2"><?php echo count($pendentes ?? []); ?></span>
+    </div>
     <div class="card-body">
-        <table class="table table-hover">
-            <thead><tr><th>Aluno</th><th>Curso</th><th>Ações</th></tr></thead>
-            <tbody>
-            <?php if (empty($pendentes)): ?>
-                <tr><td colspan="3" class="text-center">Nenhuma solicitação pendente.</td></tr>
-            <?php else: ?>
-                <?php foreach($pendentes as $req): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($req['nome']); ?></td>
-                        <td><?php echo htmlspecialchars($req['curso_nome']); ?></td>
-                        <td>
-                            <form method="post" action="/admin/atletica/membros/acao" class="d-inline">
-                                <input type="hidden" name="aluno_id" value="<?php echo $req['id']; ?>">
-                                <button type="submit" name="acao" value="aprovar" class="btn btn-sm btn-success">Aprovar</button>
-                                <button type="submit" name="acao" value="recusar" class="btn btn-sm btn-danger">Recusar</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
+        <?php if (empty($pendentes)): ?>
+            <div class="text-center py-4">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <h5 class="text-muted mt-2">Nenhuma solicitação pendente</h5>
+                <p class="text-muted">Quando alunos solicitarem entrada na sua atlética, eles aparecerão aqui.</p>
+            </div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="bi bi-person"></i> Aluno</th>
+                            <th><i class="bi bi-book"></i> Curso</th>
+                            <th><i class="bi bi-tools"></i> Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($pendentes as $req): ?>
+                            <tr>
+                                <td>
+                                    <strong><?php echo htmlspecialchars($req['nome']); ?></strong>
+                                </td>
+                                <td><?php echo htmlspecialchars($req['curso_nome']); ?></td>
+                                <td>
+                                    <form method="post" action="/admin/atletica/membros/acao" class="d-inline"
+                                          onsubmit="return confirm('Tem certeza que deseja executar esta ação?')">
+                                        <input type="hidden" name="aluno_id" value="<?php echo $req['id']; ?>">
+                                        <div class="btn-group" role="group">
+                                            <button type="submit" name="acao" value="aprovar" class="btn btn-sm btn-success">
+                                                <i class="bi bi-check-circle"></i> Aprovar
+                                            </button>
+                                            <button type="submit" name="acao" value="recusar" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-x-circle"></i> Recusar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
+
+<?php if (!empty($pendentes)): ?>
+    <div class="mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-info-circle text-primary"></i> Informações Importantes</h6>
+                <ul class="mb-0">
+                    <li><strong>Aprovar:</strong> O aluno se tornará membro oficial da atlética e poderá se inscrever em modalidades.</li>
+                    <li><strong>Recusar:</strong> A solicitação será rejeitada e o aluno poderá fazer uma nova solicitação no futuro.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>

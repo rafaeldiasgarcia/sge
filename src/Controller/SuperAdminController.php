@@ -102,12 +102,17 @@ class SuperAdminController extends BaseController
             'role' => $_POST['role'] ?? 'usuario',
             'tipo_usuario_detalhado' => $_POST['tipo_usuario_detalhado'] ?? 'Aluno',
             'curso_id' => !empty($_POST['curso_id']) ? (int)$_POST['curso_id'] : null,
-            'is_coordenador' => isset($_POST['is_coordenador']) ? 1 : 0
+            'is_coordenador' => isset($_POST['is_coordenador']) ? 1 : 0,
+            'atletica_join_status' => $_POST['atletica_join_status'] ?? 'none'
         ];
+
         if ($userId <= 0) redirect('/superadmin/usuarios');
+
         $userRepo = $this->repository('UsuarioRepository');
         $cursoRepo = $this->repository('CursoRepository');
         $atleticaIdDoCurso = $data['curso_id'] ? $cursoRepo->findAtleticaIdByCursoId($data['curso_id']) : null;
+
+        // Lógica para definir atletica_id baseado no role
         if ($data['role'] === 'admin') {
             if ($atleticaIdDoCurso) {
                 $data['atletica_id'] = $atleticaIdDoCurso;
@@ -116,8 +121,18 @@ class SuperAdminController extends BaseController
                 redirect('/superadmin/usuario/editar?id=' . $userId);
             }
         } else {
-            $data['atletica_id'] = null;
+            // Para usuários normais, atletica_id é definido apenas se for membro aprovado
+            if ($data['atletica_join_status'] === 'aprovado' && $atleticaIdDoCurso) {
+                $data['atletica_id'] = $atleticaIdDoCurso;
+                // Se tornou membro, automaticamente vira "Membro das Atléticas" se ainda não for
+                if ($data['tipo_usuario_detalhado'] === 'Aluno') {
+                    $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
+                }
+            } else {
+                $data['atletica_id'] = null;
+            }
         }
+
         $userRepo->updateUserByAdmin($userId, $data);
         $_SESSION['success_message'] = "Usuário atualizado com sucesso!";
         redirect('/superadmin/usuarios');
@@ -502,3 +517,4 @@ class SuperAdminController extends BaseController
         require ROOT_PATH . '/views/super_admin/relatorio-print.view.php';
     }
 }
+

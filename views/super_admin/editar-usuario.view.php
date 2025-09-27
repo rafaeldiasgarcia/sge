@@ -58,6 +58,80 @@ $podeSerAdmin = !empty($user['atletica_id']) || !empty($user['atletica_nome']);
                     <div class="form-text">A atlética é definida pelo curso do usuário.</div>
                 </div>
             </div>
+
+            <!-- Nova seção: Status na Atlética -->
+            <?php if (!empty($user['curso_id']) && !empty($user['atletica_nome'])): ?>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-people-fill text-primary"></i> Status na Atlética</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <strong>Atlética do curso:</strong> <?php echo htmlspecialchars($user['atletica_nome']); ?><br>
+                            <strong>Status atual:</strong>
+                            <span class="badge <?php
+                                echo match($user['atletica_join_status'] ?? 'none') {
+                                    'aprovado' => 'bg-success',
+                                    'pendente' => 'bg-warning text-dark',
+                                    default => 'bg-secondary'
+                                };
+                            ?>">
+                                <?php
+                                echo match($user['atletica_join_status'] ?? 'none') {
+                                    'aprovado' => 'Membro Ativo',
+                                    'pendente' => 'Aguardando Aprovação',
+                                    default => 'Não é Membro'
+                                };
+                                ?>
+                            </span>
+                        </p>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="atletica_join_status" value="aprovado" id="atletica_aprovado"
+                                   <?php if(($user['atletica_join_status'] ?? 'none') === 'aprovado') echo 'checked'; ?>>
+                            <label class="form-check-label" for="atletica_aprovado">
+                                <strong class="text-success">Membro da Atlética</strong> - Usuário faz parte da atlética
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="atletica_join_status" value="pendente" id="atletica_pendente"
+                                   <?php if(($user['atletica_join_status'] ?? 'none') === 'pendente') echo 'checked'; ?>>
+                            <label class="form-check-label" for="atletica_pendente">
+                                <strong class="text-warning">Solicitação Pendente</strong> - Aguardando aprovação do admin da atlética
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="atletica_join_status" value="none" id="atletica_none"
+                                   <?php if(($user['atletica_join_status'] ?? 'none') === 'none') echo 'checked'; ?>>
+                            <label class="form-check-label" for="atletica_none">
+                                <strong class="text-secondary">Não é Membro</strong> - Usuário não faz parte da atlética
+                            </label>
+                        </div>
+
+                        <div class="mt-3 p-2 bg-light rounded">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Importante:</strong> Alterar para "Membro da Atlética" automaticamente mudará o tipo de usuário para "Membro das Atléticas" se necessário.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Atlética não disponível</strong><br>
+                    Este usuário não pode fazer parte de uma atlética porque:
+                    <?php if (empty($user['curso_id'])): ?>
+                        não possui curso definido.
+                    <?php else: ?>
+                        o curso não possui atlética associada.
+                    <?php endif; ?>
+                    <input type="hidden" name="atletica_join_status" value="none">
+                </div>
+            <?php endif; ?>
+
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" name="is_coordenador" value="1" id="is_coordenador" <?php if($user['is_coordenador']) echo 'checked'; ?>>
                 <label class="form-check-label" for="is_coordenador">Marcar como Professor Coordenador</label>
