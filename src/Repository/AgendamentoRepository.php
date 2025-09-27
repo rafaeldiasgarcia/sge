@@ -245,7 +245,7 @@ class AgendamentoRepository
 
     public function findEventosComPresenca(int $userId): array
     {
-        // Buscar próximos 3 eventos esportivos
+        // Buscar próximo evento esportivo
         $sqlEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
                                  u.nome as responsavel, a.quantidade_pessoas,
                                  CASE 
@@ -261,14 +261,14 @@ class AgendamentoRepository
                           AND a.data_agendamento >= CURDATE()
                           AND a.tipo_agendamento = 'esportivo'
                           ORDER BY a.data_agendamento ASC, a.periodo ASC
-                          LIMIT 3";
+                          LIMIT 1";
 
         $stmt = $this->pdo->prepare($sqlEsportivos);
         $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $eventosEsportivos = $stmt->fetchAll();
 
-        // Buscar próximos 3 eventos não esportivos
+        // Buscar próximo evento não esportivo
         $sqlNaoEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
                                     u.nome as responsavel, a.quantidade_pessoas,
                                     CASE 
@@ -284,7 +284,7 @@ class AgendamentoRepository
                              AND a.data_agendamento >= CURDATE()
                              AND a.tipo_agendamento = 'nao_esportivo'
                              ORDER BY a.data_agendamento ASC, a.periodo ASC
-                             LIMIT 3";
+                             LIMIT 1";
 
         $stmt = $this->pdo->prepare($sqlNaoEsportivos);
         $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
