@@ -46,6 +46,8 @@ Router::get('/calendario-partial', 'AgendamentoController@getCalendarPartial');
 Router::get('/admin/atletica/dashboard', 'AdminAtleticaController@dashboard');
 Router::get('/admin/atletica/membros', 'AdminAtleticaController@gerenciarMembros');
 Router::post('/admin/atletica/membros/acao', 'AdminAtleticaController@handleMembroAction');
+Router::get('/admin/atletica/gerenciar-membros', 'AdminAtleticaController@gerenciarMembrosAtletica');
+Router::post('/admin/atletica/gerenciar-membros/acao', 'AdminAtleticaController@handleMembroAtleticaAction');
 Router::get('/admin/atletica/inscricoes', 'AdminAtleticaController@gerenciarInscricoes');
 Router::post('/admin/atletica/inscricoes/acao', 'AdminAtleticaController@handleInscricaoAction');
 Router::get('/admin/atletica/eventos', 'AdminAtleticaController@gerenciarEventos');

@@ -152,4 +152,58 @@ class AdminAtleticaRepository
         $stmt->bindValue(':id', $inscricaoId, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function findMembrosAtletica(int $atleticaId): array
+    {
+        $sql = "SELECT u.id, u.nome, u.email, u.ra, u.role, u.tipo_usuario_detalhado, 
+                       u.atletica_join_status, c.nome as curso_nome
+                FROM usuarios u 
+                LEFT JOIN cursos c ON u.curso_id = c.id
+                WHERE u.atletica_id = :atletica_id 
+                AND u.atletica_join_status = 'aprovado'
+                ORDER BY u.role DESC, u.nome ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':atletica_id', $atleticaId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function promoverMembroAAdmin(int $membroId, int $atleticaId): bool
+    {
+        $sql = "UPDATE usuarios 
+                SET role = 'admin', tipo_usuario_detalhado = 'Membro das Atléticas'
+                WHERE id = :id AND atletica_id = :atletica_id AND role = 'usuario'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $membroId, PDO::PARAM_INT);
+        $stmt->bindValue(':atletica_id', $atleticaId, PDO::PARAM_INT);
+
+        return $stmt->execute() && $stmt->rowCount() > 0;
+    }
+
+    public function rebaixarAdmin(int $adminId): bool
+    {
+        $sql = "UPDATE usuarios 
+                SET role = 'usuario' 
+                WHERE id = :id AND role = 'admin'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $adminId, PDO::PARAM_INT);
+
+        return $stmt->execute() && $stmt->rowCount() > 0;
+    }
+
+    public function removerMembroAtletica(int $membroId): bool
+    {
+        $sql = "UPDATE usuarios 
+                SET atletica_id = NULL, atletica_join_status = 'none', role = 'usuario'
+                WHERE id = :id AND role != 'superadmin'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $membroId, PDO::PARAM_INT);
+
+        return $stmt->execute() && $stmt->rowCount() > 0;
+    }
 }

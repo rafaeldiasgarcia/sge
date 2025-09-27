@@ -171,4 +171,75 @@ class AdminAtleticaController extends BaseController
         $_SESSION['success_message'] = "Inscrição removida com sucesso!";
         redirect('/admin/atletica/eventos?open_evento=' . $eventoId);
     }
+
+    public function gerenciarMembrosAtletica()
+    {
+        Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
+            redirect('/dashboard');
+            return;
+        }
+
+        $adminRepo = $this->repository('AdminAtleticaRepository');
+        $membros = $adminRepo->findMembrosAtletica($atleticaId);
+
+        view('admin_atletica/gerenciar-membros-atletica', [
+            'title' => 'Gerenciar Membros da Atlética',
+            'membros' => $membros
+        ]);
+    }
+
+    public function handleMembroAtleticaAction()
+    {
+        Auth::protectAdmin();
+        $atleticaId = Auth::get('atletica_id');
+
+        if (!$atleticaId) {
+            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
+            redirect('/dashboard');
+            return;
+        }
+
+        $membroId = (int)($_POST['membro_id'] ?? 0);
+        $action = $_POST['acao'] ?? '';
+        $adminRepo = $this->repository('AdminAtleticaRepository');
+
+        switch ($action) {
+            case 'promover_admin':
+                $success = $adminRepo->promoverMembroAAdmin($membroId, $atleticaId);
+                if ($success) {
+                    $_SESSION['success_message'] = "Membro promovido a Administrador da Atlética com sucesso!";
+                } else {
+                    $_SESSION['error_message'] = "Erro ao promover membro.";
+                }
+                break;
+
+            case 'rebaixar_admin':
+                $success = $adminRepo->rebaixarAdmin($membroId);
+                if ($success) {
+                    $_SESSION['success_message'] = "Administrador rebaixado a membro comum com sucesso!";
+                } else {
+                    $_SESSION['error_message'] = "Erro ao rebaixar administrador.";
+                }
+                break;
+
+            case 'remover_atletica':
+                $success = $adminRepo->removerMembroAtletica($membroId);
+                if ($success) {
+                    $_SESSION['success_message'] = "Membro removido da atlética com sucesso!";
+                } else {
+                    $_SESSION['error_message'] = "Erro ao remover membro da atlética.";
+                }
+                break;
+
+            default:
+                $_SESSION['error_message'] = "Ação inválida.";
+                break;
+        }
+
+        redirect('/admin/atletica/gerenciar-membros');
+    }
 }

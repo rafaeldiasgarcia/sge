@@ -62,11 +62,11 @@
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <div class="card h-100 border-success">
+        <div class="card h-100 border-primary">
             <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-calendar-plus text-success"></i> Agendar Evento na Quadra</h5>
-                <p class="card-text">Solicite o uso da quadra esportiva para treinos, campeonatos ou eventos da sua atlética.</p>
-                <a href="/agendar-evento" class="btn btn-success">Fazer Agendamento</a>
+                <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Gerenciar Membros da Atlética</h5>
+                <p class="card-text">Visualize todos os membros da sua atlética e gerencie seus status e permissões.</p>
+                <a href="/admin/atletica/gerenciar-membros" class="btn btn-primary">Gerenciar Membros</a>
             </div>
         </div>
     </div>
