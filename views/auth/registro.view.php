@@ -88,6 +88,10 @@
 
         <button type="submit" class="btn btn-auth-primary">Cadastrar</button>
 
+        <div class="auth-links-register">
+            <a href="/login">Já tem uma conta? Faça login</a>
+        </div>
+
         <div class="auth-help-text">
             Precisa de ajuda?<br>
             Entre em contato com a universidade
