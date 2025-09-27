@@ -70,8 +70,8 @@
                         <!-- Usuário sem curso definido -->
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle"></i>
-                            <strong>Defina seu curso primeiro</strong><br>
-                            Para verificar se há uma atlética disponível, você precisa definir seu curso no formulário acima.
+                            <strong>Você não pode fazer parte de nenhuma atletica.</strong><br>
+                            Seu cusro não tem uma atletica ainda, ou você não é um aluno.
                         </div>
 
                     <?php elseif (!$atletica_info): ?>

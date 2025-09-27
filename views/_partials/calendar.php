@@ -21,8 +21,9 @@ function dayBadgeCal($ymd, $ocupado) {
 
 <div class="d-flex align-items-center gap-3 small mb-2">
     <span><span class="badge bg-success me-1">&nbsp;</span> Livre</span>
-    <span><span class="badge bg-warning text-dark me-1">&nbsp;</span> Meio período ocupado</span>
+    <span><span class="badge bg-warning text-dark me-1">&nbsp;</span> Um período ocupado</span>
     <span><span class="badge bg-danger me-1">&nbsp;</span> Indisponível</span>
+    <span><span class="badge bg-light border text-dark me-1">&nbsp;</span> Horário indisponível</span>
 </div>
 
 <div id="cal" class="border rounded-3 p-3 mb-4">
