@@ -245,26 +245,54 @@ class AgendamentoRepository
 
     public function findEventosComPresenca(int $userId): array
     {
-        $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                       u.nome as responsavel, a.quantidade_pessoas,
-                       CASE 
-                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
-                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
-                           ELSE a.periodo
-                       END as horario_periodo
-                FROM agendamentos a
-                JOIN usuarios u ON a.usuario_id = u.id
-                JOIN presencas p ON a.id = p.agendamento_id
-                WHERE p.usuario_id = :usuario_id 
-                AND a.status = 'aprovado'
-                AND a.data_agendamento >= CURDATE()
-                ORDER BY a.data_agendamento ASC, a.periodo ASC
-                LIMIT 3";
+        // Buscar próximos 3 eventos esportivos
+        $sqlEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
+                                 u.nome as responsavel, a.quantidade_pessoas,
+                                 CASE 
+                                     WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                                     WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                                     ELSE a.periodo
+                                 END as horario_periodo
+                          FROM agendamentos a
+                          JOIN usuarios u ON a.usuario_id = u.id
+                          JOIN presencas p ON a.id = p.agendamento_id
+                          WHERE p.usuario_id = :usuario_id 
+                          AND a.status = 'aprovado'
+                          AND a.data_agendamento >= CURDATE()
+                          AND a.tipo_agendamento = 'esportivo'
+                          ORDER BY a.data_agendamento ASC, a.periodo ASC
+                          LIMIT 3";
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sqlEsportivos);
         $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+        $eventosEsportivos = $stmt->fetchAll();
+
+        // Buscar próximos 3 eventos não esportivos
+        $sqlNaoEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
+                                    u.nome as responsavel, a.quantidade_pessoas,
+                                    CASE 
+                                        WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                                        WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                                        ELSE a.periodo
+                                    END as horario_periodo
+                             FROM agendamentos a
+                             JOIN usuarios u ON a.usuario_id = u.id
+                             JOIN presencas p ON a.id = p.agendamento_id
+                             WHERE p.usuario_id = :usuario_id 
+                             AND a.status = 'aprovado'
+                             AND a.data_agendamento >= CURDATE()
+                             AND a.tipo_agendamento = 'nao_esportivo'
+                             ORDER BY a.data_agendamento ASC, a.periodo ASC
+                             LIMIT 3";
+
+        $stmt = $this->pdo->prepare($sqlNaoEsportivos);
+        $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $eventosNaoEsportivos = $stmt->fetchAll();
+
+        // Combinar os resultados mantendo a separação por tipo
+        return array_merge($eventosEsportivos, $eventosNaoEsportivos);
     }
 
     public function findOcupacaoPorMes(string $inicioMes, string $fimMes): array
