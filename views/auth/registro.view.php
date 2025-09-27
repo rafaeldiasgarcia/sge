@@ -4,7 +4,7 @@
 # Inclui lógica JavaScript para mostrar/ocultar campos dinamicamente.
 #
 ?>
-<div class="auth-card">
+<div class="auth-card-register">
     <h1 class="auth-title">Cadastre-se</h1>
     <p class="auth-subtitle">Cadastro para os jogos universitários da UNIFIO</p>
 
@@ -14,12 +14,19 @@
         </div>
     <?php endif; ?>
 
-    <form action="/registro" method="post" class="auth-form">
+    <form action="/registro" method="post" class="auth-form-register">
+        <div class="row">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome Completo</label>
             <input type="text" name="nome" id="nome" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label for="data_nascimento" class="form-label">Data de Nascimento</label>
+            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" required>
+        </div>
+        </div>
 
+        <div class="row"> 
         <div class="mb-3">
             <label for="tipo_usuario_detalhado" class="form-label">Vínculo com a Instituição</label>
             <select name="tipo_usuario_detalhado" id="tipo_usuario_detalhado" class="form-select" required>
@@ -39,6 +46,7 @@
         <div class="mb-3">
             <label for="email" class="form-label">E-mail institucional</label>
             <input type="email" name="email" id="email" class="form-control" placeholder="*******@unifio.edu.br" required>
+        </div>
         </div>
 
         <div class="row">
@@ -66,11 +74,7 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" required>
-        </div>
-
+        <div class="row">
         <div class="mb-3">
             <label for="senha" class="form-label">Senha</label>
             <input type="password" name="senha" id="senha" class="form-control" placeholder="••••••••" required>
@@ -80,6 +84,7 @@
             <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
             <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" placeholder="••••••••" required>
         </div>
+        </div>
 
         <button type="submit" class="btn btn-auth-primary">Cadastrar</button>
 
@@ -88,7 +93,9 @@
             Entre em contato com a universidade
         </div>
 
-        <div class="unifio-logo">UniFio</div>
+        <div class="unifio-logo">
+            <img src="/public/img/logo-unifio.png" alt="">
+        </div>
     </form>
 </div>
 

@@ -21,19 +21,19 @@
 
     <form action="/login" method="post" class="auth-form">
         <div class="mb-3">
-            <label for="email" class="form-label">Matrícula (RA)</label>
-            <input type="text" name="email" id="email" class="form-control" placeholder="00000" required>
+            <label for="email" class="form-label">E-mail institucional</label>
+            <input type="text" name="email" id="email" class="form-control" placeholder="00000@unifio.edu.br" required>
         </div>
-        <div class="mb-3">
+        <div class="mb-1">
             <label for="senha" class="form-label">Senha</label>
             <input type="password" name="senha" id="senha" class="form-control" placeholder="••••••••" required>
         </div>
         <div class="auth-links mb-3">
-            <a href="/esqueci-senha">Esqueceu a senha?</a>
+            <a class="esqueceu-senha" href="/esqueci-senha">Esqueceu a senha?</a>
         </div>
         <button type="submit" class="btn btn-auth-primary">Entrar</button>
 
-        <div class="auth-links">
+        <div class="auth-links-register">
             <a href="/registro">Cadastre-se</a>
         </div>
 
@@ -42,6 +42,8 @@
             Entre em contato com a universidade
         </div>
 
-        <div class="unifio-logo">UniFio</div>
+        <div class="unifio-logo">
+            <img src="/public/img/logo-unifio.png" alt="">
+        </div>
     </form>
 </div>
