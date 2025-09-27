@@ -1,5 +1,5 @@
 <?php
-#
+// Removido o condicional para manter o footer em todas as páginas.
 # Rodapé Padrão da Aplicação.
 # Fecha as tags HTML abertas no header.
 #
