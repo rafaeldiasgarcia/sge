@@ -11,31 +11,112 @@
 
 <div class="mb-5">
     <h2 class="mb-4"><i class="bi bi-calendar-plus text-success"></i> Próximos Eventos</h2>
-    <div class="row">
+
+    <!-- Botões para alternar entre tipos de eventos -->
+    <div class="row mb-4">
         <div class="col-md-6">
-            <h3><i class="bi bi-trophy-fill text-primary"></i> Eventos Esportivos</h3>
-            <div class="list-group">
+            <button class="btn btn-primary btn-lg w-100" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
+                <i class="bi bi-trophy-fill"></i> Eventos Esportivos
+                <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_esportivos); ?></span>
+            </button>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-success btn-lg w-100" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
+                <i class="bi bi-calendar-event-fill"></i> Eventos Não Esportivos
+                <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_nao_esportivos); ?></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Seção de Eventos Esportivos -->
+    <div id="eventosEsportivos" class="eventos-section" style="display: none;">
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-trophy-fill"></i> Eventos Esportivos</h3>
+            </div>
+            <div class="card-body">
                 <?php if (!empty($eventos_futuros_esportivos)): ?>
-                    <?php foreach ($eventos_futuros_esportivos as $evento): ?>
-                        <div class="list-group-item list-group-item-action flex-column align-items-start mb-2">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
-                                <small><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
-                            </div>
-                            <p class="mb-1">Período: <?php echo htmlspecialchars($evento['periodo'] ?? ''); ?> | Esporte: <strong><?php echo htmlspecialchars($evento['esporte_tipo'] ?? 'Não informado'); ?></strong></p>
-                            <small class="text-muted">Responsável: <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
-
-                            <?php if ($evento['atletica_confirmada']): ?>
-                                <div class="mt-2">
-                                <span class="badge bg-success">
-                                    <i class="bi bi-check-circle"></i> <?php echo htmlspecialchars($evento['atletica_nome'] ?? ''); ?> confirmada
-                                    (<?php echo $evento['quantidade_atletica']; ?> pessoas)
-                                </span>
+                    <div class="list-group">
+                        <?php foreach ($eventos_futuros_esportivos as $evento): ?>
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-primary">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1 text-primary"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
+                                    <small class="text-primary fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
                                 </div>
-                            <?php endif; ?>
 
-                            <div class="mt-2">
-                                <form method="post" action="/agenda/presenca" class="d-inline">
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo'] ?? $evento['periodo']); ?></p>
+                                        <p class="mb-1"><strong>Esporte:</strong> <?php echo htmlspecialchars($evento['esporte_tipo'] ?? 'Não informado'); ?></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted"><strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
+                                    </div>
+                                </div>
+
+                                <?php if ($evento['atletica_confirmada']): ?>
+                                    <div class="mb-2">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> <?php echo htmlspecialchars($evento['atletica_nome'] ?? ''); ?> confirmada
+                                            (<?php echo $evento['quantidade_atletica']; ?> pessoas)
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="mt-2">
+                                    <form method="post" action="/agenda/presenca" class="d-inline">
+                                        <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
+                                        <?php if ($evento['presenca_id']): ?>
+                                            <input type="hidden" name="action" value="desmarcar">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                            </button>
+                                        <?php else: ?>
+                                            <input type="hidden" name="action" value="marcar">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-check-circle"></i> Marcar Presença
+                                            </button>
+                                        <?php endif; ?>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Nenhum evento esportivo agendado no momento.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Eventos Não Esportivos -->
+    <div id="eventosNaoEsportivos" class="eventos-section" style="display: none;">
+        <div class="card shadow-sm border-success">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="bi bi-calendar-event-fill"></i> Eventos Não Esportivos</h3>
+            </div>
+            <div class="card-body">
+                <?php if (!empty($eventos_futuros_nao_esportivos)): ?>
+                    <div class="list-group">
+                        <?php foreach ($eventos_futuros_nao_esportivos as $evento): ?>
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-success">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1 text-success"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
+                                    <small class="text-success fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo'] ?? $evento['periodo']); ?></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted"><strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
+                                    </div>
+                                </div>
+
+                                <form method="post" action="/agenda/presenca" class="mt-2">
                                     <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
                                     <?php if ($evento['presenca_id']): ?>
                                         <input type="hidden" name="action" value="desmarcar">
@@ -50,45 +131,8 @@
                                     <?php endif; ?>
                                 </form>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Nenhum evento esportivo agendado no momento.
+                        <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <h3><i class="bi bi-calendar-event-fill text-success"></i> Eventos Não Esportivos</h3>
-            <div class="list-group">
-                <?php if (!empty($eventos_futuros_nao_esportivos)): ?>
-                    <?php foreach ($eventos_futuros_nao_esportivos as $evento): ?>
-                        <div class="list-group-item list-group-item-action flex-column align-items-start mb-2">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
-                                <small><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
-                            </div>
-                            <p class="mb-1">Período: <?php echo htmlspecialchars($evento['periodo'] ?? ''); ?></p>
-                            <small class="text-muted">Responsável: <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
-
-                            <form method="post" action="/agenda/presenca" class="mt-2">
-                                <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
-                                <?php if ($evento['presenca_id']): ?>
-                                    <input type="hidden" name="action" value="desmarcar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                    </button>
-                                <?php else: ?>
-                                    <input type="hidden" name="action" value="marcar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="bi bi-check-circle"></i> Marcar Presença
-                                    </button>
-                                <?php endif; ?>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
                 <?php else: ?>
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle"></i> Nenhum evento não esportivo agendado no momento.
@@ -127,7 +171,7 @@
                                         <h5 class="mb-1 text-muted"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                         <small class="text-muted"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
                                     </div>
-                                    <p class="mb-1 text-muted">Período: <?php echo htmlspecialchars($evento['periodo'] ?? ''); ?> | Esporte: <strong><?php echo htmlspecialchars($evento['esporte_tipo'] ?? 'Não informado'); ?></strong></p>
+                                    <p class="mb-1 text-muted"><strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo'] ?? $evento['periodo']); ?> | <strong>Esporte:</strong> <?php echo htmlspecialchars($evento['esporte_tipo'] ?? 'Não informado'); ?></p>
                                     <small class="text-muted">Responsável: <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
                                     <div class="mt-2">
                                         <?php if ($evento['presenca_id']): ?>
@@ -153,7 +197,7 @@
                                         <h5 class="mb-1 text-muted"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                         <small class="text-muted"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
                                     </div>
-                                    <p class="mb-1 text-muted">Período: <?php echo htmlspecialchars($evento['periodo'] ?? ''); ?></p>
+                                    <p class="mb-1 text-muted"><strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo'] ?? $evento['periodo']); ?></p>
                                     <small class="text-muted">Responsável: <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
                                     <div class="mt-2">
                                         <?php if ($evento['presenca_id']): ?>
@@ -175,6 +219,34 @@
 <?php endif; ?>
 
 <script>
+function toggleEventos(tipo) {
+    // Esconder todas as seções
+    document.querySelectorAll('.eventos-section').forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // Remover classe ativa de todos os botões
+    document.getElementById('btnEventosEsportivos').classList.remove('active');
+    document.getElementById('btnEventosNaoEsportivos').classList.remove('active');
+
+    // Mostrar seção selecionada e ativar botão
+    if (tipo === 'esportivos') {
+        document.getElementById('eventosEsportivos').style.display = 'block';
+        document.getElementById('btnEventosEsportivos').classList.add('active');
+    } else if (tipo === 'nao_esportivos') {
+        document.getElementById('eventosNaoEsportivos').style.display = 'block';
+        document.getElementById('btnEventosNaoEsportivos').classList.add('active');
+    }
+
+    // Scroll suave para a seção
+    setTimeout(() => {
+        document.querySelector('.eventos-section[style*="block"]').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }, 100);
+}
+
 function toggleEventosPassados() {
     const section = document.getElementById('eventosPassadosSection');
     const toggleText = document.getElementById('toggleText');
@@ -194,4 +266,9 @@ function toggleEventosPassados() {
         document.getElementById('toggleEventosPassados').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
+
+// Inicializar mostrando eventos esportivos por padrão
+document.addEventListener('DOMContentLoaded', function() {
+    toggleEventos('esportivos');
+});
 </script>

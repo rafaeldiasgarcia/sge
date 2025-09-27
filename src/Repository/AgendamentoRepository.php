@@ -22,7 +22,12 @@ class AgendamentoRepository
     {
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
                        u.nome as responsavel, p.id as presenca_id, a.atletica_confirmada, 
-                       a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome
+                       a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                           ELSE a.periodo
+                       END as horario_periodo
                 FROM agendamentos a
                 JOIN usuarios u ON a.usuario_id = u.id
                 LEFT JOIN presencas p ON a.id = p.agendamento_id AND p.usuario_id = :usuario_id
@@ -241,14 +246,20 @@ class AgendamentoRepository
     public function findEventosComPresenca(int $userId): array
     {
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                       u.nome as responsavel, a.quantidade_pessoas, at.nome as atletica_nome
+                       u.nome as responsavel, a.quantidade_pessoas,
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                           ELSE a.periodo
+                       END as horario_periodo
                 FROM agendamentos a
                 JOIN usuarios u ON a.usuario_id = u.id
                 JOIN presencas p ON a.id = p.agendamento_id
-                LEFT JOIN atleticas at ON a.atletica_id_confirmada = at.id
                 WHERE p.usuario_id = :usuario_id 
                 AND a.status = 'aprovado'
-                ORDER BY a.data_agendamento DESC";
+                AND a.data_agendamento >= CURDATE()
+                ORDER BY a.data_agendamento ASC, a.periodo ASC
+                LIMIT 3";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
