@@ -8,7 +8,11 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>Bem-vindo, <?php echo htmlspecialchars($user['nome']); ?>!</h1>
+            <h1>Bem-vindo, <?php
+                $nomeCompleto = htmlspecialchars($user['nome']);
+                $primeiroNome = explode(' ', $nomeCompleto)[0];
+                echo $primeiroNome;
+            ?>!</h1>
             <p class="text-muted">Este é o seu painel de controle.</p>
         </div>
         <div>
