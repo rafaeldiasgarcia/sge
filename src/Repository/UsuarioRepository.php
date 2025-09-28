@@ -117,13 +117,14 @@ class UsuarioRepository
     public function updateProfileData(int $id, array $data): bool
     {
         $sql = "UPDATE usuarios 
-                SET nome = :nome, email = :email, data_nascimento = :data_nascimento, curso_id = :curso_id
+                SET nome = :nome, email = :email, data_nascimento = :data_nascimento, curso_id = :curso_id, telefone = :telefone
                 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':nome', $data['nome']);
         $stmt->bindValue(':email', $data['email']);
         $stmt->bindValue(':data_nascimento', $data['data_nascimento']);
         $stmt->bindValue(':curso_id', $data['curso_id'] ?: null, PDO::PARAM_INT);
+        $stmt->bindValue(':telefone', $data['telefone'] ?? null);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -167,14 +168,15 @@ class UsuarioRepository
 
     public function createUser(array $data)
     {
-        $sql = "INSERT INTO usuarios (nome, email, senha, ra, data_nascimento, tipo_usuario_detalhado, curso_id, role, atletica_join_status, atletica_id) 
-                VALUES (:nome, :email, :senha, :ra, :data_nascimento, :tipo_usuario_detalhado, :curso_id, :role, :atletica_join_status, :atletica_id)";
+        $sql = "INSERT INTO usuarios (nome, email, senha, ra, data_nascimento, telefone, tipo_usuario_detalhado, curso_id, role, atletica_join_status, atletica_id) 
+                VALUES (:nome, :email, :senha, :ra, :data_nascimento, :telefone, :tipo_usuario_detalhado, :curso_id, :role, :atletica_join_status, :atletica_id)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':nome', $data['nome']);
         $stmt->bindValue(':email', $data['email']);
         $stmt->bindValue(':senha', $data['senha']);
         $stmt->bindValue(':ra', $data['ra']);
         $stmt->bindValue(':data_nascimento', $data['data_nascimento']);
+        $stmt->bindValue(':telefone', $data['telefone'] ?? null);
         $stmt->bindValue(':tipo_usuario_detalhado', $data['tipo_usuario_detalhado']);
         $stmt->bindValue(':curso_id', $data['curso_id'], PDO::PARAM_INT);
         $stmt->bindValue(':role', $data['role']);
@@ -201,7 +203,7 @@ class UsuarioRepository
     public function updateUserByAdmin(int $id, array $data): bool
     {
         $sql = "UPDATE usuarios 
-                SET nome = :nome, email = :email, ra = :ra, role = :role, 
+                SET nome = :nome, email = :email, ra = :ra, telefone = :telefone, role = :role, 
                     tipo_usuario_detalhado = :tipo_usuario_detalhado, curso_id = :curso_id, 
                     atletica_id = :atletica_id, is_coordenador = :is_coordenador,
                     atletica_join_status = :atletica_join_status
@@ -210,6 +212,7 @@ class UsuarioRepository
         $stmt->bindValue(':nome', $data['nome']);
         $stmt->bindValue(':email', $data['email']);
         $stmt->bindValue(':ra', $data['ra']);
+        $stmt->bindValue(':telefone', $data['telefone'] ?? null);
         $stmt->bindValue(':role', $data['role']);
         $stmt->bindValue(':tipo_usuario_detalhado', $data['tipo_usuario_detalhado']);
         $stmt->bindValue(':curso_id', $data['curso_id'], PDO::PARAM_INT);

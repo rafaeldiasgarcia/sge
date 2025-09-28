@@ -52,7 +52,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
-                <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(**) ****-****">
+                <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(00) 00000-0000" required maxlength="15">
             </div>
             <div class="col-md-6 mb-3">
                 <label for="cargo" class="form-label">Cargo</label>
@@ -133,5 +133,40 @@
 
         tipoUsuarioSelect.addEventListener('change', toggleFields);
         toggleFields();
+
+        // Máscara para o campo telefone
+        const telefoneInput = document.getElementById('telefone');
+        telefoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            
+            // Limita a 11 dígitos
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
+            
+            // Aplica a máscara (00) 00000-0000
+            if (value.length >= 1) {
+                value = value.replace(/^(\d{0,2})(\d{0,5})(\d{0,4}).*/, function(match, p1, p2, p3) {
+                    let result = '';
+                    if (p1) result += '(' + p1;
+                    if (p1.length === 2) result += ')';
+                    if (p2) result += p2;
+                    if (p2.length === 5 && p3) result += '-' + p3;
+                    return result;
+                });
+            }
+            
+            e.target.value = value;
+        });
+
+        // Validação em tempo real
+        telefoneInput.addEventListener('blur', function(e) {
+            const value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0 && value.length !== 11) {
+                e.target.setCustomValidity('O telefone deve conter exatamente 11 dígitos.');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
     });
 </script>

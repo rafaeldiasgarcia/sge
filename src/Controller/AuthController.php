@@ -158,6 +158,7 @@ class AuthController extends BaseController
             'tipo_usuario_detalhado' => trim($_POST['tipo_usuario_detalhado'] ?? ''),
             'data_nascimento' => trim($_POST['data_nascimento'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
+            'telefone' => trim($_POST['telefone'] ?? ''),
             'senha' => $_POST['senha'] ?? '',
             'confirmar_senha' => $_POST['confirmar_senha'] ?? '',
             'curso_id' => !empty($_POST['curso_id']) ? (int)$_POST['curso_id'] : null,
@@ -169,6 +170,20 @@ class AuthController extends BaseController
         if (empty($data['email'])) $errors[] = "O e-mail é obrigatório.";
         if (strlen($data['senha']) < 6) $errors[] = "A senha deve ter no mínimo 6 caracteres.";
         if ($data['senha'] !== $data['confirmar_senha']) $errors[] = "As senhas não coincidem.";
+        
+        // Validação do telefone - obrigatório e deve ter 11 dígitos no formato (00)00000-0000
+        if (empty($data['telefone'])) {
+            $errors[] = "O telefone é obrigatório.";
+        } else {
+            // Remove caracteres não numéricos para validar
+            $telefone_numeros = preg_replace('/[^0-9]/', '', $data['telefone']);
+            if (strlen($telefone_numeros) !== 11) {
+                $errors[] = "O telefone deve conter exatamente 11 dígitos no formato (00)00000-0000.";
+            } else {
+                // Formatar o telefone no padrão correto
+                $data['telefone'] = '(' . substr($telefone_numeros, 0, 2) . ')' . substr($telefone_numeros, 2, 5) . '-' . substr($telefone_numeros, 7, 4);
+            }
+        }
 
         $email_domain = substr(strrchr($data['email'], "@"), 1);
         if ($data['tipo_usuario_detalhado'] != 'Comunidade Externa' && !in_array($email_domain, ['unifio.edu.br', 'fio.edu.br'])) {
