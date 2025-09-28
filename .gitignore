@@ -1,1 +1,65 @@
-vendor
+# IDEs e Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Dependências PHP (geradas pelo composer install)
+vendor/
+composer.phar
+
+# Arquivos de Ambiente Específicos
+.env.local
+.env.production
+.env.staging
+
+# Logs (gerados em runtime)
+*.log
+error.log
+access.log
+
+# Cache e Temporários (gerados automaticamente)
+*.cache
+tmp/
+temp/
+
+# Sistema Operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Docker (personalizações locais)
+docker-compose.override.yml
+
+# Uploads de Usuários (conteúdo dinâmico)
+uploads/*
+!uploads/.gitkeep
+
+# Backups (gerados localmente)
+*.sql.backup
+*.bak
+
+# Node.js (se usar futuramente)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos de Configuração Local Sensíveis
+config.local.php
+database.local.php
+
+# Certificados SSL (sensíveis)
+*.pem
+*.key
+*.crt
+
+# Arquivos de Debug (gerados em desenvolvimento)
+xdebug.log
+debug.log
