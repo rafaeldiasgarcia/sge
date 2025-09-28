@@ -28,7 +28,7 @@ class RelatorioRepository
                     COUNT(CASE WHEN a.tipo_agendamento = 'esportivo' THEN 1 END) as eventos_esportivos,
                     COUNT(CASE WHEN a.tipo_agendamento = 'nao_esportivo' THEN 1 END) as eventos_nao_esportivos,
                     COUNT(CASE WHEN a.atletica_confirmada = 1 THEN 1 END) as eventos_com_atletica,
-                    SUM(a.quantidade_pessoas) as total_pessoas_estimadas,
+                    SUM(a.estimativa_participantes) as total_pessoas_estimadas,
                     SUM(a.quantidade_atletica) as total_pessoas_atleticas,
                     (SELECT COUNT(p.id) FROM presencas p JOIN agendamentos ag ON p.agendamento_id = ag.id WHERE ag.data_agendamento BETWEEN :sub_inicio AND :sub_fim) as total_presencas
                 FROM agendamentos a 

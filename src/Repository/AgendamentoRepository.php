@@ -23,6 +23,7 @@ class AgendamentoRepository
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
                        u.nome as responsavel, p.id as presenca_id, a.atletica_confirmada, 
                        a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
+                       (SELECT COUNT(*) FROM presencas p2 WHERE p2.agendamento_id = a.id) as total_presencas,
                        CASE 
                            WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
                            WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'

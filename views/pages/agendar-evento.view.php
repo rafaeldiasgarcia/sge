@@ -110,6 +110,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="estimativa_participantes_esp" class="form-label">Público Estimado *</label>
+                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes_esp" class="form-control" min="1" max="500" placeholder="Ex: 50" required>
+                                </div>
                                 <div class="col-md-6 mb-3" id="campo_arbitro">
                                     <label for="arbitro_partida" class="form-label">Árbitro da Partida</label>
                                     <input type="text" name="arbitro_partida" id="arbitro_partida" class="form-control" placeholder="Nome do árbitro (opcional)">
@@ -241,6 +245,7 @@
                 subtipo1.required = true;
                 document.getElementById('esporte_tipo').required = true;
                 document.getElementById('lista_participantes').required = true;
+                document.getElementById('estimativa_participantes_esp').required = true;
                 subtipo2.required = false;
                 document.getElementById('estimativa_participantes').required = false;
             } else if (this.value === 'nao_esportivo') {
@@ -251,6 +256,7 @@
                 subtipo1.required = false;
                 document.getElementById('esporte_tipo').required = false;
                 document.getElementById('lista_participantes').required = false;
+                document.getElementById('estimativa_participantes_esp').required = false;
             } else {
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'none';

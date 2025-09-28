@@ -63,6 +63,12 @@
                                     </div>
                                 <?php endif; ?>
 
+                                <div class="mb-2">
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-people-fill"></i> <?php echo $evento['total_presencas']; ?> pessoa(s) confirmaram presença
+                                    </span>
+                                </div>
+
                                 <div class="mt-2">
                                     <button type="button" class="btn btn-sm presenca-btn"
                                             data-agendamento-id="<?php echo $evento['id']; ?>"
@@ -112,6 +118,12 @@
                                     <div class="col-md-6">
                                         <small class="text-muted"><strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel'] ?? ''); ?></small>
                                     </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-people-fill"></i> <?php echo $evento['total_presencas']; ?> pessoa(s) confirmaram presença
+                                    </span>
                                 </div>
 
                                 <div class="mt-2">
@@ -293,16 +305,32 @@ document.addEventListener('click', function(event) {
         .then(data => {
             // Atualizar interface com base na resposta
             if (data.success) {
+                // Encontrar o badge de contagem de presenças no mesmo evento
+                const eventoContainer = btn.closest('.list-group-item');
+                const badgePresencas = eventoContainer.querySelector('.badge.bg-info');
+                
                 if (action === 'marcar') {
                     btn.setAttribute('data-action', 'desmarcar');
                     btn.innerHTML = '<i class="bi bi-x-circle-fill"></i> Desmarcar Presença';
                     btn.classList.remove('btn-outline-success');
                     btn.classList.add('btn-outline-danger');
+                    
+                    // Incrementar contador
+                    if (badgePresencas) {
+                        const currentCount = parseInt(badgePresencas.textContent.match(/\d+/)[0]);
+                        badgePresencas.innerHTML = '<i class="bi bi-people-fill"></i> ' + (currentCount + 1) + ' pessoa(s) confirmaram presença';
+                    }
                 } else {
                     btn.setAttribute('data-action', 'marcar');
                     btn.innerHTML = '<i class="bi bi-check-circle"></i> Marcar Presença';
                     btn.classList.remove('btn-outline-danger');
                     btn.classList.add('btn-outline-success');
+                    
+                    // Decrementar contador
+                    if (badgePresencas) {
+                        const currentCount = parseInt(badgePresencas.textContent.match(/\d+/)[0]);
+                        badgePresencas.innerHTML = '<i class="bi bi-people-fill"></i> ' + Math.max(0, currentCount - 1) + ' pessoa(s) confirmaram presença';
+                    }
                 }
             } else {
                 alert('Erro ao atualizar presença. Tente novamente mais tarde.');

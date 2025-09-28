@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sge-db
--- Tempo de geração: 28/09/2025 às 05:10
+-- Tempo de geração: 28/09/2025 às 05:45
 -- Versão do servidor: 9.4.0
 -- Versão do PHP: 8.2.27
 
@@ -20,6 +20,398 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `sge_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `agendamentos`
+--
+
+CREATE TABLE `agendamentos` (
+  `id` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo_agendamento` enum('esportivo','nao_esportivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `esporte_tipo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `data_agendamento` date NOT NULL,
+  `periodo` enum('primeiro','segundo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'primeiro: 19:15-20:55, segundo: 21:10-22:50',
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status` enum('aprovado','pendente','rejeitado','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `motivo_rejeicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `atletica_confirmada` tinyint(1) NOT NULL DEFAULT '0',
+  `atletica_id_confirmada` int DEFAULT NULL,
+  `quantidade_atletica` int DEFAULT '0',
+  `quantidade_pessoas` int DEFAULT '0',
+  `subtipo_evento` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'treino/campeonato para esportivos, palestra/workshop/formatura para nao_esportivos',
+  `responsavel_evento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `possui_materiais` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
+  `materiais_necessarios` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `responsabiliza_devolucao` tinyint(1) DEFAULT NULL,
+  `lista_participantes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `arquivo_participantes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `arbitro_partida` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `estimativa_participantes` int DEFAULT NULL,
+  `evento_aberto_publico` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
+  `descricao_publico_alvo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `agendamentos`
+--
+
+INSERT INTO `agendamentos` (`id`, `usuario_id`, `titulo`, `tipo_agendamento`, `esporte_tipo`, `data_agendamento`, `periodo`, `descricao`, `status`, `motivo_rejeicao`, `data_solicitacao`, `atletica_confirmada`, `atletica_id_confirmada`, `quantidade_atletica`, `quantidade_pessoas`, `subtipo_evento`, `responsavel_evento`, `possui_materiais`, `materiais_necessarios`, `responsabiliza_devolucao`, `lista_participantes`, `arquivo_participantes`, `arbitro_partida`, `estimativa_participantes`, `evento_aberto_publico`, `descricao_publico_alvo`, `infraestrutura_adicional`, `observacoes`) VALUES
+(1, 11, 'Treino de Férias - Futsal', 'esportivo', 'Futsal', '2025-07-02', 'primeiro', 'Treino leve de manutenção durante as férias.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 15, NULL, NULL, NULL, NULL),
+(2, 12, 'Jogo Amistoso Vôlei', 'esportivo', 'Voleibol', '2025-07-05', 'segundo', 'Amistoso contra time convidado.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Julia Alves', NULL, NULL, NULL, NULL, NULL, NULL, 20, NULL, NULL, NULL, NULL),
+(3, 8, 'Curso de Extensão: Programação em R', 'nao_esportivo', NULL, '2025-07-08', 'primeiro', 'Curso de férias para a comunidade.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Profa. Beatriz Lima', NULL, NULL, NULL, NULL, NULL, NULL, 40, NULL, NULL, NULL, NULL),
+(4, 15, 'Planejamento de Eventos MAGNA', 'nao_esportivo', NULL, '2025-07-10', 'primeiro', 'Reunião de diretoria para o próximo semestre.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Gabriel Pereira', NULL, NULL, NULL, NULL, NULL, NULL, 12, NULL, NULL, NULL, NULL),
+(5, 11, 'Treino Físico Geral', 'esportivo', 'Atletismo', '2025-07-15', 'segundo', 'Preparação física geral para atletas.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 25, NULL, NULL, NULL, NULL),
+(6, 20, 'Palestra: Saúde Mental no Esporte', 'nao_esportivo', NULL, '2025-07-18', 'primeiro', 'Palestra com psicólogo convidado.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Sr. Jorge Santos', NULL, NULL, NULL, NULL, NULL, NULL, 80, NULL, NULL, NULL, NULL),
+(7, 13, 'Campeonato Relâmpago de CS:GO', 'esportivo', 'CS:GO', '2025-07-22', 'segundo', 'Torneio de um dia entre os alunos.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Pedro Martins', NULL, NULL, NULL, NULL, NULL, NULL, 16, NULL, NULL, NULL, NULL),
+(8, 14, 'Ação Social SANGUINÁRIA', 'nao_esportivo', NULL, '2025-07-26', 'primeiro', 'Campanha de doação de sangue.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Fernanda Oliveira', NULL, NULL, NULL, NULL, NULL, NULL, 100, NULL, NULL, NULL, NULL),
+(9, 11, 'Volta aos Treinos - Futsal', 'esportivo', 'Futsal', '2025-08-01', 'primeiro', 'Início oficial dos treinos do semestre.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 18, NULL, NULL, NULL, NULL),
+(10, 12, 'Seletiva Vôlei PREDADORA', 'esportivo', 'Voleibol', '2025-08-04', 'segundo', 'Seleção de novas atletas.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Julia Alves', NULL, NULL, NULL, NULL, NULL, NULL, 30, NULL, NULL, NULL, NULL),
+(11, 7, 'Aula Magna Engenharia Civil', 'nao_esportivo', NULL, '2025-08-05', 'primeiro', 'Evento de boas-vindas aos calouros.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Prof. Carlos Andrade', NULL, NULL, NULL, NULL, NULL, NULL, 150, NULL, NULL, NULL, NULL),
+(12, 13, 'Treino Tático Valorant', 'esportivo', NULL, '2025-08-07', 'segundo', 'Análise de mapas e estratégias.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Pedro Martins', NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, NULL, NULL, NULL),
+(13, 16, 'Treino Handebol VENENOSA', 'esportivo', 'Handebol', '2025-08-11', 'primeiro', 'Foco em jogadas ensaiadas.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Mariana Ferreira', NULL, NULL, NULL, NULL, NULL, NULL, 14, NULL, NULL, NULL, NULL),
+(14, 9, 'Simpósio de Direito Penal', 'nao_esportivo', NULL, '2025-08-15', 'primeiro', 'Evento com palestras e debates.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Prof. Ricardo Souza', NULL, NULL, NULL, NULL, NULL, NULL, 120, NULL, NULL, NULL, NULL),
+(15, 11, 'Treino de Rugby', 'esportivo', NULL, '2025-08-19', 'segundo', 'Treino de contato e táticas de jogo.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 22, NULL, NULL, NULL, NULL),
+(16, 17, 'Festival de Queimada', 'esportivo', 'Queimada', '2025-08-23', 'primeiro', 'Evento de integração para calouros.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Bruno Rodrigues', NULL, NULL, NULL, NULL, NULL, NULL, 50, NULL, NULL, NULL, NULL),
+(17, 4, 'Reunião Geral - Admin Atlética', 'nao_esportivo', NULL, '2025-08-26', 'primeiro', 'Alinhamento com a diretoria de esportes.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Admin Atletica Teste', NULL, NULL, NULL, NULL, NULL, NULL, 8, NULL, NULL, NULL, NULL),
+(18, 12, 'Treino de Polo Aquático', 'esportivo', NULL, '2025-08-28', 'segundo', 'Treino em piscina olímpica.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Julia Alves', NULL, NULL, NULL, NULL, NULL, NULL, 12, NULL, NULL, NULL, NULL),
+(19, 7, 'Palestra: Engenharia e Inovação', 'nao_esportivo', NULL, '2025-09-02', 'primeiro', 'Evento do curso de Engenharia de Produção.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Prof. Carlos Andrade', NULL, NULL, NULL, NULL, NULL, NULL, 90, NULL, NULL, NULL, NULL),
+(20, 11, 'Jogo-Treino Futsal vs SANGUINÁRIA', 'esportivo', 'Futsal', '2025-09-05', 'segundo', 'Jogo preparatório.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 35, NULL, NULL, NULL, NULL),
+(21, 8, 'Treino de Cobertura de Eventos', 'nao_esportivo', NULL, '2025-09-09', 'primeiro', 'Atividade prática para alunos de Jornalismo.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Profa. Beatriz Lima', NULL, NULL, NULL, NULL, NULL, NULL, 25, NULL, NULL, NULL, NULL),
+(22, 13, 'Treino Cancelado (Chuva)', 'esportivo', 'League of Legends', '2025-09-11', 'segundo', 'Treino cancelado por problemas na rede elétrica.', 'cancelado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Pedro Martins', NULL, NULL, NULL, NULL, NULL, NULL, 8, NULL, NULL, NULL, NULL),
+(23, 15, 'Semana do Administrador', 'nao_esportivo', NULL, '2025-09-16', 'primeiro', 'Ciclo de palestras e workshops.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Gabriel Pereira', NULL, NULL, NULL, NULL, NULL, NULL, 60, NULL, NULL, NULL, NULL),
+(24, 4, 'Manutenção do E-Sports', 'nao_esportivo', NULL, '2025-09-23', 'segundo', 'Atualização dos computadores da sala de e-sports.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Admin Atletica Teste', NULL, NULL, NULL, NULL, NULL, NULL, 5, NULL, NULL, NULL, NULL),
+(25, 18, 'Cine Debate - Psicologia', 'nao_esportivo', NULL, '2025-09-26', 'primeiro', 'Exibição de filme seguida de debate.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Larissa Gonçalves', NULL, NULL, NULL, NULL, NULL, NULL, 45, NULL, NULL, NULL, NULL),
+(26, 11, 'Treino Futsal Masculino - FURIOSA', 'esportivo', 'Futsal', '2025-10-06', 'primeiro', 'Treino preparatório para o Intercursos.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 20, NULL, NULL, NULL, NULL),
+(27, 12, 'Treino Vôlei Feminino - PREDADORA', 'esportivo', 'Voleibol', '2025-10-06', 'segundo', 'Treino tático e físico.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Julia Alves', NULL, NULL, NULL, NULL, NULL, NULL, 16, NULL, NULL, NULL, NULL),
+(28, 13, 'Treino League of Legends - ALFA', 'esportivo', 'League of Legends', '2025-10-07', 'primeiro', 'Treino de estratégias e team play.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Pedro Martins', NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, NULL, NULL, NULL),
+(29, 20, 'Palestra sobre Mercado de Trabalho', 'nao_esportivo', NULL, '2025-10-08', 'primeiro', 'Palestra com convidado externo para alunos.', 'pendente', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Sr. Jorge Santos', NULL, NULL, NULL, NULL, NULL, NULL, 75, NULL, NULL, NULL, NULL),
+(30, 14, 'Treino Basquete - SANGUINÁRIA', 'esportivo', 'Basquetebol', '2025-10-08', 'segundo', 'Foco em arremessos e defesa.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Fernanda Oliveira', NULL, NULL, NULL, NULL, NULL, NULL, 12, NULL, NULL, NULL, NULL),
+(31, 8, 'Workshop de Python para iniciantes', 'nao_esportivo', NULL, '2025-10-09', 'primeiro', 'Organizado pelo curso de Ciência da Computação.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Profa. Beatriz Lima', NULL, NULL, NULL, NULL, NULL, NULL, 30, NULL, NULL, NULL, NULL),
+(32, 11, 'Amistoso Futsal FURIOSA x ALFA', 'esportivo', 'Futsal', '2025-10-10', 'segundo', 'Jogo amistoso entre as atléticas.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Lucas Mendes', NULL, NULL, NULL, NULL, NULL, NULL, 40, NULL, NULL, NULL, NULL),
+(33, 15, 'Reunião da Atlética MAGNA', 'nao_esportivo', NULL, '2025-10-13', 'primeiro', 'Planejamento de eventos do semestre.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Gabriel Pereira', NULL, NULL, NULL, NULL, NULL, NULL, 15, NULL, NULL, NULL, NULL),
+(34, 17, 'Uso da quadra para Lazer', 'esportivo', 'Futsal', '2025-10-13', 'segundo', 'Solicitação de aluno para jogo com amigos.', 'rejeitado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Bruno Rodrigues', NULL, NULL, NULL, NULL, NULL, NULL, 8, NULL, NULL, NULL, NULL),
+(35, 16, 'Treino de Handebol - VENENOSA', 'esportivo', 'Handebol', '2025-10-14', 'primeiro', 'Treino de ataque e contra-ataque.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Mariana Ferreira', NULL, NULL, NULL, NULL, NULL, NULL, 18, NULL, NULL, NULL, NULL),
+(36, 6, 'Manutenção da Quadra', 'nao_esportivo', NULL, '2025-10-15', 'primeiro', 'Reserva para manutenção e pintura.', 'aprovado', NULL, '2025-09-28 05:41:22', 0, NULL, 0, 0, NULL, 'Admin Esportes', NULL, NULL, NULL, NULL, NULL, NULL, 3, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `atleticas`
+--
+
+CREATE TABLE `atleticas` (
+  `id` int NOT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `atleticas`
+--
+
+INSERT INTO `atleticas` (`id`, `nome`) VALUES
+(1, 'A.A.A. FURIOSA'),
+(2, 'A.A.A. PREDADORA'),
+(3, 'A.A.A. SANGUINÁRIA'),
+(4, 'A.A.A. INSANA'),
+(5, 'A.A.A. MAGNA'),
+(6, 'A.A.A. ALFA'),
+(7, 'A.A.A. IMPÉRIO'),
+(8, 'A.A.A. VENENOSA'),
+(9, 'A.A.A. LETAL'),
+(10, 'A.A.A. ATÔMICA');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `cursos`
+--
+
+CREATE TABLE `cursos` (
+  `id` int NOT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `atletica_id` int DEFAULT NULL,
+  `coordenador_id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `cursos`
+--
+
+INSERT INTO `cursos` (`id`, `nome`, `atletica_id`, `coordenador_id`) VALUES
+(1, 'Engenharia Civil', 1, 7),
+(2, 'Engenharia de Software', 6, NULL),
+(3, 'Direito', 2, 9),
+(4, 'Medicina', 3, NULL),
+(5, 'Psicologia', 4, NULL),
+(6, 'Administração', 5, NULL),
+(7, 'Ciência da Computação', 6, 8),
+(8, 'Publicidade e Propaganda', 7, NULL),
+(9, 'Farmácia', 8, NULL),
+(10, 'Ciências Biológicas', 9, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `inscricoes_eventos`
+--
+
+CREATE TABLE `inscricoes_eventos` (
+  `id` int NOT NULL,
+  `aluno_id` int NOT NULL,
+  `evento_id` int NOT NULL,
+  `atletica_id` int NOT NULL,
+  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aprovado',
+  `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `inscricoes_eventos`
+--
+
+INSERT INTO `inscricoes_eventos` (`id`, `aluno_id`, `evento_id`, `atletica_id`, `status`, `data_inscricao`, `observacoes`) VALUES
+(1, 11, 7, 1, 'aprovado', '2025-09-28 05:41:22', NULL),
+(2, 13, 3, 6, 'aprovado', '2025-09-28 05:41:22', NULL),
+(3, 17, 6, 6, 'aprovado', '2025-09-28 05:41:22', NULL),
+(4, 18, 6, 6, 'aprovado', '2025-09-28 05:41:22', NULL),
+(5, 12, 2, 2, 'aprovado', '2025-09-28 05:41:22', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `inscricoes_modalidade`
+--
+
+CREATE TABLE `inscricoes_modalidade` (
+  `id` int NOT NULL,
+  `aluno_id` int NOT NULL,
+  `modalidade_id` int NOT NULL,
+  `atletica_id` int NOT NULL,
+  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `inscricoes_modalidade`
+--
+
+INSERT INTO `inscricoes_modalidade` (`id`, `aluno_id`, `modalidade_id`, `atletica_id`, `status`, `data_inscricao`) VALUES
+(1, 11, 1, 1, 'aprovado', '2025-09-28 05:41:22'),
+(2, 12, 2, 2, 'aprovado', '2025-09-28 05:41:22'),
+(3, 13, 12, 6, 'aprovado', '2025-09-28 05:41:22'),
+(4, 14, 3, 3, 'aprovado', '2025-09-28 05:41:22'),
+(5, 15, 11, 5, 'aprovado', '2025-09-28 05:41:22'),
+(6, 16, 4, 8, 'aprovado', '2025-09-28 05:41:22'),
+(7, 17, 1, 1, 'pendente', '2025-09-28 05:41:22'),
+(8, 18, 2, 2, 'pendente', '2025-09-28 05:41:22');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `modalidades`
+--
+
+CREATE TABLE `modalidades` (
+  `id` int NOT NULL,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `modalidades`
+--
+
+INSERT INTO `modalidades` (`id`, `nome`) VALUES
+(1, 'Futsal'),
+(2, 'Voleibol'),
+(3, 'Basquetebol'),
+(4, 'Handebol'),
+(5, 'Natação'),
+(6, 'Atletismo'),
+(7, 'Judô'),
+(8, 'Karatê'),
+(9, 'Tênis de Mesa'),
+(10, 'Tênis de Campo'),
+(11, 'Xadrez'),
+(12, 'League of Legends'),
+(13, 'CS:GO'),
+(14, 'Vôlei de Praia'),
+(15, 'Queimada');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `presencas`
+--
+
+CREATE TABLE `presencas` (
+  `id` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  `agendamento_id` int NOT NULL,
+  `data_presenca` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `presencas`
+--
+
+INSERT INTO `presencas` (`id`, `usuario_id`, `agendamento_id`, `data_presenca`) VALUES
+(1, 11, 1, '2025-09-28 05:41:22'),
+(2, 12, 1, '2025-09-28 05:41:22'),
+(3, 13, 1, '2025-09-28 05:41:22'),
+(4, 14, 1, '2025-09-28 05:41:22'),
+(5, 15, 1, '2025-09-28 05:41:22'),
+(6, 16, 1, '2025-09-28 05:41:22'),
+(7, 17, 1, '2025-09-28 05:41:22'),
+(8, 2, 1, '2025-09-28 05:41:22'),
+(9, 3, 1, '2025-09-28 05:41:22'),
+(10, 4, 1, '2025-09-28 05:41:22'),
+(11, 20, 1, '2025-09-28 05:41:22'),
+(12, 12, 2, '2025-09-28 05:41:22'),
+(13, 13, 2, '2025-09-28 05:41:22'),
+(14, 14, 2, '2025-09-28 05:41:22'),
+(15, 16, 2, '2025-09-28 05:41:22'),
+(16, 18, 2, '2025-09-28 05:41:22'),
+(17, 19, 2, '2025-09-28 05:41:22'),
+(18, 3, 2, '2025-09-28 05:41:22'),
+(19, 4, 2, '2025-09-28 05:41:22'),
+(20, 8, 3, '2025-09-28 05:41:22'),
+(21, 11, 3, '2025-09-28 05:41:22'),
+(22, 13, 3, '2025-09-28 05:41:22'),
+(23, 15, 3, '2025-09-28 05:41:22'),
+(24, 17, 3, '2025-09-28 05:41:22'),
+(25, 18, 3, '2025-09-28 05:41:22'),
+(26, 19, 3, '2025-09-28 05:41:22'),
+(27, 2, 3, '2025-09-28 05:41:22'),
+(28, 3, 3, '2025-09-28 05:41:22'),
+(29, 4, 3, '2025-09-28 05:41:22'),
+(30, 20, 3, '2025-09-28 05:41:22'),
+(31, 21, 3, '2025-09-28 05:41:22'),
+(32, 7, 3, '2025-09-28 05:41:22'),
+(33, 9, 3, '2025-09-28 05:41:22'),
+(34, 10, 3, '2025-09-28 05:41:22'),
+(35, 15, 4, '2025-09-28 05:41:22'),
+(36, 11, 4, '2025-09-28 05:41:22'),
+(37, 13, 4, '2025-09-28 05:41:22'),
+(38, 16, 4, '2025-09-28 05:41:22'),
+(39, 18, 4, '2025-09-28 05:41:22'),
+(40, 11, 5, '2025-09-28 05:41:22'),
+(41, 12, 5, '2025-09-28 05:41:22'),
+(42, 13, 5, '2025-09-28 05:41:22'),
+(43, 14, 5, '2025-09-28 05:41:22'),
+(44, 16, 5, '2025-09-28 05:41:22'),
+(45, 17, 5, '2025-09-28 05:41:22'),
+(46, 18, 5, '2025-09-28 05:41:22'),
+(47, 2, 5, '2025-09-28 05:41:22'),
+(48, 3, 5, '2025-09-28 05:41:22'),
+(49, 4, 5, '2025-09-28 05:41:22'),
+(50, 19, 5, '2025-09-28 05:41:22'),
+(51, 20, 5, '2025-09-28 05:41:22'),
+(52, 20, 6, '2025-09-28 05:41:22'),
+(53, 11, 6, '2025-09-28 05:41:22'),
+(54, 12, 6, '2025-09-28 05:41:22'),
+(55, 13, 6, '2025-09-28 05:41:22'),
+(56, 14, 6, '2025-09-28 05:41:22'),
+(57, 15, 6, '2025-09-28 05:41:22'),
+(58, 16, 6, '2025-09-28 05:41:22'),
+(59, 17, 6, '2025-09-28 05:41:22'),
+(60, 18, 6, '2025-09-28 05:41:22'),
+(61, 19, 6, '2025-09-28 05:41:22'),
+(62, 2, 6, '2025-09-28 05:41:22'),
+(63, 3, 6, '2025-09-28 05:41:22'),
+(64, 4, 6, '2025-09-28 05:41:22'),
+(65, 7, 6, '2025-09-28 05:41:22'),
+(66, 8, 6, '2025-09-28 05:41:22'),
+(67, 9, 6, '2025-09-28 05:41:22'),
+(68, 10, 6, '2025-09-28 05:41:22'),
+(69, 21, 6, '2025-09-28 05:41:22'),
+(70, 13, 7, '2025-09-28 05:41:22'),
+(71, 11, 7, '2025-09-28 05:41:22'),
+(72, 17, 7, '2025-09-28 05:41:22'),
+(73, 18, 7, '2025-09-28 05:41:22'),
+(74, 19, 7, '2025-09-28 05:41:22'),
+(75, 2, 7, '2025-09-28 05:41:22'),
+(76, 3, 7, '2025-09-28 05:41:22'),
+(77, 4, 7, '2025-09-28 05:41:22'),
+(78, 15, 7, '2025-09-28 05:41:22'),
+(79, 14, 8, '2025-09-28 05:41:22'),
+(80, 11, 8, '2025-09-28 05:41:22'),
+(81, 12, 8, '2025-09-28 05:41:22'),
+(82, 13, 8, '2025-09-28 05:41:22'),
+(83, 15, 8, '2025-09-28 05:41:22'),
+(84, 16, 8, '2025-09-28 05:41:22'),
+(85, 17, 8, '2025-09-28 05:41:22'),
+(86, 18, 8, '2025-09-28 05:41:22'),
+(87, 19, 8, '2025-09-28 05:41:22'),
+(88, 20, 8, '2025-09-28 05:41:22'),
+(89, 21, 8, '2025-09-28 05:41:22'),
+(90, 2, 8, '2025-09-28 05:41:22'),
+(91, 3, 8, '2025-09-28 05:41:22'),
+(92, 4, 8, '2025-09-28 05:41:22'),
+(93, 7, 8, '2025-09-28 05:41:22'),
+(94, 8, 8, '2025-09-28 05:41:22'),
+(95, 9, 8, '2025-09-28 05:41:22'),
+(96, 10, 8, '2025-09-28 05:41:22'),
+(97, 6, 8, '2025-09-28 05:41:22'),
+(98, 5, 8, '2025-09-28 05:41:22'),
+(99, 1, 8, '2025-09-28 05:41:22'),
+(100, 11, 18, '2025-09-28 05:41:22'),
+(101, 13, 18, '2025-09-28 05:41:22'),
+(102, 17, 18, '2025-09-28 05:41:22'),
+(103, 2, 18, '2025-09-28 05:41:22'),
+(104, 3, 18, '2025-09-28 05:41:22'),
+(105, 15, 18, '2025-09-28 05:41:22'),
+(106, 12, 19, '2025-09-28 05:41:22'),
+(107, 14, 19, '2025-09-28 05:41:22'),
+(108, 16, 19, '2025-09-28 05:41:22'),
+(109, 18, 19, '2025-09-28 05:41:22'),
+(110, 13, 20, '2025-09-28 05:41:22'),
+(111, 11, 20, '2025-09-28 05:41:22'),
+(112, 17, 20, '2025-09-28 05:41:22'),
+(113, 19, 20, '2025-09-28 05:41:22'),
+(114, 2, 20, '2025-09-28 05:41:22'),
+(115, 3, 20, '2025-09-28 05:41:22'),
+(116, 4, 20, '2025-09-28 05:41:22'),
+(117, 14, 22, '2025-09-28 05:41:22'),
+(118, 11, 22, '2025-09-28 05:41:22'),
+(119, 16, 22, '2025-09-28 05:41:22'),
+(120, 18, 22, '2025-09-28 05:41:22'),
+(121, 20, 22, '2025-09-28 05:41:22'),
+(122, 8, 23, '2025-09-28 05:41:22'),
+(123, 11, 23, '2025-09-28 05:41:22'),
+(124, 13, 23, '2025-09-28 05:41:22'),
+(125, 17, 23, '2025-09-28 05:41:22'),
+(126, 19, 23, '2025-09-28 05:41:22'),
+(127, 2, 23, '2025-09-28 05:41:22'),
+(128, 3, 23, '2025-09-28 05:41:22'),
+(129, 4, 23, '2025-09-28 05:41:22'),
+(130, 15, 23, '2025-09-28 05:41:22'),
+(131, 18, 23, '2025-09-28 05:41:22'),
+(132, 20, 23, '2025-09-28 05:41:22'),
+(133, 21, 23, '2025-09-28 05:41:22'),
+(134, 11, 24, '2025-09-28 05:41:22'),
+(135, 13, 24, '2025-09-28 05:41:22'),
+(136, 17, 24, '2025-09-28 05:41:22'),
+(137, 12, 24, '2025-09-28 05:41:22'),
+(138, 14, 24, '2025-09-28 05:41:22'),
+(139, 16, 24, '2025-09-28 05:41:22'),
+(140, 2, 24, '2025-09-28 05:41:22'),
+(141, 3, 24, '2025-09-28 05:41:22'),
+(142, 15, 25, '2025-09-28 05:41:22'),
+(143, 18, 25, '2025-09-28 05:41:22'),
+(144, 20, 25, '2025-09-28 05:41:22'),
+(145, 16, 27, '2025-09-28 05:41:22'),
+(146, 14, 27, '2025-09-28 05:41:22'),
+(147, 12, 27, '2025-09-28 05:41:22'),
+(148, 18, 27, '2025-09-28 05:41:22'),
+(149, 19, 27, '2025-09-28 05:41:22'),
+(150, 20, 27, '2025-09-28 05:41:22');
 
 -- --------------------------------------------------------
 
@@ -79,6 +471,61 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `ra`, `data_nascimento`,
 --
 
 --
+-- Índices de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `atletica_id_confirmada` (`atletica_id_confirmada`);
+
+--
+-- Índices de tabela `atleticas`
+--
+ALTER TABLE `atleticas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `cursos`
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `atletica_id` (`atletica_id`),
+  ADD KEY `coordenador_id` (`coordenador_id`);
+
+--
+-- Índices de tabela `inscricoes_eventos`
+--
+ALTER TABLE `inscricoes_eventos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `aluno_evento_unique` (`aluno_id`,`evento_id`),
+  ADD KEY `idx_evento` (`evento_id`),
+  ADD KEY `idx_atletica` (`atletica_id`),
+  ADD KEY `idx_status` (`status`);
+
+--
+-- Índices de tabela `inscricoes_modalidade`
+--
+ALTER TABLE `inscricoes_modalidade`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `aluno_id` (`aluno_id`,`modalidade_id`),
+  ADD KEY `modalidade_id` (`modalidade_id`),
+  ADD KEY `atletica_id` (`atletica_id`);
+
+--
+-- Índices de tabela `modalidades`
+--
+ALTER TABLE `modalidades`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `presencas`
+--
+ALTER TABLE `presencas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario_id` (`usuario_id`,`agendamento_id`),
+  ADD KEY `agendamento_id` (`agendamento_id`);
+
+--
 -- Índices de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -93,6 +540,48 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT de tabela `atleticas`
+--
+ALTER TABLE `atleticas`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de tabela `cursos`
+--
+ALTER TABLE `cursos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de tabela `inscricoes_eventos`
+--
+ALTER TABLE `inscricoes_eventos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de tabela `inscricoes_modalidade`
+--
+ALTER TABLE `inscricoes_modalidade`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de tabela `modalidades`
+--
+ALTER TABLE `modalidades`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de tabela `presencas`
+--
+ALTER TABLE `presencas`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+
+--
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -101,6 +590,43 @@ ALTER TABLE `usuarios`
 --
 -- Restrições para tabelas despejadas
 --
+
+--
+-- Restrições para tabelas `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `agendamentos_ibfk_2` FOREIGN KEY (`atletica_id_confirmada`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `cursos`
+--
+ALTER TABLE `cursos`
+  ADD CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `cursos_ibfk_2` FOREIGN KEY (`coordenador_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `inscricoes_eventos`
+--
+ALTER TABLE `inscricoes_eventos`
+  ADD CONSTRAINT `fk_inscricoes_eventos_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inscricoes_eventos_atletica` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inscricoes_eventos_evento` FOREIGN KEY (`evento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `inscricoes_modalidade`
+--
+ALTER TABLE `inscricoes_modalidade`
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_1` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_2` FOREIGN KEY (`modalidade_id`) REFERENCES `modalidades` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inscricoes_modalidade_ibfk_3` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `presencas`
+--
+ALTER TABLE `presencas`
+  ADD CONSTRAINT `presencas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `presencas_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `usuarios`

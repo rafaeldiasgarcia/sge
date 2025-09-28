@@ -45,7 +45,7 @@
                         <td><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></td>
                         <td><?php echo htmlspecialchars($evento['titulo']); ?></td>
                         <td><?php echo htmlspecialchars($evento['responsavel']); ?></td>
-                        <td><?php echo $evento['quantidade_pessoas']; ?></td>
+                        <td><?php echo $evento['estimativa_participantes'] ?? 0; ?></td>
                         <td><?php echo $evento['total_presencas']; ?></td>
                     </tr>
                 <?php endforeach; ?>
@@ -58,7 +58,7 @@
             <div class="summary-card p-3 rounded mb-4">
                 <h5><?php echo htmlspecialchars($evento['titulo']); ?></h5>
                 <p class="mb-1"><strong>Data:</strong> <?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?> | <strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel']); ?></p>
-                <p class="mb-0"><strong>Público Previsto:</strong> <?php echo $evento['quantidade_pessoas']; ?> | <strong class="text-success">Presenças Confirmadas:</strong> <?php echo $evento['total_presencas']; ?></p>
+                <p class="mb-0"><strong>Público Previsto:</strong> <?php echo $evento['estimativa_participantes'] ?? 0; ?> | <strong class="text-success">Presenças Confirmadas:</strong> <?php echo $evento['total_presencas']; ?></p>
             </div>
             <h6>Lista de Presenças Confirmadas</h6>
             <table class="table table-striped table-bordered">

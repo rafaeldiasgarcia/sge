@@ -100,7 +100,7 @@
             <h5>Detalhes do Evento: <?php echo htmlspecialchars($dados_relatorio['evento']['titulo']); ?></h5>
             <ul class="list-group">
                 <li class="list-group-item"><strong>Responsável:</strong> <?php echo htmlspecialchars($dados_relatorio['evento']['responsavel']); ?></li>
-                <li class="list-group-item"><strong>Público Estimado:</strong> <?php echo $dados_relatorio['evento']['quantidade_pessoas']; ?></li>
+                <li class="list-group-item"><strong>Público Estimado:</strong> <?php echo $dados_relatorio['evento']['estimativa_participantes'] ?? 0; ?></li>
                 <li class="list-group-item"><strong>Presenças Confirmadas:</strong> <?php echo $dados_relatorio['evento']['total_presencas']; ?></li>
                 <?php if (!empty($dados_relatorio['evento']['participantes_formatados'])): ?>
                     <li class="list-group-item">

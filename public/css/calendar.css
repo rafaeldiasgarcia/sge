@@ -76,7 +76,7 @@
 }
 
 .calendar-cell.past-date .calendar-day {
-    color: #495057;
+    color: hwb(210 29% 66%);
     position: relative;
     z-index: 1;
 }
