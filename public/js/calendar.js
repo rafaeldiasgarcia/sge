@@ -19,6 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.slot').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (btn.disabled || btn.classList.contains('disabled')) return;
+                
+                // Verificação adicional no lado do cliente para datas inválidas
+                const dateStr = btn.dataset.date;
+                if (dateStr) {
+                    const eventDate = new Date(dateStr);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Zera as horas para comparação precisa
+                    eventDate.setHours(0, 0, 0, 0);
+                    
+                    // Verifica se a data já passou
+                    if (eventDate < today) {
+                        return; // Não permite seleção de datas passadas
+                    }
+                    
+                    const diffTime = eventDate.getTime() - today.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays < 4) {
+                        return; // Não permite seleção de datas com menos de 4 dias de antecedência
+                    }
+                }
 
                 document.querySelectorAll('.slot.selected').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');

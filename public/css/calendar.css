@@ -55,6 +55,44 @@
     border: 1px solid #0a58ca !important;
 }
 
+/* Estilo para dias que já passaram */
+.calendar-cell.past-date {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: brightness(0.7) saturate(0.5);
+    position: relative;
+}
+
+.calendar-cell.past-date::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.calendar-cell.past-date .calendar-day {
+    color: #495057;
+    position: relative;
+    z-index: 1;
+}
+
+.calendar-cell.past-date .badge {
+    position: relative;
+    z-index: 1;
+}
+
+.calendar-cell.past-date .slot {
+    cursor: not-allowed;
+    position: relative;
+    z-index: 1;
+}
+
+
 /* Responsividade */
 @media (max-width: 992px) {
     .calendar-cell {

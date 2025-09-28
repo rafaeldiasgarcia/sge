@@ -69,6 +69,13 @@ class AgendamentoController extends BaseController
         $dataEvento = $_POST['data_agendamento'];
         $hoje = new \DateTime();
         $dataEventoObj = new \DateTime($dataEvento);
+        
+        // Verifica se a data já passou
+        if ($dataEventoObj < $hoje) {
+            $_SESSION['error_message'] = "Não é possível agendar eventos em datas que já passaram.";
+            redirect('/agendar-evento');
+        }
+        
         $diferencaDias = $hoje->diff($dataEventoObj)->days;
 
         $subtipo = $_POST['subtipo_evento'] ?? '';
