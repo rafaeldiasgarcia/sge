@@ -57,9 +57,9 @@
 
 /* Estilo para dias que já passaram */
 .calendar-cell.past-date {
-    opacity: 0.6;
+    opacity: 0.9;
     pointer-events: none;
-    filter: brightness(0.7) saturate(0.5);
+    filter: brightness(0.95) saturate(0.8);
     position: relative;
 }
 
@@ -70,7 +70,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(100, 100, 100, 0.05);
     border-radius: 10px;
     pointer-events: none;
 }
