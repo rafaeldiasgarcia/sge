@@ -91,6 +91,21 @@ class NotificationRepository
         return $stmt->execute($values);
     }
 
+    public function createGlobalNotification(string $titulo, string $mensagem, string $tipo = 'sistema'): bool
+    {
+        // Buscar todos os usuários (removida condição WHERE ativo = 1 pois a coluna não existe)
+        $sql = "SELECT id FROM usuarios";
+        $stmt = $this->pdo->query($sql);
+        $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($userIds)) {
+            return false;
+        }
+
+        // Usar o método existente para criar notificações para múltiplos usuários
+        return $this->createForMultipleUsers($userIds, $titulo, $mensagem, $tipo);
+    }
+
     public function deleteOldNotifications(int $days = 30): bool
     {
         $sql = "DELETE FROM notificacoes WHERE data_criacao < DATE_SUB(NOW(), INTERVAL :days DAY)";

@@ -62,18 +62,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             /**
-             * Previne interferência do Bootstrap
+             * Controle de clique para dropdowns
              *
-             * O Bootstrap por padrão controla dropdowns via clique.
-             * Este código previne o comportamento padrão para que
-             * nosso sistema hover funcione corretamente.
+             * Permite que o dropdown funcione tanto com hover quanto com clique.
+             * Especialmente importante para o dropdown do perfil do usuário.
              */
             const dropdownToggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
             if (dropdownToggle) {
                 dropdownToggle.addEventListener('click', function(e) {
                     e.preventDefault();
+
+                    // Toggle do menu ao clicar
+                    if (dropdownMenu.classList.contains('show')) {
+                        dropdownMenu.classList.remove('show');
+                    } else {
+                        // Fechar outros dropdowns abertos antes de abrir este
+                        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                            if (menu !== dropdownMenu) {
+                                menu.classList.remove('show');
+                            }
+                        });
+                        dropdownMenu.classList.add('show');
+                    }
                 });
             }
+
+            // Fechar dropdown ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
         });
     }
 

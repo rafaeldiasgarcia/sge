@@ -1,5 +1,6 @@
-/* Estilos para o sistema de notificações - expansão simples */
+/* Sistema de Notificações - VERSÃO NOVA E LIMPA */
 
+/* Dropdown das notificações */
 .notification-dropdown {
     width: 380px !important;
     max-height: 500px;
@@ -8,14 +9,74 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     border-radius: 12px;
     background: white;
+    display: none;
 }
 
+/* Item de notificações no menu - SEM interferência com animações */
+.nav-item.notifications {
+    position: relative;
+}
+
+/* Badge de notificação - TOTALMENTE ISOLADO */
+.notification-badge {
+    position: absolute !important;
+    top: 6px !important;
+    left: 8px !important;
+    background: #dc3545 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    line-height: 16px !important;
+    z-index: 9999 !important;
+    border: 1px solid white !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+    /* CRÍTICO: Iniciar sempre escondido */
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    /* Prevenir qualquer transformação ou animação externa */
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Estado visível do badge - APENAS quando explicitamente ativado */
+.notification-badge.active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Garantir que o badge NUNCA seja afetado pelo hover do nav-item */
+.nav-item.notifications:hover .notification-badge,
+.nav-item.notifications .nav-link:hover .notification-badge,
+.navbar-nav .nav-item:hover .notification-badge {
+    position: absolute !important;
+    top: 6px !important;
+    left: 8px !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Remover qualquer animação do badge durante hover */
+.nav-item.notifications:hover .notification-badge.active,
+.nav-item.notifications .nav-link:hover .notification-badge.active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Itens da lista de notificações */
 .notification-item {
     padding: 12px 16px;
     border-bottom: 1px solid #e9ecef;
     cursor: pointer;
     transition: all 0.3s ease;
-    position: relative;
 }
 
 .notification-item:last-child {
@@ -24,9 +85,6 @@
 
 .notification-item:hover {
     background-color: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
 }
 
 .notification-item.unread {
@@ -34,36 +92,11 @@
     border-left: 4px solid #ffc107;
 }
 
-.notification-item.unread:hover {
-    background-color: #fff8e1;
-}
-
-/* Mensagem que se expande naturalmente no hover */
-.notification-message {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
-    transition: all 0.3s ease;
-}
-
-/* Expansão simples da mensagem no hover */
-.notification-item:hover .notification-message {
-    -webkit-line-clamp: unset;
-    max-height: none;
-    overflow: visible;
-    white-space: normal;
-}
-
-/* Estilos gerais */
 .notification-item h6 {
     color: #333;
     margin: 0 0 6px 0;
     font-size: 0.9rem;
     font-weight: 600;
-    line-height: 1.3;
 }
 
 .notification-item.unread h6 {
@@ -80,10 +113,9 @@
 .notification-item small {
     color: #999;
     font-size: 0.75rem;
-    font-weight: 500;
 }
 
-/* Header das notificações */
+/* Header do dropdown */
 .dropdown-header {
     padding: 12px 18px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -93,51 +125,11 @@
     color: #495057;
 }
 
-.dropdown-header button {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.dropdown-header button:hover {
-    background-color: #6c757d;
-    transform: scale(1.05);
-}
-
-/* Badge animado */
-#notification-badge {
-    animation: pulseNotification 2s infinite;
-}
-
-@keyframes pulseNotification {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-}
-
 /* Estado vazio */
 .notification-empty {
     text-align: center;
     padding: 40px 20px;
     color: #6c757d;
-}
-
-.notification-empty i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    display: block;
-}
-
-/* Footer */
-.notification-footer {
-    text-align: center;
-    padding: 8px 16px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
 }
 
 /* Responsividade */

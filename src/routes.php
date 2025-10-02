@@ -98,6 +98,10 @@ Router::get('/superadmin/relatorios', 'SuperAdminController@showRelatorios');
 Router::post('/superadmin/relatorios', 'SuperAdminController@gerarRelatorio');
 Router::post('/superadmin/relatorios/imprimir', 'SuperAdminController@imprimirRelatorio');
 
+// Notificação Global
+Router::get('/superadmin/notificacao-global', 'SuperAdminController@enviarNotificacaoGlobal');
+Router::post('/superadmin/notificacao-global/enviar', 'SuperAdminController@processarNotificacaoGlobal');
+
 // --- Rotas da API ---
 Router::get('/notifications', 'NotificationController@getNotifications');
 Router::post('/notifications/read', 'NotificationController@markAsRead');

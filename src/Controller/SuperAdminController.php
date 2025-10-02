@@ -528,4 +528,38 @@ class SuperAdminController extends BaseController
         extract(['title' => 'Imprimir Relatório', 'dados_relatorio' => $dadosRelatorio]);
         require ROOT_PATH . '/views/super_admin/relatorio-print.view.php';
     }
+
+    public function enviarNotificacaoGlobal()
+    {
+        Auth::protectSuperAdmin();
+        view('super_admin/enviar-notificacao-global', [
+            'title' => 'Enviar Notificação Global'
+        ]);
+    }
+
+    public function processarNotificacaoGlobal()
+    {
+        Auth::protectSuperAdmin();
+
+        $titulo = trim($_POST['titulo'] ?? '');
+        $mensagem = trim($_POST['mensagem'] ?? '');
+        $tipo = $_POST['tipo'] ?? 'sistema';
+
+        if (empty($titulo) || empty($mensagem)) {
+            $_SESSION['error_message'] = "Título e mensagem são obrigatórios.";
+            redirect('/superadmin/notificacao-global');
+            return;
+        }
+
+        $notificationRepo = $this->repository('NotificationRepository');
+        $success = $notificationRepo->createGlobalNotification($titulo, $mensagem, $tipo);
+
+        if ($success) {
+            $_SESSION['success_message'] = "Notificação enviada com sucesso para todos os usuários!";
+        } else {
+            $_SESSION['error_message'] = "Erro ao enviar a notificação. Tente novamente.";
+        }
+
+        redirect('/superadmin/dashboard');
+    }
 }

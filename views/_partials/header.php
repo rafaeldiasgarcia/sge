@@ -68,19 +68,20 @@ use Application\Core\Auth;
                             <li class="nav-item"><a class="nav-link" href="/admin/atletica/dashboard"><span>Painel Admin</span></a></li>
                         <?php endif; ?>
 
-                        <li class="nav-item dropdown me-2">
-                           <a class="nav-link position-relative" href="#" role="button" id="notification-bell">
-                            <i class="bi bi-bell fs-5"></i> <span>Notificações</span>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-badge" style="display: none;"></span>
+                        <li class="nav-item dropdown me-2 notifications">
+                           <a class="nav-link" href="#" id="notification-bell">
+                            <i class="bi bi-bell fs-5"></i>
+                            <span>Notificações</span>
+                            <span class="notification-badge" id="notification-badge"></span>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" id="notification-dropdown" style="width: 350px;">
+                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" id="notification-dropdown">
                                 <h6 class="dropdown-header d-flex justify-content-between align-items-center">
                                     <span>Notificações</span>
                                     <button class="btn btn-sm btn-outline-secondary" id="mark-all-read">Marcar todas como lidas</button>
                                 </h6>
                                 <div id="notification-list" style="max-height: 400px; overflow-y: auto;">
-                                    <div class="dropdown-item text-muted text-center">Carregando...</div>
+                                    <div class="notification-empty">Carregando...</div>
                                 </div>
                             </div>
                         </li>

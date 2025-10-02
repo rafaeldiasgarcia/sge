@@ -1,386 +1,228 @@
 /**
- * Sistema de Notificações - SGE UNIFIO
- *
- * Este arquivo contém toda a lógica relacionada ao sistema de notificações em tempo real.
- * Funcionalidades:
- * - Busca de notificações do servidor
- * - Atualização da interface em tempo real
- * - Marcação de notificações como lidas
- * - Controle do dropdown de notificações
- * - Formatação de timestamps
- *
- * @author Sistema SGE UNIFIO
- * @version 1.0
+ * Sistema de Notificações - VERSÃO NOVA E SIMPLES
+ * Foco: Badge aparece automaticamente quando há notificações não lidas
  */
 
-class NotificationSystem {
+class SimpleNotifications {
     constructor() {
-        this.notificationBell = null;
-        this.notificationBadge = null;
-        this.notificationDropdown = null;
-        this.notificationList = null;
-        this.markAllReadBtn = null;
-        this.isDropdownOpen = false;
-        this.updateInterval = null;
+        this.badge = null;
+        this.bell = null;
+        this.dropdown = null;
+        this.list = null;
+        this.markAllBtn = null;
+        this.isOpen = false;
 
         this.init();
     }
 
-    /**
-     * Inicializa o sistema de notificações
-     */
     init() {
-        // Buscar elementos do DOM
-        this.notificationBell = document.getElementById('notification-bell');
-        this.notificationBadge = document.getElementById('notification-badge');
-        this.notificationDropdown = document.getElementById('notification-dropdown');
-        this.notificationList = document.getElementById('notification-list');
-        this.markAllReadBtn = document.getElementById('mark-all-read');
+        // Buscar elementos
+        this.badge = document.getElementById('notification-badge');
+        this.bell = document.getElementById('notification-bell');
+        this.dropdown = document.getElementById('notification-dropdown');
+        this.list = document.getElementById('notification-list');
+        this.markAllBtn = document.getElementById('mark-all-read');
 
-        // Verificar se os elementos existem (usuário logado)
-        if (!this.notificationBell || !this.notificationDropdown) {
+        if (!this.badge || !this.bell) {
+            console.log('Elementos de notificação não encontrados');
             return;
         }
 
-        this.bindEvents();
-        this.fetchNotifications();
-        this.startPeriodicUpdate();
+        console.log('Sistema de notificações iniciado');
+
+        // Garantir que o badge inicie COMPLETAMENTE escondido
+        this.badge.classList.remove('show', 'active');
+        this.badge.style.display = 'none';
+        this.badge.style.visibility = 'hidden';
+        this.badge.style.opacity = '0';
+
+        // Configurar eventos
+        this.setupEvents();
+
+        // Buscar notificações imediatamente
+        this.loadNotifications();
+
+        // Verificar periodicamente (a cada 30 segundos)
+        setInterval(() => {
+            this.loadNotifications();
+        }, 30000);
     }
 
-    /**
-     * Vincula eventos aos elementos
-     */
-    bindEvents() {
-        // Toggle do dropdown
-        this.notificationBell.addEventListener('click', (e) => {
+    setupEvents() {
+        // Clique no sino
+        this.bell.addEventListener('click', (e) => {
             e.preventDefault();
-            e.stopPropagation();
             this.toggleDropdown();
         });
 
         // Marcar todas como lidas
-        if (this.markAllReadBtn) {
-            this.markAllReadBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.markAsRead();
+        if (this.markAllBtn) {
+            this.markAllBtn.addEventListener('click', () => {
+                this.markAllAsRead();
             });
         }
 
-        // Fechar dropdown ao clicar fora
+        // Fechar ao clicar fora
         document.addEventListener('click', (e) => {
-            if (this.isDropdownOpen &&
-                !this.notificationBell.contains(e.target) &&
-                !this.notificationDropdown.contains(e.target)) {
+            if (!this.bell.contains(e.target) && !this.dropdown.contains(e.target)) {
                 this.closeDropdown();
             }
         });
     }
 
-    /**
-     * Busca notificações do servidor
-     */
-    async fetchNotifications() {
+    async loadNotifications() {
         try {
+            console.log('Buscando notificações...');
+
             const response = await fetch('/notifications');
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Dados recebidos:', data);
 
             if (data.success) {
-                this.updateNotificationUI(data.notifications, data.unreadCount);
+                this.updateBadge(data.unreadCount);
+                this.updateList(data.notifications);
             }
         } catch (error) {
-            console.error('Erro ao buscar notificações:', error);
+            console.error('Erro ao carregar notificações:', error);
         }
     }
 
-    /**
-     * Atualiza a interface das notificações
-     */
-    updateNotificationUI(notifications, unreadCount) {
-        this.updateBadge(unreadCount);
-        this.updateNotificationList(notifications);
-    }
+    updateBadge(count) {
+        console.log('Atualizando badge, count:', count);
 
-    /**
-     * Atualiza o badge de contagem
-     */
-    updateBadge(unreadCount) {
-        if (unreadCount > 0) {
-            this.notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            this.notificationBadge.style.display = 'inline-block';
-            this.notificationBell.classList.add('has-notifications');
+        if (!this.badge) return;
+
+        if (count > 0) {
+            // Mostrar badge com número usando a nova classe 'active'
+            this.badge.textContent = count > 99 ? '99+' : count.toString();
+            this.badge.classList.add('active');
+            console.log('Badge mostrado com', count, 'notificações');
         } else {
-            this.notificationBadge.style.display = 'none';
-            this.notificationBell.classList.remove('has-notifications');
+            // Esconder badge completamente
+            this.badge.classList.remove('active');
+            this.badge.textContent = '';
+            console.log('Badge escondido');
         }
     }
 
-    /**
-     * Atualiza a lista de notificações
-     */
-    updateNotificationList(notifications) {
-        const maxNotifications = 5;
-        const limitedNotifications = notifications.slice(0, maxNotifications);
-        const hasMore = notifications.length > maxNotifications;
+    updateList(notifications) {
+        if (!this.list) return;
 
-        if (limitedNotifications.length === 0) {
-            this.renderEmptyState();
-        } else {
-            this.renderNotifications(limitedNotifications, hasMore, notifications.length - maxNotifications);
+        if (notifications.length === 0) {
+            this.list.innerHTML = '<div class="notification-empty">Nenhuma notificação</div>';
+            return;
         }
-    }
 
-    /**
-     * Renderiza estado vazio
-     */
-    renderEmptyState() {
-        this.notificationList.innerHTML = `
-            <div class="notification-empty">
-                <i class="bi bi-bell-slash"></i>
-                Nenhuma notificação
-            </div>
-        `;
-    }
-
-    /**
-     * Renderiza lista de notificações
-     */
-    renderNotifications(notifications, hasMore, remainingCount) {
-        const notificationsHTML = notifications.map(notification => {
+        let html = '';
+        notifications.forEach(notification => {
             const isUnread = notification.lida == 0;
-            const timeAgo = this.formatTimeAgo(notification.data_criacao);
-            const icon = this.getNotificationIcon(notification.tipo);
+            const timeAgo = this.getTimeAgo(notification.data_criacao);
 
-            return `
-                <div class="notification-item ${isUnread ? 'unread' : ''}" 
-                     data-notification-id="${notification.id}">
-                    <div class="d-flex align-items-start">
-                        <div class="me-3 mt-1" style="font-size: 1.2rem; min-width: 24px;">
-                            ${icon}
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1 ${isUnread ? 'fw-bold' : ''}">${notification.titulo}</h6>
-                            <p class="mb-1 small notification-message">${notification.mensagem}</p>
-                            <small class="text-muted">${timeAgo}</small>
-                        </div>
-                        ${isUnread ? '<div class="ms-2 mt-1"><span class="badge bg-danger rounded-pill" style="font-size: 0.65rem;">Nova</span></div>' : ''}
-                    </div>
+            html += `
+                <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notification.id}">
+                    <h6>${this.escapeHtml(notification.titulo)}</h6>
+                    <p>${this.escapeHtml(notification.mensagem)}</p>
+                    <small>${timeAgo}</small>
+                    ${isUnread ? '<span class="badge bg-warning ms-2">Nova</span>' : ''}
                 </div>
             `;
-        }).join('');
+        });
 
-        // Adicionar footer se houver mais notificações
-        const footerHTML = hasMore ? `
-            <div class="notification-footer">
-                <small class="text-muted">
-                    <i class="bi bi-three-dots"></i>
-                    ${remainingCount} notificação${remainingCount > 1 ? 'ões' : ''} a mais
-                </small>
-            </div>
-        ` : '';
+        this.list.innerHTML = html;
 
-        this.notificationList.innerHTML = notificationsHTML + footerHTML;
-
-        // Adicionar event listeners simplificados
-        this.bindNotificationEvents();
-    }
-
-    /**
-     * Vincula eventos às notificações
-     */
-    bindNotificationEvents() {
-        this.notificationList.querySelectorAll('.notification-item[data-notification-id]').forEach(item => {
-            // Evento de clique para marcar como lida
-            item.addEventListener('click', (e) => {
-                const notificationId = item.dataset.notificationId;
-                this.handleNotificationClick(item, notificationId);
+        // Adicionar eventos de clique
+        this.list.querySelectorAll('.notification-item.unread').forEach(item => {
+            item.addEventListener('click', () => {
+                this.markAsRead(item.dataset.id);
             });
         });
     }
 
-    /**
-     * Manipula clique em notificação
-     */
-    handleNotificationClick(item, notificationId) {
-        if (item.classList.contains('unread')) {
-            this.markAsRead(notificationId);
-            item.classList.remove('unread');
-
-            // Atualizar badge
-            const currentBadge = parseInt(this.notificationBadge.textContent) || 0;
-            const newCount = Math.max(0, currentBadge - 1);
-            this.updateBadge(newCount);
+    toggleDropdown() {
+        if (this.isOpen) {
+            this.closeDropdown();
+        } else {
+            this.openDropdown();
         }
     }
 
-    /**
-     * Escapa caracteres HTML para prevenir XSS
-     */
-    escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    openDropdown() {
+        if (this.dropdown) {
+            this.dropdown.style.display = 'block';
+            this.isOpen = true;
+        }
     }
 
-    /**
-     * Mostra a mensagem completa da notificação
-     */
-    showFullMessage(notificationItem, fullMessageElement) {
-        // Verificar se a mensagem está truncada
-        const messageElement = notificationItem.querySelector('.notification-message');
-        const isOverflowing = messageElement.scrollHeight > messageElement.clientHeight;
+    closeDropdown() {
+        if (this.dropdown) {
+            this.dropdown.style.display = 'none';
+            this.isOpen = false;
+        }
+    }
 
-        if (isOverflowing || fullMessageElement) {
-            fullMessageElement.style.display = 'block';
+    async markAsRead(notificationId) {
+        try {
+            const response = await fetch('/notifications/read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notification_id: notificationId })
+            });
 
-            // Ajustar posição se sair da tela
-            const rect = fullMessageElement.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-
-            if (rect.bottom > viewportHeight) {
-                fullMessageElement.style.top = 'auto';
-                fullMessageElement.style.bottom = '100%';
-            } else {
-                fullMessageElement.style.top = '100%';
-                fullMessageElement.style.bottom = 'auto';
+            if (response.ok) {
+                // Recarregar notificações
+                this.loadNotifications();
             }
+        } catch (error) {
+            console.error('Erro ao marcar como lida:', error);
         }
     }
 
-    /**
-     * Esconde a mensagem completa da notificação
-     */
-    hideFullMessage(fullMessageElement) {
-        if (fullMessageElement) {
-            fullMessageElement.style.display = 'none';
+    async markAllAsRead() {
+        try {
+            const response = await fetch('/notifications/read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+                this.loadNotifications();
+            }
+        } catch (error) {
+            console.error('Erro ao marcar todas como lidas:', error);
         }
     }
 
-    /**
-     * Retorna ícone baseado no tipo de notificação
-     */
-    getNotificationIcon(tipo) {
-        const icons = {
-            'agendamento_aprovado': '✅',
-            'agendamento_rejeitado': '❌',
-            'agendamento_cancelado': '⚠️',
-            'presenca_confirmada': '📅',
-            'lembrete_evento': '🔔',
-            'info': '📢',
-            'aviso': '⚡'
-        };
-
-        return icons[tipo] || '📢';
-    }
-
-    /**
-     * Formata timestamp para exibição relativa
-     */
-    formatTimeAgo(dateString) {
+    getTimeAgo(dateString) {
         const now = new Date();
         const date = new Date(dateString);
         const diffInSeconds = Math.floor((now - date) / 1000);
 
-        if (diffInSeconds < 60) return 'agora mesmo';
-        if (diffInSeconds < 3600) return `há ${Math.floor(diffInSeconds / 60)} min`;
-        if (diffInSeconds < 86400) return `há ${Math.floor(diffInSeconds / 3600)} h`;
-        if (diffInSeconds < 2592000) return `há ${Math.floor(diffInSeconds / 86400)} dias`;
-
-        return date.toLocaleDateString('pt-BR');
+        if (diffInSeconds < 60) return 'Agora mesmo';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min atrás`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`;
+        return `${Math.floor(diffInSeconds / 86400)}d atrás`;
     }
 
-    /**
-     * Marca notificação(ões) como lida(s)
-     */
-    async markAsRead(notificationId = null) {
-        try {
-            const response = await fetch('/notifications/read', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    notification_id: notificationId
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                this.fetchNotifications();
-            }
-        } catch (error) {
-            console.error('Erro ao marcar notificação como lida:', error);
-        }
-    }
-
-    /**
-     * Abre/fecha dropdown
-     */
-    toggleDropdown() {
-        this.isDropdownOpen = !this.isDropdownOpen;
-
-        if (this.isDropdownOpen) {
-            this.openDropdown();
-        } else {
-            this.closeDropdown();
-        }
-    }
-
-    /**
-     * Abre dropdown
-     */
-    openDropdown() {
-        this.notificationDropdown.classList.add('show');
-        this.fetchNotifications(); // Atualizar ao abrir
-    }
-
-    /**
-     * Fecha dropdown
-     */
-    closeDropdown() {
-        this.isDropdownOpen = false;
-        this.notificationDropdown.classList.remove('show');
-    }
-
-    /**
-     * Inicia atualizações periódicas
-     */
-    startPeriodicUpdate() {
-        // Atualizar a cada 30 segundos
-        this.updateInterval = setInterval(() => {
-            this.fetchNotifications();
-        }, 30000);
-    }
-
-    /**
-     * Para atualizações periódicas
-     */
-    stopPeriodicUpdate() {
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-            this.updateInterval = null;
-        }
-    }
-
-    /**
-     * Destroi a instância
-     */
-    destroy() {
-        this.stopPeriodicUpdate();
-        // Remover event listeners se necessário
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 
-// Auto-inicialização quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', function() {
-    window.notificationSystem = new NotificationSystem();
+// Inicializar quando página carregar
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM carregado, iniciando notificações...');
+    new SimpleNotifications();
 });
 
-// Exportar para uso externo se necessário
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = NotificationSystem;
+// Também tentar inicializar se DOM já estiver carregado
+if (document.readyState !== 'loading') {
+    console.log('DOM já carregado, iniciando notificações...');
+    new SimpleNotifications();
 }

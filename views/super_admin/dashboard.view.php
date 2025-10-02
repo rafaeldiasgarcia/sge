@@ -13,6 +13,15 @@
     <div class="col-md-4 mb-3"><div class="card h-100 border-primary border-2"><div class="card-body"><h5 class="card-title">Gerenciar Usuários</h5><p>Visualize e edite todos os usuários do sistema.</p><a href="/superadmin/usuarios" class="btn btn-primary">Acessar</a></div></div></div>
     <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body"><h5 class="card-title">Gerenciar Admins</h5><p>Promova alunos a administradores.</p><a href="/superadmin/admins" class="btn btn-secondary">Acessar</a></div></div></div>
     <div class="col-md-4 mb-3">
+        <div class="card h-100 border-warning border-2">
+            <div class="card-body">
+                <h5 class="card-title">Notificação Global</h5>
+                <p>Envie notificações para todos os usuários da plataforma.</p>
+                <a href="/superadmin/notificacao-global" class="btn btn-warning">Enviar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">Estrutura Acadêmica</h5>
@@ -22,4 +31,5 @@
         </div>
     </div>
     <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body"><h5 class="card-title">Gerenciar Modalidades</h5><p>Adicione os esportes disponíveis para os eventos.</p><a href="/superadmin/modalidades" class="btn btn-secondary">Acessar</a></div></div></div>
+    <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body"><h5 class="card-title">Relatórios</h5><p>Visualize relatórios detalhados do sistema.</p><a href="/superadmin/relatorios" class="btn btn-secondary">Acessar</a></div></div></div>
 </div>
