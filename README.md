@@ -165,7 +165,7 @@ O projeto utiliza 3 contêineres Docker:
 3.  **Opção B - Usando Docker Compose Diretamente:**
     -   Instale as dependências do PHP:
         ```bash
-        docker-compose run --rm web composer install
+        docker-compose run --rm sge-php composer install
         ```
     -   Inicie os serviços:
         ```bash

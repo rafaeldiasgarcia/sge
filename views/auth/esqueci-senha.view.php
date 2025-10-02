@@ -19,6 +19,18 @@
         </div>
     <?php endif; ?>
 
+    <!-- Exibir link de recuperação para desenvolvimento/teste -->
+    <?php if (isset($_SESSION['recovery_link'])): ?>
+        <div class="alert alert-info alert-auth">
+            <strong>Link de recuperação disponível:</strong><br>
+            <a href="<?php echo htmlspecialchars($_SESSION['recovery_link']); ?>" 
+               style="word-break: break-all; color: #0056b3; text-decoration: underline;">
+                <?php echo htmlspecialchars($_SESSION['recovery_link']); ?>
+            </a>
+            <?php unset($_SESSION['recovery_link']); ?>
+        </div>
+    <?php endif; ?>
+
     <form action="/esqueci-senha" method="post" class="auth-form">
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>

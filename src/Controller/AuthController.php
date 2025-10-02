@@ -260,9 +260,11 @@ class AuthController extends BaseController
 
             // SIMULAÇÃO DE ENVIO DE E-MAIL
             // Em um ambiente real, você usaria uma biblioteca como PHPMailer aqui.
-            $baseUrl = getenv('APP_URL') ?: "http://" . $_SERVER['HTTP_HOST'];
-            $recoveryLink = $baseUrl . "/redefinir-senha?token=" . $token;
-            $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.<br><br><strong>[AMBIENTE DE TESTE]</strong><br>Seu link é: <a href='{$recoveryLink}'>{$recoveryLink}</a>";
+            $recoveryLink = "/redefinir-senha?token=" . $token;
+            
+            // Armazenar o link na sessão para exibir na tela
+            $_SESSION['recovery_link'] = $recoveryLink;
+            $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.";
         } else {
             // Mensagem genérica para não confirmar se um e-mail existe ou não.
             $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.";
