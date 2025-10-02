@@ -43,25 +43,18 @@
             <input type="text" name="ra" id="ra" class="form-control" placeholder="00000" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="O RA deve conter exatamente 6 números.">
         </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">E-mail institucional</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="*******@unifio.edu.br" required>
-        </div>
         </div>
 
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="telefone" class="form-label">Telefone</label>
-                <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(00) 00000-0000" required maxlength="15">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="cargo" class="form-label">Cargo</label>
-                <select name="cargo" id="cargo" class="form-select">
-                    <option value="Aluno" selected>Aluno</option>
-                    <option value="Professor">Professor</option>
-                    <option value="Funcionário">Funcionário</option>
-                </select>
-            </div>
+        <div class="mb-3">
+            <label for="email" class="form-label" id="label_email">E-mail</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="*******@unifio.edu.br" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone</label>
+            <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(00) 00000-0000" required maxlength="15">
+        </div>
         </div>
 
         <div id="campo_curso" class="mb-3" style="display:none;">
@@ -110,6 +103,7 @@
         const inputRa = document.getElementById('ra');
         const campoCurso = document.getElementById('campo_curso');
         const emailInput = document.getElementById('email');
+        const labelEmail = document.getElementById('label_email');
 
         function toggleFields() {
             const tipo = tipoUsuarioSelect.value;
@@ -118,16 +112,26 @@
                 campoRa.style.display = 'block';
                 inputRa.required = true;
                 campoCurso.style.display = 'block';
+            } else if (tipo === 'Professor') {
+                campoRa.style.display = 'none';
+                inputRa.required = false;
+                campoCurso.style.display = 'block';
             } else {
                 campoRa.style.display = 'none';
                 inputRa.required = false;
                 campoCurso.style.display = 'none';
             }
 
-            if (tipo !== 'Comunidade Externa' && tipo !== '') {
+            // Atualizar label e placeholder do email baseado no tipo de usuário
+            if (tipo === 'Aluno' || tipo === 'Membro das Atléticas' || tipo === 'Professor') {
+                labelEmail.textContent = 'E-mail institucional';
                 emailInput.placeholder = 'Use seu e-mail @unifio.edu.br';
-            } else {
+            } else if (tipo === 'Comunidade Externa') {
+                labelEmail.textContent = 'E-mail';
                 emailInput.placeholder = 'Seu e-mail';
+            } else {
+                labelEmail.textContent = 'E-mail';
+                emailInput.placeholder = '*******@unifio.edu.br';
             }
         }
 
