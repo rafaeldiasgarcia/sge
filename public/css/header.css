@@ -4,8 +4,36 @@ nav{
     border-radius: 0px 0px 10px 10px;
     box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.25);
     background-color: var(--background-color);
-
 }
+nav .container {
+    position: relative;
+    height: 64px; /* ou a altura do seu header */
+}
+
+.logo-header {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height:52px;
+    margin-left:16px;
+}
+
+.header-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.header-left,
+.header-right {
+    min-width: 120px; /* ajuste conforme necessário para garantir espaço */
+}
+
+
 .navbar-brand strong{
     color: var(--textcolor-blue);
 }
@@ -82,3 +110,4 @@ nav{
 .dropdown-menu.show .dropdown-item:nth-child(4) {
     transition-delay: 0.2s;
 }
+
