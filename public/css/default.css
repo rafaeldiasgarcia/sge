@@ -1,3 +1,13 @@
 body {
     font-family: 'Montserrat', Arial, sans-serif;
 }
+
+:root {
+    --blue-color: #0900FF;
+    --textcolor-blue: #004386;
+    --orange-color: #F28100;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --gradient-color-login: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
+    --gradient-color-text: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(242, 129, 0, 1) 100%); 
+}

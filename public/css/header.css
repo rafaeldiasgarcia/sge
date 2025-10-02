@@ -1,0 +1,84 @@
+/* Header CSS */
+
+nav{
+    border-radius: 0px 0px 10px 10px;
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.25);
+    background-color: var(--background-color);
+
+}
+.navbar-brand strong{
+    color: var(--textcolor-blue);
+}
+
+.navbar .nav-link {
+    font-style: normal !important;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500; /* fica mais consistente */
+}
+
+/* Itens padrão animados */
+.navbar-nav .nav-item .nav-link {
+    display: flex;
+    align-items: center;
+    width: 45px; /* só o ícone aparece no início */
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.4s ease;
+    position: relative;
+    padding: 8px 10px;
+    color: var(--orange-color);
+}
+
+/* Ícones fixos */
+.navbar-nav .nav-item .nav-link i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* Texto inicialmente invisível */
+.navbar-nav .nav-item .nav-link span {
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+/* Quando passar o mouse: expande e revela */
+.navbar-nav .nav-item .nav-link:hover {
+    width: 160px;
+}
+
+.navbar-nav .nav-item .nav-link:hover span {
+    opacity: 1;
+}
+
+/* Badge de notificações (sempre visível e posicionado corretamente) */
+#notificationBadge {
+    right: 6px;
+    top: 2px;
+}
+/* Estado inicial dos itens */
+.dropdown-menu .dropdown-item {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+/* Quando o dropdown abre */
+.dropdown-menu.show .dropdown-item {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animação em cascata (delay automático por item) */
+.dropdown-menu.show .dropdown-item:nth-child(1) {
+    transition-delay: 0.05s;
+}
+.dropdown-menu.show .dropdown-item:nth-child(2) {
+    transition-delay: 0.1s;
+}
+.dropdown-menu.show .dropdown-item:nth-child(3) {
+    transition-delay: 0.15s;
+}
+.dropdown-menu.show .dropdown-item:nth-child(4) {
+    transition-delay: 0.2s;
+}

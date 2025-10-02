@@ -14,8 +14,7 @@ use Application\Core\Auth;
     <title><?php echo isset($title) ? htmlspecialchars($title) : 'SGE - UNIFIO'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Caminhos para os assets agora são diretos na raiz de public -->
-        <!-- Fonte Montserrat Google Fonts -->
+    <link rel="stylesheet" href="/css/header.css">
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/default.css">
     <link rel="stylesheet" href="/css/calendar.css">
@@ -30,7 +29,7 @@ use Application\Core\Auth;
 <?php else: ?>
 <body class="d-flex flex-column min-vh-100">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg p-3">
     <div class="container">
         <a class="navbar-brand" href="/"><strong>SGE UNIFIO</strong></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
@@ -38,10 +37,10 @@ use Application\Core\Auth;
             <ul class="navbar-nav ms-auto">
                 <?php if (Auth::check()): ?>
                     <?php if (Auth::role() === 'usuario'): ?>
-                        <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> Agenda</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-house"></i> <span>Dashboard</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> <span>Agenda</span></a></li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> Agenda da Quadra</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i><span>Agenda da Quadra</span></a></li>
                     <?php endif; ?>
 
                     <?php
@@ -50,21 +49,22 @@ use Application\Core\Auth;
                     $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin' && $tipo_usuario === 'Membro das Atléticas');
 
                     if ($can_schedule): ?>
-                        <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> Agendar Evento</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i><span>Agendar Evento</span></a></li>
                     <?php endif; ?>
 
                     <?php if (Auth::role() === 'superadmin'): ?>
-                        <li class="nav-item"><a class="nav-link" href="/superadmin/dashboard">Painel Super Admin</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/superadmin/relatorios">Relatórios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/superadmin/dashboard"><span>Painel Super Admin</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="/superadmin/relatorios"><span>Relatórios</span></a></li>
                     <?php elseif (Auth::role() === 'admin'): ?>
-                        <li class="nav-item"><a class="nav-link" href="/admin/atletica/dashboard">Painel Admin</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/atletica/dashboard"><span>Painel Admin</span></a></li>
                     <?php endif; ?>
 
                     <li class="nav-item dropdown me-2">
-                        <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notificationDropdown">
-                            <i class="bi bi-bell fs-5"></i>
+                       <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notificationDropdown">
+                        <i class="bi bi-bell fs-5"></i> <span>Notificações</span>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;"></span>
                         </a>
+
                         <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px;">
                             <h6 class="dropdown-header d-flex justify-content-between align-items-center">
                                 <span>Notificações</span>
@@ -78,22 +78,22 @@ use Application\Core\Auth;
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> Olá, <?php echo htmlspecialchars(Auth::name()); ?>
+                            <i class="bi bi-person-circle"><span>Meu Perfil</span></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <?php if (Auth::role() === 'admin'): ?>
-                                <li><a class="dropdown-item" href="/admin/atletica/dashboard">Meu Painel</a></li>
+                                <li><a class="dropdown-item" href="/admin/atletica/dashboard"><span>Meu Painel</span></a></li>
                             <?php elseif (Auth::role() === 'superadmin'): ?>
-                                <li><a class="dropdown-item" href="/superadmin/dashboard">Meu Painel</a></li>
+                                <li><a class="dropdown-item" href="/superadmin/dashboard"><span>Meu Painel</span></a></li>
                             <?php endif; ?>
-                            <li><a class="dropdown-item" href="/perfil">Editar Perfil</a></li>
+                            <li><a class="dropdown-item" href="/perfil"><span>Editar Perfil</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout">Sair</a></li>
+                            <li><a class="dropdown-item" href="/logout"><span>Sair</span></a></li>
                         </ul>
                     </li>
                 <?php else: ?>
-                    <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/registro">Registrar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login"><span>Login</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/registro"><span>Registrar</span></a></li>
                 <?php endif; ?>
             </ul>
         </div>
