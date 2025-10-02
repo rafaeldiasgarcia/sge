@@ -8,9 +8,17 @@
 namespace Application\Controller;
 
 use Application\Core\Auth;
+use Application\Core\NotificationService;
 
 class SuperAdminController extends BaseController
 {
+    private $notificationService;
+
+    public function __construct()
+    {
+        $this->notificationService = new NotificationService();
+    }
+
     public function dashboard()
     {
         Auth::protectSuperAdmin();
@@ -39,6 +47,8 @@ class SuperAdminController extends BaseController
             $_SESSION['error_message'] = "Falha na Aprovação! Já existe um evento aprovado para esta data e período.";
         } else {
             $agendamentoRepo->approveAgendamento($id);
+            // Enviar notificação de aprovação
+            $this->notificationService->notifyAgendamentoAprovado($id);
             $_SESSION['success_message'] = "Agendamento aprovado com sucesso!";
         }
         redirect('/superadmin/agendamentos');
@@ -55,6 +65,8 @@ class SuperAdminController extends BaseController
         }
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $agendamentoRepo->rejectAgendamento($id, $motivo);
+        // Enviar notificação de rejeição
+        $this->notificationService->notifyAgendamentoRejeitado($id, $motivo);
         $_SESSION['success_message'] = "Agendamento rejeitado com sucesso.";
         redirect('/superadmin/agendamentos');
     }
@@ -517,4 +529,3 @@ class SuperAdminController extends BaseController
         require ROOT_PATH . '/views/super_admin/relatorio-print.view.php';
     }
 }
-

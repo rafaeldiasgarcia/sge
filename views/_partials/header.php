@@ -18,6 +18,7 @@ use Application\Core\Auth;
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/default.css">
     <link rel="stylesheet" href="/css/calendar.css">
+    <link rel="stylesheet" href="/css/notifications.css">
     <?php if (isset($isAuthPage) && $isAuthPage): ?>
     <link rel="stylesheet" href="/css/auth.css">
     <?php endif; ?>
@@ -68,17 +69,17 @@ use Application\Core\Auth;
                         <?php endif; ?>
 
                         <li class="nav-item dropdown me-2">
-                           <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notificationDropdown">
+                           <a class="nav-link position-relative" href="#" role="button" id="notification-bell">
                             <i class="bi bi-bell fs-5"></i> <span>Notificações</span>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;"></span>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-badge" style="display: none;"></span>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px;">
+                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" id="notification-dropdown" style="width: 350px;">
                                 <h6 class="dropdown-header d-flex justify-content-between align-items-center">
                                     <span>Notificações</span>
-                                    <button class="btn btn-sm btn-outline-secondary" id="markAllReadBtn">Marcar todas como lidas</button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="mark-all-read">Marcar todas como lidas</button>
                                 </h6>
-                                <div id="notificationsList" style="max-height: 400px; overflow-y: auto;">
+                                <div id="notification-list" style="max-height: 400px; overflow-y: auto;">
                                     <div class="dropdown-item text-muted text-center">Carregando...</div>
                                 </div>
                             </div>

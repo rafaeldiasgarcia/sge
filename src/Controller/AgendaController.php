@@ -8,9 +8,22 @@
 namespace Application\Controller;
 
 use Application\Core\Auth;
+use Application\Core\NotificationService;
 
 class AgendaController extends BaseController
 {
+    private $notificationService;
+
+    public function __construct()
+    {
+        try {
+            $this->notificationService = new NotificationService();
+        } catch (Exception $e) {
+            // Fallback se houver problema com NotificationService
+            $this->notificationService = null;
+        }
+    }
+
     public function index()
     {
         Auth::protect();
@@ -65,6 +78,8 @@ class AgendaController extends BaseController
 
                 if ($action === 'marcar') {
                     $agendamentoRepo->marcarPresenca(Auth::id(), $agendamentoId);
+                    // Enviar notificação de presença confirmada
+                    $this->notificationService->notifyPresencaConfirmada(Auth::id(), $agendamentoId);
                 } elseif ($action === 'desmarcar') {
                     $agendamentoRepo->desmarcarPresenca(Auth::id(), $agendamentoId);
                 }

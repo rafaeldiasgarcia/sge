@@ -7,6 +7,7 @@
 -- Versão do servidor: 9.4.0
 -- Versão do PHP: 8.2.27
 -- MODIFICADO: Adicionado campo 'telefone' na tabela usuarios
+-- MODIFICADO: Adicionada tabela 'notificacoes'
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -164,6 +165,23 @@ CREATE TABLE `usuarios` (
   `reset_token_expires` datetime DEFAULT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `notificacoes`
+--
+
+CREATE TABLE `notificacoes` (
+  `id` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','presenca_confirmada','lembrete_evento','info','aviso') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `agendamento_id` int DEFAULT NULL,
+  `lida` tinyint(1) NOT NULL DEFAULT '0',
+  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tabelas despejadas
 --
@@ -234,6 +252,14 @@ ALTER TABLE `usuarios`
   ADD KEY `atletica_id` (`atletica_id`);
 
 --
+-- Índices de tabela `notificacoes`
+--
+ALTER TABLE `notificacoes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `agendamento_id` (`agendamento_id`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -286,6 +312,12 @@ ALTER TABLE `usuarios`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `notificacoes`
+--
+ALTER TABLE `notificacoes`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- Restrições para tabelas despejadas
 --
 
@@ -332,6 +364,13 @@ ALTER TABLE `presencas`
 ALTER TABLE `usuarios`
   ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`),
   ADD CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`);
+
+--
+-- Restrições para tabelas `notificacoes`
+--
+ALTER TABLE `notificacoes`
+  ADD CONSTRAINT `notificacoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `notificacoes_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

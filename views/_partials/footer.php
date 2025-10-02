@@ -39,6 +39,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php if (!isset($isAuthPage) || !$isAuthPage): ?>
 <script src="/js/calendar.js"></script>
+<script src="/js/notifications.js"></script>
 <script src="/js/header.js"></script>
 <?php endif; ?>
 </body>

@@ -307,4 +307,35 @@ class AgendamentoRepository
         $stmt->execute(['ini' => $inicioMes, 'fim' => $fimMes]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function findById(int $id)
+    {
+        $sql = "SELECT * FROM agendamentos WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function findByDate(string $date): array
+    {
+        $sql = "SELECT * FROM agendamentos WHERE data_agendamento = :date AND status = 'aprovado'";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':date', $date);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getPresencasByAgendamento(int $agendamentoId): array
+    {
+        $sql = "SELECT p.usuario_id, u.nome, u.email 
+                FROM presencas p 
+                JOIN usuarios u ON p.usuario_id = u.id 
+                WHERE p.agendamento_id = :agendamento_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':agendamento_id', $agendamentoId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
+

@@ -8,10 +8,18 @@
 namespace Application\Controller;
 
 use Application\Core\Auth;
+use Application\Core\NotificationService;
 use Application\Repository\AgendamentoRepository;
 
 class AgendamentoController extends BaseController
 {
+    private $notificationService;
+
+    public function __construct()
+    {
+        $this->notificationService = new NotificationService();
+    }
+
     private function _checkSchedulingPermission()
     {
         $tipo_usuario = Auth::get('tipo_usuario_detalhado');
@@ -258,13 +266,28 @@ class AgendamentoController extends BaseController
     public function cancel()
     {
         Auth::protect();
-        $this->_checkSchedulingPermission();
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) redirect('/meus-agendamentos');
+        $id = (int)($_POST['agendamento_id'] ?? 0);
+        if ($id <= 0) {
+            $_SESSION['error_message'] = "Agendamento inválido.";
+            redirect('/meus-agendamentos');
+        }
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
-        $agendamentoRepo->cancelAgendamento($id, Auth::id());
-        $_SESSION['success_message'] = "Agendamento cancelado com sucesso.";
+        $agendamento = $agendamentoRepo->findByIdAndUserId($id, Auth::id());
+
+        if (!$agendamento || $agendamento['status'] !== 'aprovado') {
+            $_SESSION['error_message'] = "Apenas agendamentos aprovados podem ser cancelados.";
+            redirect('/meus-agendamentos');
+        }
+
+        if ($agendamentoRepo->cancelAgendamento($id, Auth::id())) {
+            // Enviar notificações de cancelamento
+            $this->notificationService->notifyAgendamentoCancelado($id);
+            $_SESSION['success_message'] = "Agendamento cancelado com sucesso!";
+        } else {
+            $_SESSION['error_message'] = "Erro ao cancelar o agendamento.";
+        }
+
         redirect('/meus-agendamentos');
     }
 }

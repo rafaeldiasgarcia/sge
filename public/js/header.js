@@ -10,7 +10,7 @@
  * - Animações suaves nos menus
  *
  * @author Sistema SGE UNIFIO
- * @version 1.0
+ * @version 2.1
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initDropdownHover();
 
         // Aqui podem ser adicionadas outras inicializações do header no futuro
-        // Por exemplo: inicialização de notificações, search, etc.
+        // As notificações agora são gerenciadas pelo arquivo notifications.js
     }
 
     // Executa a inicialização

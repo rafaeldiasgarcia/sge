@@ -8,6 +8,7 @@ START TRANSACTION;
 DELETE FROM `presencas`;
 DELETE FROM `inscricoes_eventos`;
 DELETE FROM `inscricoes_modalidade`;
+DELETE FROM `notificacoes`;
 DELETE FROM `agendamentos`;
 DELETE FROM `usuarios`;
 DELETE FROM `cursos`;
@@ -23,6 +24,7 @@ ALTER TABLE `agendamentos` AUTO_INCREMENT = 1;
 ALTER TABLE `inscricoes_modalidade` AUTO_INCREMENT = 1;
 ALTER TABLE `inscricoes_eventos` AUTO_INCREMENT = 1;
 ALTER TABLE `presencas` AUTO_INCREMENT = 1;
+ALTER TABLE `notificacoes` AUTO_INCREMENT = 1;
 
 
 --
@@ -198,6 +200,69 @@ INSERT INTO `presencas` (`usuario_id`, `agendamento_id`) VALUES
 
 -- Evento 27: Treino de Handebol - VENENOSA (6 pessoas já confirmaram)
 (16, 27),(14, 27),(12, 27),(18, 27),(19, 27),(20, 27);
+
+--
+-- Inserindo dados na tabela `notificacoes`
+--
+INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendamento_id`, `lida`, `data_criacao`) VALUES
+-- Notificações de agendamentos aprovados
+(11, 'Agendamento Aprovado', 'Seu agendamento "Treino de Férias - Futsal" foi aprovado para o dia 02/07/2025 no primeiro período.', 'agendamento_aprovado', 1, 1, '2025-07-01 10:00:00'),
+(12, 'Agendamento Aprovado', 'Seu agendamento "Jogo Amistoso Vôlei" foi aprovado para o dia 05/07/2025 no segundo período.', 'agendamento_aprovado', 2, 1, '2025-07-04 14:30:00'),
+(8, 'Agendamento Aprovado', 'Seu agendamento "Curso de Extensão: Programação em R" foi aprovado para o dia 08/07/2025 no primeiro período.', 'agendamento_aprovado', 3, 1, '2025-07-07 09:15:00'),
+(15, 'Agendamento Aprovado', 'Seu agendamento "Planejamento de Eventos MAGNA" foi aprovado para o dia 10/07/2025 no primeiro período.', 'agendamento_aprovado', 4, 1, '2025-07-09 16:45:00'),
+(20, 'Agendamento Aprovado', 'Seu agendamento "Palestra: Saúde Mental no Esporte" foi aprovado para o dia 18/07/2025 no primeiro período.', 'agendamento_aprovado', 6, 1, '2025-07-17 11:20:00'),
+
+-- Notificações de agendamento cancelado
+(13, 'Agendamento Cancelado', 'Seu agendamento "Treino Cancelado (Chuva)" foi cancelado devido a problemas na rede elétrica.', 'agendamento_cancelado', 22, 0, '2025-09-11 15:30:00'),
+
+-- Notificações de agendamento rejeitado
+(17, 'Agendamento Rejeitado', 'Seu agendamento "Uso da quadra para Lazer" foi rejeitado. A quadra é destinada para atividades oficiais das atléticas.', 'agendamento_rejeitado', 33, 0, '2025-10-12 10:45:00'),
+
+-- Notificações de confirmação de presença
+(11, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Treino de Férias - Futsal" do dia 02/07/2025.', 'presenca_confirmada', 1, 1, '2025-07-02 19:00:00'),
+(12, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Jogo Amistoso Vôlei" do dia 05/07/2025.', 'presenca_confirmada', 2, 1, '2025-07-05 21:00:00'),
+(14, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Ação Social SANGUINÁRIA" do dia 26/07/2025.', 'presenca_confirmada', 8, 1, '2025-07-26 19:15:00'),
+
+-- Lembretes de eventos futuros
+(11, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Futsal Masculino - FURIOSA" amanhã às 19:15.', 'lembrete_evento', 26, 0, '2025-10-05 18:00:00'),
+(12, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Vôlei Feminino - PREDADORA" amanhã às 21:10.', 'lembrete_evento', 27, 0, '2025-10-05 20:00:00'),
+(13, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino League of Legends - ALFA" hoje às 19:15.', 'lembrete_evento', 28, 0, '2025-10-07 17:00:00'),
+(14, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Basquete - SANGUINÁRIA" hoje às 21:10.', 'lembrete_evento', 30, 0, '2025-10-08 19:00:00'),
+(8, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Workshop de Python para iniciantes" amanhã às 19:15.', 'lembrete_evento', 31, 0, '2025-10-08 18:30:00'),
+
+-- Notificações informativas
+(1, 'Nova Funcionalidade', 'O sistema de notificações foi implementado! Agora você receberá atualizações sobre seus agendamentos.', 'info', NULL, 0, '2025-10-01 08:00:00'),
+(2, 'Manutenção da Quadra', 'A quadra passará por manutenção no dia 15/10/2025. Não haverá atividades neste dia.', 'info', 35, 1, '2025-10-01 09:00:00'),
+(3, 'Sistema de Presenças', 'Lembre-se de confirmar sua presença nos eventos através do sistema.', 'info', NULL, 1, '2025-09-28 14:00:00'),
+
+-- Avisos gerais
+(11, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+(12, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+(13, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+(14, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+(15, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+(16, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
+
+-- Mais notificações variadas
+(4, 'Reunião de Admins', 'Reunião mensal dos administradores das atléticas marcada para 20/10/2025.', 'info', NULL, 0, '2025-10-01 11:00:00'),
+(6, 'Atualização do Sistema', 'O sistema será atualizado durante a madrugada de 10/10/2025. Pode haver instabilidade.', 'aviso', NULL, 1, '2025-10-09 22:00:00'),
+(7, 'Evento Acadêmico', 'Seu evento "Aula Magna Engenharia Civil" teve grande participação. Parabéns!', 'info', 11, 1, '2025-08-06 10:00:00'),
+(9, 'Feedback do Evento', 'O "Simpósio de Direito Penal" foi muito bem avaliado pelos participantes.', 'info', 14, 1, '2025-08-16 09:30:00'),
+(18, 'Inscrição Aprovada', 'Sua inscrição na modalidade de Vôlei foi aprovada pela atlética PREDADORA.', 'info', NULL, 0, '2025-09-15 16:20:00'),
+(17, 'Inscrição Pendente', 'Sua inscrição na modalidade de Futsal está pendente de aprovação pela atlética FURIOSA.', 'info', NULL, 0, '2025-09-20 11:45:00'),
+
+-- Notificações sobre eventos futuros específicos
+(20, 'Status do Agendamento', 'Seu agendamento "Palestra sobre Mercado de Trabalho" ainda está pendente de aprovação.', 'info', 29, 0, '2025-10-07 14:00:00'),
+(15, 'Confirmação de Evento', 'Lembrete: Reunião da Atlética MAGNA confirmada para 13/10/2025 às 19:15.', 'lembrete_evento', 33, 0, '2025-10-12 17:00:00'),
+(16, 'Treino Confirmado', 'Seu treino de Handebol foi confirmado para 14/10/2025. Compareça com antecedência!', 'lembrete_evento', 34, 0, '2025-10-13 19:00:00'),
+
+-- Notificações sobre materiais e infraestrutura
+(11, 'Materiais Disponíveis', 'Os materiais para o treino de futsal estão disponíveis na secretaria.', 'info', 26, 0, '2025-10-05 15:00:00'),
+(13, 'Equipamentos E-sports', 'Os computadores da sala de e-sports foram atualizados. Aproveitem!', 'info', 24, 1, '2025-09-24 08:00:00'),
+
+-- Notificações de boas-vindas e orientações
+(19, 'Bem-vindo ao SGE', 'Bem-vindo ao Sistema de Gestão Esportiva! Explore as funcionalidades disponíveis.', 'info', NULL, 1, '2025-09-01 09:00:00'),
+(21, 'Como Agendar Eventos', 'Acesse o menu "Agendar Evento" para solicitar o uso da quadra poliesportiva.', 'info', NULL, 1, '2025-09-15 10:30:00');
 
 -- Reativa a verificação de chaves estrangeiras.
 SET FOREIGN_KEY_CHECKS=1;

@@ -57,4 +57,45 @@ class NotificationRepository
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function create(int $userId, string $titulo, string $mensagem, string $tipo, int $agendamentoId = null): bool
+    {
+        $sql = "INSERT INTO notificacoes (usuario_id, titulo, mensagem, tipo, agendamento_id) 
+                VALUES (:user_id, :titulo, :mensagem, :tipo, :agendamento_id)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':titulo', $titulo, PDO::PARAM_STR);
+        $stmt->bindValue(':mensagem', $mensagem, PDO::PARAM_STR);
+        $stmt->bindValue(':tipo', $tipo, PDO::PARAM_STR);
+        $stmt->bindValue(':agendamento_id', $agendamentoId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function createForMultipleUsers(array $userIds, string $titulo, string $mensagem, string $tipo, int $agendamentoId = null): bool
+    {
+        $placeholders = str_repeat('(?, ?, ?, ?, ?),', count($userIds));
+        $placeholders = rtrim($placeholders, ',');
+
+        $sql = "INSERT INTO notificacoes (usuario_id, titulo, mensagem, tipo, agendamento_id) VALUES $placeholders";
+        $stmt = $this->pdo->prepare($sql);
+
+        $values = [];
+        foreach ($userIds as $userId) {
+            $values[] = $userId;
+            $values[] = $titulo;
+            $values[] = $mensagem;
+            $values[] = $tipo;
+            $values[] = $agendamentoId;
+        }
+
+        return $stmt->execute($values);
+    }
+
+    public function deleteOldNotifications(int $days = 30): bool
+    {
+        $sql = "DELETE FROM notificacoes WHERE data_criacao < DATE_SUB(NOW(), INTERVAL :days DAY)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }
