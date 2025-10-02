@@ -5,14 +5,107 @@
 # principais funcionalidades e uma lista de eventos onde ele marcou presença.
 #
 ?>
-<div class="container">
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGE UNIFIO</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/default.css">
+    <link rel="stylesheet" href="/css/calendar.css">
+</head>
+
+<body>
+
+<section>
+    <div class="container">
+        <div class="title-dashboard">
+            <div>
+                <h1>SEJA BEM-VINDO</h1>
+                <h1>A NOSSA SALA DE EVENTOS!!!</h1>
+            </div>
+        </div>
+
+        <!-- CARROSSEL COM 3 SLIDES -->
+        <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+
+    <div class="carousel-inner">
+        <!-- SLIDE 1: Card Laranja -->
+        <div class="carousel-item active">
+            <div class="custom-card orange-card">
+                <div class="text-content">
+                    <h2>AQUI VOCÊ VERÁ</h2>
+                    <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
+                    <span class="highlight-text">UNIVERSIDADE!</span>
+                </div>
+                <div class="character-image-container static-character">
+                    <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Card Branco com Efeito 3D -->
+        <div class="carousel-item">
+            <div class="custom-card white-card">
+                <div class="text-content">
+                    <h2>
+                        <span class="gradient-text-orange">LOGO</span>
+                        <span class="gradient-text-blue">ABAIXO</span>
+                    </h2>
+                    <p class="card-text-body">
+                        <span class="text-orange">GERENCIE SEU</span>
+                        <span class="text-blue">ESPAÇO,</span><br>
+                        <span class="text-blue">SEU</span>
+                        <span class="text-orange">ESPORTE</span>
+                        <span class="text-blue">E</span><br>
+                        <span class="text-blue">SUA</span>
+                        <span class="text-orange">RESERVA</span>
+                    </p>
+                </div>
+                <!-- Container da imagem que vai "sair" do card -->
+                <div class="character-image-container popup-character">
+                    <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Exemplo de outro slide -->
+        <div class="carousel-item">
+             <div class="custom-card blue-card">
+                <h2>TERCEIRO CARD</h2>
+                <p>Mais informações aqui.</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+       
+</section>
+
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>Bem-vindo, <?php
+            <h2>Bem-vindo, <?php
                 $nomeCompleto = htmlspecialchars($user['nome']);
                 $primeiroNome = explode(' ', $nomeCompleto)[0];
                 echo $primeiroNome;
-            ?>!</h1>
+            ?>!</h2>
             <p class="text-muted">Este é o seu painel de controle.</p>
         </div>
         <div>
@@ -182,3 +275,5 @@
         </div>
     </div>
 </div>
+</body>
+</html>

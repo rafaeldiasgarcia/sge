@@ -164,6 +164,7 @@ body.auth-body {
 .auth-links {
     text-align: right;
     font-size: 14px;
+    margin-top: 10px;
 }
 
 .auth-links-es {

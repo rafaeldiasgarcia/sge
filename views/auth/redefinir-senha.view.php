@@ -45,6 +45,8 @@
             Entre em contato com a universidade
         </div>
 
-        <div class="unifio-logo">UniFio</div>
+        <div class="unifio-logo">
+            <img src="/public/img/logo-unifio.webp" alt="Logo UNIFIO">
+        </div>
     </form>
 </div>

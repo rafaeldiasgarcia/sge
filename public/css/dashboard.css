@@ -1,0 +1,134 @@
+.title-dashboard h1 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 1.2;  /* Ajuste a altura da linha para o H1 */
+     background: var(--gradient-color-text);
+    /* 2. Recorta o fundo para ter exatamente o formato do texto */
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* 3. Deixa a cor do texto transparente para que o fundo (o gradiente) apareça */
+    color: transparent;
+    text-align: center;
+}
+
+.title-dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Permite que o conteúdo (a imagem 3D) vaze para fora sem ser cortado */
+.carousel {
+    margin-bottom: 60px; /* Dá espaço abaixo para a sombra da imagem que vaza */
+}
+.carousel-inner {
+    overflow: visible !important; /* A regra mais importante! */
+}
+
+
+/* BASE DO NOSSO CARD CUSTOMIZADO */
+.custom-card {
+    height: 350px; /* Altura fixa para todos os cards */
+    width: 90%;   /* Ocupa 90% da largura do carrossel */
+    margin: 0 auto; /* Centraliza o card no slide */
+    border-radius: 10px;
+    box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    -moz-box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    position: relative; /* ESSENCIAL: para o posicionamento da imagem */
+    box-sizing: border-box;
+}
+
+/* Cores e estilos específicos dos cards */
+.orange-card {
+    background-color: var(--orange-color);
+    color: white;
+}
+.white-card {
+    background-color: #fff;
+    color: #333;
+}
+.blue-card {
+    background: var(--blue-color);
+    color: white;
+}
+
+.text-content {
+    font-weight: 900;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    flex-basis: 60%;
+    font-size: 3rem;
+    
+}
+
+/* Estilo do conteúdo de texto */
+.text-content p{
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1; /* Garante que o texto fique atrás da imagem 3D */
+    flex-basis: 60%; /* Ocupa 60% do espaço, deixando 40% para a imagem */
+    font-size: 1.5rem;
+}
+
+.text-content h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    flex-basis: 60%;
+    font-size: 3rem;
+}
+
+.highlight-text {
+    font-size: 4rem;
+    color: var(--blue-color);
+    margin-left: 30px;
+}
+
+/* --- A MÁGICA DO EFEITO 3D ACONTECE AQUI --- */
+
+.character-image-container {
+    position: absolute; /* Libera o elemento do fluxo normal */
+    z-index: 2; /* Coloca a imagem NA FRENTE do texto */
+}
+
+/* Estilo para a imagem que fica DENTRO do card (card laranja) */
+.static-character {
+    bottom: 0;
+    right: 40px;
+    width: 320px;
+}
+.static-character img {
+    width: 100%;
+    filter: drop-shadow(5px 15px 20px rgba(0, 0, 0, 0.6));
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Estilo para a imagem que VAZA do card (card branco) */
+.popup-character {
+    width: 390px; /* Tamanho da imagem */
+    top: -80px;   /* Move 60px PARA CIMA (fora do card) */
+    right: -40px; /* Move 40px PARA A DIREITA (fora do card) */
+}
+.popup-character img {
+    width: 100%;
+    /* Sombra que segue o contorno da imagem transparente */
+    filter: drop-shadow(5px 10px 15px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Estilos do texto do card branco (para ficar igual à imagem) */
+.card-text-body { font-size: 1.5rem; line-height: 1.3; }
+.text-orange { color: var(--orange-color); }
+.text-blue { color: var(--blue-color); }
+.gradient-text-orange { background: linear-gradient(90deg, #F28100, #c86c00); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.gradient-text-blue { background: linear-gradient(90deg, #0900FF, #004386); -webkit-background-clip: text; background-clip: text; color: transparent; }

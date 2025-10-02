@@ -28,6 +28,11 @@ nav .container {
     height: 100%;
 }
 
+.header-center img {
+    height: 82px; /* ou o tamanho que preferir */
+    width: auto;  /* mantém a proporção */
+}
+
 .header-left,
 .header-right {
     min-width: 120px; /* ajuste conforme necessário para garantir espaço */
@@ -111,3 +116,12 @@ nav .container {
     transition-delay: 0.2s;
 }
 
+.dropdown-item {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    color: var(--orange-color);
+}
+
+.dropdown-menu .dropdown-menu-end{
+    color: var(--orange-color);
+}
