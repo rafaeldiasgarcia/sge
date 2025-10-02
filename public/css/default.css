@@ -1,5 +1,11 @@
 body {
     font-family: 'Montserrat', Arial, sans-serif;
+    min-height: 100vh; /* Garante altura mínima da tela */
+}
+
+/* Páginas normais também precisam de altura suficiente para o scroll */
+body.d-flex {
+    min-height: 120vh; /* Força conteúdo maior que a tela para ter scroll */
 }
 
 :root {
@@ -10,4 +16,109 @@ body {
     --text-color: #333333;
     --gradient-color-login: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
     --gradient-color-text: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(242, 129, 0, 1) 100%); 
+}
+
+/* UNIFIO Footer Styles */
+.unifio-footer {
+    background-color: #343a40 !important; /* Preto/cinza escuro sólido */
+    color: white !important;
+    padding: 20px 0;
+    position: relative; /* Remove margin-top: auto para não ficar colado */
+    opacity: 1 !important; /* Garante que não seja transparente */
+    z-index: 1000; /* Garante que fique por cima de outros elementos */
+    margin-top: 50px; /* Adiciona espaço antes do footer */
+}
+
+.unifio-footer-auth {
+    background-color: #343a40 !important; /* Preto/cinza escuro sólido */
+    position: relative;
+    margin-top: 50px;
+    opacity: 1 !important; /* Garante que não seja transparente */
+    z-index: 1000; /* Garante que fique por cima de outros elementos */
+}
+
+.unifio-footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.unifio-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.unifio-logo {
+    height: 60px;
+    width: auto;
+}
+
+.unifio-address {
+    color: #ffffff;
+}
+
+.unifio-address p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.unifio-footer-right {
+    text-align: center;
+}
+
+.unifio-footer-right h5 {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.unifio-contact-info {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.unifio-contact-item {
+    text-align: center;
+}
+
+.unifio-contact-item p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.unifio-contact-item p:first-child {
+    font-weight: bold;
+}
+
+.unifio-contact-item p:last-child {
+    color: #cccccc;
+    font-size: 12px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .unifio-footer-container {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .unifio-footer-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .unifio-contact-info {
+        flex-direction: column;
+        gap: 15px;
+    }
 }

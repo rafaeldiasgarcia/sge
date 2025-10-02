@@ -13,9 +13,11 @@ body.auth-body {
     background: linear-gradient(90deg,rgba(7, 97, 233, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
     min-height: 100vh;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden; /* Permite scroll vertical */
+    overflow-y: auto; /* Permite scroll vertical */
     margin: 0;
     padding: 0;
+    /* Remove padding-bottom para que o footer não seja fixo */
 }
 
 .auth-background {
@@ -35,7 +37,7 @@ body.auth-body {
 .auth-container {
     position: relative;
     z-index: 2;
-    min-height: 100vh;
+    min-height: 100vh; /* Volta para altura total da tela */
     display: flex;
     align-items: center;
     justify-content: center;

@@ -75,7 +75,16 @@ nav .container {
     transition: opacity 0.3s ease 0.1s;
 }
 
-/* Quando passar o mouse: expande e revela */
+/* Quando passar o mouse sobre o nav-item inteiro: expande e revela */
+.navbar-nav .nav-item:hover .nav-link {
+    width: 160px;
+}
+
+.navbar-nav .nav-item:hover .nav-link span {
+    opacity: 1;
+}
+
+/* Mantém compatibilidade com hover direto no link também */
 .navbar-nav .nav-item .nav-link:hover {
     width: 160px;
 }
@@ -125,4 +134,3 @@ nav .container {
 .dropdown-menu .dropdown-menu-end{
     color: var(--orange-color);
 }
-
