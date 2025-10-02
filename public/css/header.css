@@ -98,6 +98,17 @@ nav .container {
     right: 6px;
     top: 2px;
 }
+
+/* Controle de hover para dropdowns - fecha quando mouse sai */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.nav-item.dropdown .dropdown-menu {
+    display: none;
+    margin-top: 0;
+}
+
 /* Estado inicial dos itens */
 .dropdown-menu .dropdown-item {
     opacity: 0;

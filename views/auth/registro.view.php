@@ -91,7 +91,7 @@
         </div>
 
         <div class="unifio-logo">
-            <img src="/public/img/logo-unifio.webp" alt="">
+            <img src="/img/logo-unifio-azul.webp" alt="">
         </div>
     </form>
 </div>

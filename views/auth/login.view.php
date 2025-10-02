@@ -21,8 +21,8 @@
 
     <form action="/login" method="post" class="auth-form">
         <div class="mb-3">
-            <label for="email" class="form-label">E-mail institucional</label>
-            <input type="text" name="email" id="email" class="form-control" placeholder="00000@unifio.edu.br" required>
+            <label for="email" class="form-label">E-mail</label>
+            <input type="text" name="email" id="email" class="form-control" placeholder="******@seuemail.com" required>
         </div>
         <div class="mb-1">
             <label for="senha" class="form-label">Senha</label>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="unifio-logo">
-            <img src="/public/img/logo-unifio.webp" alt="">
+            <img src="/img/logo-unifio-azul.webp" alt="">
         </div>
     </form>
 </div>

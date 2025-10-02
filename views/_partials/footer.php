@@ -9,7 +9,7 @@
 <footer class="unifio-footer <?php echo (isset($isAuthPage) && $isAuthPage) ? 'unifio-footer-auth' : 'mt-auto'; ?>">
     <div class="unifio-footer-container">
         <div class="unifio-footer-left">
-            <img src="/img/logo-unifio.webp" alt="Logo UNIFIO" class="unifio-logo">
+            <img src="/img/logo-unifio-branco.webp" alt="Logo UNIFIO" class="unifio-logo">
             <div class="unifio-address">
                 <p>Rodovia BR 153, Km 338+420m,</p>
                 <p>Bairro Água do Cateto, Ourinhos-SP.</p>
@@ -20,15 +20,15 @@
             <h5>ATENDIMENTO - FALE CONOSCO</h5>
             <div class="unifio-contact-info">
                 <div class="unifio-contact-item">
-                    <p>email@unifio.edu.br</p>
+                    <p><a href="mailto:email@unifio.edu.br" class="footer-link">email@unifio.edu.br</a></p>
                     <p>Pró-Reitoria UNIFIO</p>
                 </div>
                 <div class="unifio-contact-item">
-                    <p>(14) 3302-6400</p>
+                    <p><a href="https://wa.me/551433026400" class="footer-link" target="_blank">(14) 3302-6400</a></p>
                     <p>Secretaria UNIFIO</p>
                 </div>
                 <div class="unifio-contact-item">
-                    <p>email@unifio.edu.br</p>
+                    <p><a href="mailto:email@unifio.edu.br" class="footer-link">email@unifio.edu.br</a></p>
                     <p>Coordenação Educação Física</p>
                 </div>
             </div>
@@ -39,6 +39,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php if (!isset($isAuthPage) || !$isAuthPage): ?>
 <script src="/js/calendar.js"></script>
+<script src="/js/header.js"></script>
 <?php endif; ?>
 </body>
 </html>

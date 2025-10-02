@@ -46,7 +46,7 @@
         </div>
 
         <div class="unifio-logo">
-            <img src="/public/img/logo-unifio.webp" alt="Logo UNIFIO">
+            <img src="/img/logo-unifio-azul.webp" alt="Logo UNIFIO">
         </div>
     </form>
 </div>

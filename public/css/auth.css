@@ -230,6 +230,12 @@ body.auth-body {
     margin-top: 30px;
 }
 
+.unifio-logo img {
+    max-width: 120px;
+    height: auto;
+    opacity: 0.8;
+}
+
 .alert-auth {
     border-radius: 10px;
     margin-bottom: 20px;

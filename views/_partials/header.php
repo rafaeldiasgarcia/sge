@@ -110,5 +110,6 @@ use Application\Core\Auth;
         </div>
     </div>
 </nav>
+
 <main class="container mt-4 flex-grow-1">
 <?php endif; ?>
