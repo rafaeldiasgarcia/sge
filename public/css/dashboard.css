@@ -126,6 +126,10 @@
     transition: transform 0.3s ease-in-out;
 }
 
+.popup-character img:hover {
+    transform: scale(1.025); /* Move a imagem 10px para cima ao passar o mouse */
+}
+
 /* Estilos do texto do card branco (para ficar igual à imagem) */
 .card-text-body { font-size: 1.5rem; line-height: 1.3; }
 .text-orange { color: var(--orange-color); }

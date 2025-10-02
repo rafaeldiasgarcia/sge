@@ -15,7 +15,7 @@ use Application\Core\Auth;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/header.css">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/default.css">
     <link rel="stylesheet" href="/css/calendar.css">
     <?php if (isset($isAuthPage) && $isAuthPage): ?>
