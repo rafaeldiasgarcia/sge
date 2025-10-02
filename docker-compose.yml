@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   sge-php:
     build: .
@@ -14,7 +16,7 @@ services:
       - .env
 
   sge-db:
-    image: mysql
+    image: mysql:8
     container_name: sge-db
     restart: always
     environment:
