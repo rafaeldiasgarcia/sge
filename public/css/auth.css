@@ -24,7 +24,7 @@ body.auth-body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('/img/jogador-azul.png'), url('/img/jogador-branco.png');
+    background-image: url('/img/jogador-azul.webp'), url('/img/jogador-branco.webp');
     background-position: left center, right center;
     background-repeat: no-repeat, no-repeat;
     background-size: contain, contain;

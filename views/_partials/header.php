@@ -35,7 +35,7 @@ use Application\Core\Auth;
             <a class="navbar-brand" href="/"><strong>SGE UNIFIO</strong></a>
         </div>
         <div class="header-center">
-            <img src="/img/logo-quadra.png" alt="Logo Quadra" class="logo-header">
+            <img src="/img/logo-quadra.webp" alt="Logo Quadra" class="logo-header">
         </div>
         <div class="header-right d-flex align-items-center">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>

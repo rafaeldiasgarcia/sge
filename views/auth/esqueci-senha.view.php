@@ -49,7 +49,7 @@
         </div>
 
         <div class="unifio-logo">
-            <img src="/public/img/logo-unifio.png" alt="">
+            <img src="/public/img/logo-unifio.webp" alt="">
         </div>
     </form>
 </div>
