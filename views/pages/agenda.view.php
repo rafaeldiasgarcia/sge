@@ -13,19 +13,17 @@
     <h2 class="mb-4"><i class="bi bi-calendar-plus text-success"></i> Próximos Eventos</h2>
 
     <!-- Botões para alternar entre tipos de eventos -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <button class="btn btn-primary btn-lg w-100" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
-                <i class="bi bi-trophy-fill"></i> Eventos Esportivos
-                <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_esportivos); ?></span>
-            </button>
-        </div>
-        <div class="col-md-6">
-            <button class="btn btn-success btn-lg w-100" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
-                <i class="bi bi-calendar-event-fill"></i> Eventos Não Esportivos
-                <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_nao_esportivos); ?></span>
-            </button>
-        </div>
+    <div class="d-flex gap-3 mb-4 align-items-stretch">
+        <button class="btn btn-primary btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
+            <i class="bi bi-trophy-fill me-2"></i>
+            <span>Eventos Esportivos</span>
+            <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_esportivos); ?></span>
+        </button>
+        <button class="btn btn-success btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
+            <i class="bi bi-calendar-event-fill me-2"></i>
+            <span>Eventos Não Esportivos</span>
+            <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_nao_esportivos); ?></span>
+        </button>
     </div>
 
     <!-- Seção de Eventos Esportivos -->

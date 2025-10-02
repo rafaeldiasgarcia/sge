@@ -29,13 +29,15 @@ use Application\Core\Auth;
 <?php else: ?>
 <body class="d-flex flex-column min-vh-100">
 
-<nav class="navbar navbar-expand-lg p-3">
+<nav class="navbar navbar-expand-lg p-1">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="header-left">
-            <a class="navbar-brand" href="/"><strong>SGE UNIFIO</strong></a>
+            <a class="navbar-brand" href="/">
+                <img src="/img/logo-quadra.webp" alt="Logo Quadra" class="logo-header">
+            </a>
         </div>
         <div class="header-center">
-            <img src="/img/logo-quadra.webp" alt="Logo Quadra" class="logo-header">
+            <!-- Logo movido para a esquerda -->
         </div>
         <div class="header-right d-flex align-items-center">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
@@ -85,9 +87,13 @@ use Application\Core\Auth;
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"><span> Olá, <?php
-                                $nomeCompleto = htmlspecialchars($user['nome']);
-                                $primeiroNome = explode(' ', $nomeCompleto)[0];
-                                echo $primeiroNome;
+                                if (isset($user) && isset($user['nome']) && !empty($user['nome'])) {
+                                    $nomeCompleto = htmlspecialchars($user['nome']);
+                                    $primeiroNome = explode(' ', $nomeCompleto)[0];
+                                    echo $primeiroNome;
+                                } else {
+                                    echo 'Usuário';
+                                }
                                 ?></span></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">

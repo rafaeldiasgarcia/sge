@@ -5,39 +5,31 @@ nav{
     box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.25);
     background-color: var(--background-color);
 }
+
+/* Navbar básico - configuração única */
+.navbar {
+    padding: 0;
+    min-height: auto;
+}
+
+/* Container do navbar */
 nav .container {
     position: relative;
-    height: 64px; /* ou a altura do seu header */
+    padding: 0.2rem 1rem;
+    align-items: center;
 }
 
+/* Logo - CSS novo do zero */
 .logo-header {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    height:52px;
-    margin-left:16px;
+    height: 50px;
+    width: auto;
 }
 
-.header-center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+.header-right {
+    min-width: 120px;
     display: flex;
     align-items: center;
-    height: 100%;
 }
-
-.header-center img {
-    height: 82px; /* ou o tamanho que preferir */
-    width: auto;  /* mantém a proporção */
-}
-
-.header-left,
-.header-right {
-    min-width: 120px; /* ajuste conforme necessário para garantir espaço */
-}
-
 
 .navbar-brand strong{
     color: var(--textcolor-blue);
@@ -46,14 +38,14 @@ nav .container {
 .navbar .nav-link {
     font-style: normal !important;
     font-family: "Montserrat", sans-serif;
-    font-weight: 500; /* fica mais consistente */
+    font-weight: 500;
 }
 
 /* Itens padrão animados */
 .navbar-nav .nav-item .nav-link {
     display: flex;
     align-items: center;
-    width: 45px; /* só o ícone aparece no início */
+    width: 45px;
     overflow: hidden;
     white-space: nowrap;
     transition: width 0.4s ease;
@@ -93,13 +85,13 @@ nav .container {
     opacity: 1;
 }
 
-/* Badge de notificações (sempre visível e posicionado corretamente) */
+/* Badge de notificações */
 #notificationBadge {
     right: 6px;
     top: 2px;
 }
 
-/* Controle de hover para dropdowns - fecha quando mouse sai */
+/* Controle de hover para dropdowns */
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
 }
@@ -122,7 +114,7 @@ nav .container {
     transform: translateX(0);
 }
 
-/* Animação em cascata (delay automático por item) */
+/* Animação em cascata */
 .dropdown-menu.show .dropdown-item:nth-child(1) {
     transition-delay: 0.05s;
 }
