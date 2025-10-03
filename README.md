@@ -950,5 +950,5 @@ Desenvolvido para o **Centro Universitário UNIFIO** com o objetivo de moderniza
 ---
 
 **Versão**: 1.0.0  
-**Última Atualização**: Outubro 2025  
+**Última Atualização**: Outubro 2025
 **Status**: ✅ Produção
