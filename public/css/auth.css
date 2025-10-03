@@ -67,7 +67,7 @@ body.auth-body {
 }
 
 .auth-title {
-    color: var(--textcolor-blue) !important;
+    color: var(--blue-color) !important;
     font-weight: bold;
     font-size: 1.9rem;
     text-align: center;
