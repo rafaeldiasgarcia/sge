@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   sge-php:
     build: .
@@ -26,7 +28,7 @@ services:
     volumes:
       - ./assets/data:/docker-entrypoint-initdb.d
     ports:
-      - '3307:3306'
+      - '3306:3306'  # Ou 3307, se preferir
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -40,3 +42,7 @@ services:
       PMA_PASSWORD: rootpass
     depends_on:
       - sge-db
+
+networks:
+  default:
+    name: sge-network
