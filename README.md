@@ -271,10 +271,11 @@ sge/
 │   └── vendor/                   # Dependências do Composer
 │
 ├── 🗄️ Database
-│   └── assets/data/
-│       ├── 0-schema.sql          # Schema completo + dados
-│       ├── db_populate.sql       # Dados de exemplo
-│       └── db_vazia.sql          # Schema limpo
+│   └── assets/
+│       ├── data/
+│       │   └── 0-schema.sql      # Estrutura do banco (auto-executado)
+│       └── seeds/
+│           └── db_populate.sql   # Dados de exemplo (manual)
 │
 ├── 🌐 Public (DocumentRoot)
 │   └── public/
@@ -312,86 +313,99 @@ sge/
 
 ## 🚀 Instalação e Configuração
 
-### Pré-requisitos
+### 🎉 GitHub Codespaces (Recomendado)
+
+A forma mais rápida de começar! Tudo é configurado automaticamente:
+
+1. **Abra no Codespaces**
+   - Clique no botão verde "Code" no GitHub
+   - Selecione "Codespaces" → "Create codespace on main"
+
+2. **Aguarde a Inicialização** (1-2 minutos)
+   - O ambiente será criado automaticamente
+   - Docker Compose subirá todos os containers
+   - O banco de dados será criado com a estrutura vazia
+
+3. **Popular o Banco de Dados** (Obrigatório)
+   
+   **Opção 1 - Via phpMyAdmin (porta 8080)**:
+   - Acesse o phpMyAdmin quando a porta 8080 abrir
+   - Login: `root` / Senha: `rootpass`
+   - Selecione o banco `application`
+   - Vá em "SQL" e cole o conteúdo de `assets/seeds/db_populate.sql`
+   - Execute
+
+   **Opção 2 - Via Terminal**:
+   ```bash
+   docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
+   ```
+
+4. **Pronto!** 🎉
+   - Aplicação: Porta 80
+   - phpMyAdmin: Porta 8080
+   - MySQL: Porta 3306
+
+---
+
+### 💻 Instalação Local (Docker)
+
+#### Pré-requisitos
 
 - **Docker Desktop**: Versão mais recente instalada
 - **Git**: Para clonar o repositório
-- **Porta 80, 3307 e 8080**: Devem estar disponíveis
+- **Portas 80, 3306 e 8080**: Devem estar disponíveis
 
-### Passo a Passo
+#### Passo a Passo
 
-#### 1. Clone o Repositório
+**1. Clone o Repositório**
 
 ```bash
 git clone <url-do-repositorio>
 cd sge
 ```
 
-#### 2. Configure as Variáveis de Ambiente
-
-O arquivo `.env` já está configurado com as credenciais padrão:
-
-```env
-DB_HOST=sge-db
-DB_NAME=sge_db
-DB_USER=root
-DB_PASS=rootpass
-```
-
-**Atenção**: Em produção, altere as credenciais!
-
-#### 3. Inicie os Containers Docker
+**2. Inicie os Containers Docker**
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Isso iniciará 3 containers:
-- **sge-php**: Aplicação PHP + Apache (porta 80)
-- **sge-db**: MySQL 9.4 (porta 3307)
+- **php**: Aplicação PHP + Apache (porta 80)
+- **mysql**: MySQL (porta 3306)
 - **phpmyadmin**: Interface de administração (porta 8080)
 
-#### 4. Verifique o Status dos Containers
+**3. Instale as Dependências do Composer**
 
 ```bash
-docker-compose ps
+docker exec -it php composer install
 ```
 
-Todos devem estar com status "Up".
+**4. Popular o Banco de Dados**
 
-#### 5. Instale as Dependências do Composer
-
-```bash
-docker exec -it sge-php composer install
-```
-
-#### 6. Importe o Banco de Dados
-
-O banco é importado automaticamente na primeira inicialização através do volume:
-```yaml
-volumes:
-  - ./assets/data:/docker-entrypoint-initdb.d
-```
-
-Caso precise reimportar manualmente:
+O banco é criado automaticamente **vazio** (somente estrutura).
+Para adicionar dados de exemplo:
 
 **Via phpMyAdmin**:
 1. Acesse http://localhost:8080
 2. Login: `root` / Senha: `rootpass`
-3. Importe o arquivo `assets/data/0-schema.sql`
+3. Selecione o banco `application`
+4. Importe o arquivo `assets/seeds/db_populate.sql`
 
 **Via Terminal**:
 ```bash
-docker exec -i sge-db mysql -uroot -prootpass sge_db < assets/data/0-schema.sql
+docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
 ```
 
-#### 7. Acesse a Aplicação
+**5. Acesse a Aplicação**
 
 Abra o navegador em: **http://localhost**
 
 ---
 
 ## 🔑 Credenciais de Acesso
+
+> ⚠️ **Importante**: As credenciais abaixo só funcionarão **após popular o banco** com o arquivo `assets/seeds/db_populate.sql`
 
 ### Super Admin (Acesso Total)
 - **Email**: `sadmin`
@@ -613,35 +627,72 @@ if (Auth::role() === 'superadmin') {
 
 ```bash
 # Iniciar containers
-docker-compose up -d
+docker compose up -d
 
 # Parar containers
-docker-compose down
+docker compose down
 
 # Reiniciar containers
-docker-compose restart
+docker compose restart
+
+# Recriar do zero (apaga todos os dados)
+docker compose down -v
+docker compose up -d
 
 # Ver logs
-docker-compose logs -f sge-php
+docker logs php -f
 
 # Ver status
-docker-compose ps
+docker ps
+```
+
+### Banco de Dados
+
+```bash
+# Popular banco com dados de exemplo
+docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
+
+# Acessar MySQL via terminal
+docker exec -it mysql mysql -uroot -prootpass application
+
+# Backup do banco
+docker exec mysql mysqldump -uroot -prootpass application > backup.sql
+
+# Restaurar backup
+docker exec -i mysql mysql -uroot -prootpass application < backup.sql
 ```
 
 ### Acesso aos Containers
 
 ```bash
 # Entrar no container PHP
-docker exec -it sge-php bash
-
-# Entrar no container MySQL
-docker exec -it sge-db mysql -uroot -prootpass sge_db
+docker exec -it php bash
 
 # Executar comandos PHP
-docker exec -it sge-php php -v
+docker exec -it php php -v
 
 # Executar Composer
-docker exec -it sge-php composer install
+docker exec -it php composer install
+
+# Atualizar autoload
+docker exec -it php composer dump-autoload
+```
+
+### 🚀 Quick Start (Codespaces)
+
+```bash
+# 1. Abra no GitHub Codespaces (tudo sobe automaticamente)
+
+# 2. Aguarde containers subirem (automático via postCreateCommand)
+
+# 3. Popular banco de dados (OBRIGATÓRIO)
+docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
+
+# 4. Acesse a aplicação (porta 80 será aberta automaticamente)
+
+# 5. Login como Super Admin
+# Email: sadmin
+# Senha: sadmin
 ```
 
 ### Banco de Dados

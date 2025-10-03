@@ -4,7 +4,7 @@
 #
 ?>
 
-<link rel="stylesheet" href="/img/default.css">
+<link rel="stylesheet" href="/css/default.css">
 
 <div class="auth-card">
     <h1 class="auth-title">Jogos Acadêmicos</h1>

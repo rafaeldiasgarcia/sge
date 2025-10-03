@@ -2,6 +2,9 @@
     "autoload": {
         "psr-4": {
             "Application\\": "src/"
-        }
+        },
+        "files": [
+            "src/Core/helpers.php"
+        ]
     }
 }
