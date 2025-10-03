@@ -1,12 +1,26 @@
 {
-  "name": "SGE Docker Codespace",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
-  "postStartCommand": "docker-compose up -d && docker exec -it sge-php composer install",
-  "forwardPorts": [80, 3306, 8080],
-  "features": {
-    "docker-in-docker": "latest"
-  }
+	"name": "PHP in Docker",
+	"build": {
+         "dockerfile": "Dockerfile"
+     },
+	 "features": {
+ 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+ 			"version": "latest",
+ 			"enableNonRootDocker": "true",
+ 			"moby": "true"
+ 		}
+ 	},
+	"forwardPorts": [
+		3306,
+		80,
+		8080
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"zobo.php-intellisense"
+			]
+		}
+	},
+	"postCreateCommand": "composer update && docker compose up -d"
 }
