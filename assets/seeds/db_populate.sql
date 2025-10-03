@@ -92,6 +92,7 @@ UPDATE `cursos` SET `coordenador_id` = 9 WHERE `id` = 3; -- Prof. Ricardo Souza 
 -- Inserindo dados na tabela `agendamentos` (IDs baseados na nova ordem de inserção)
 --
 INSERT INTO `agendamentos` (`usuario_id`, `titulo`, `tipo_agendamento`, `esporte_tipo`, `data_agendamento`, `periodo`, `descricao`, `status`, `responsavel_evento`, `estimativa_participantes`) VALUES
+-- JULHO 2025 - Período de Férias
 (11, 'Treino de Férias - Futsal', 'esportivo', 'Futsal', '2025-07-02', 'primeiro', 'Treino leve de manutenção durante as férias.', 'finalizado', 'Lucas Mendes', 15),
 (12, 'Jogo Amistoso Vôlei', 'esportivo', 'Voleibol', '2025-07-05', 'segundo', 'Amistoso contra time convidado.', 'finalizado', 'Julia Alves', 20),
 (8, 'Curso de Extensão: Programação em R', 'nao_esportivo', NULL, '2025-07-08', 'primeiro', 'Curso de férias para a comunidade.', 'finalizado', 'Profa. Beatriz Lima', 40),
@@ -100,6 +101,9 @@ INSERT INTO `agendamentos` (`usuario_id`, `titulo`, `tipo_agendamento`, `esporte
 (20, 'Palestra: Saúde Mental no Esporte', 'nao_esportivo', NULL, '2025-07-18', 'primeiro', 'Palestra com psicólogo convidado.', 'finalizado', 'Sr. Jorge Santos', 80),
 (13, 'Campeonato Relâmpago de CS:GO', 'esportivo', 'CS:GO', '2025-07-22', 'segundo', 'Torneio de um dia entre os alunos.', 'finalizado', 'Pedro Martins', 16),
 (14, 'Ação Social SANGUINÁRIA', 'nao_esportivo', NULL, '2025-07-26', 'primeiro', 'Campanha de doação de sangue.', 'finalizado', 'Fernanda Oliveira', 100),
+(16, 'Treino de Handebol Feminino', 'esportivo', 'Handebol', '2025-07-29', 'segundo', 'Treino técnico e tático.', 'finalizado', 'Mariana Ferreira', 16),
+
+-- AGOSTO 2025 - Início do Semestre
 (11, 'Volta aos Treinos - Futsal', 'esportivo', 'Futsal', '2025-08-01', 'primeiro', 'Início oficial dos treinos do semestre.', 'finalizado', 'Lucas Mendes', 18),
 (12, 'Seletiva Vôlei PREDADORA', 'esportivo', 'Voleibol', '2025-08-04', 'segundo', 'Seleção de novas atletas.', 'finalizado', 'Julia Alves', 30),
 (7, 'Aula Magna Engenharia Civil', 'nao_esportivo', NULL, '2025-08-05', 'primeiro', 'Evento de boas-vindas aos calouros.', 'finalizado', 'Prof. Carlos Andrade', 150),
@@ -110,25 +114,81 @@ INSERT INTO `agendamentos` (`usuario_id`, `titulo`, `tipo_agendamento`, `esporte
 (17, 'Festival de Queimada', 'esportivo', 'Queimada', '2025-08-23', 'primeiro', 'Evento de integração para calouros.', 'finalizado', 'Bruno Rodrigues', 50),
 (4, 'Reunião Geral - Admin Atlética', 'nao_esportivo', NULL, '2025-08-26', 'primeiro', 'Alinhamento com a diretoria de esportes.', 'finalizado', 'Admin Atletica Teste', 8),
 (12, 'Treino de Polo Aquático', 'esportivo', NULL, '2025-08-28', 'segundo', 'Treino em piscina olímpica.', 'finalizado', 'Julia Alves', 12),
+(14, 'Treino Basquete SANGUINÁRIA', 'esportivo', 'Basquetebol', '2025-08-30', 'primeiro', 'Fundamentos e jogadas.', 'finalizado', 'Fernanda Oliveira', 15),
+
+-- SETEMBRO 2025
 (7, 'Palestra: Engenharia e Inovação', 'nao_esportivo', NULL, '2025-09-02', 'primeiro', 'Evento do curso de Engenharia de Produção.', 'finalizado', 'Prof. Carlos Andrade', 90),
 (11, 'Jogo-Treino Futsal vs SANGUINÁRIA', 'esportivo', 'Futsal', '2025-09-05', 'segundo', 'Jogo preparatório.', 'finalizado', 'Lucas Mendes', 35),
 (8, 'Treino de Cobertura de Eventos', 'nao_esportivo', NULL, '2025-09-09', 'primeiro', 'Atividade prática para alunos de Jornalismo.', 'finalizado', 'Profa. Beatriz Lima', 25),
 (13, 'Treino Cancelado (Chuva)', 'esportivo', 'League of Legends', '2025-09-11', 'segundo', 'Treino cancelado por problemas na rede elétrica.', 'cancelado', 'Pedro Martins', 8),
 (15, 'Semana do Administrador', 'nao_esportivo', NULL, '2025-09-16', 'primeiro', 'Ciclo de palestras e workshops.', 'finalizado', 'Gabriel Pereira', 60),
+(12, 'Amistoso Vôlei vs IMPÉRIO', 'esportivo', 'Voleibol', '2025-09-18', 'segundo', 'Jogo amistoso entre atléticas.', 'finalizado', 'Julia Alves', 28),
+(16, 'Torneio de Handebol Feminino', 'esportivo', 'Handebol', '2025-09-20', 'primeiro', 'Primeira rodada do torneio interno.', 'finalizado', 'Mariana Ferreira', 32),
 (4, 'Manutenção do E-Sports', 'nao_esportivo', NULL, '2025-09-23', 'segundo', 'Atualização dos computadores da sala de e-sports.', 'finalizado', 'Admin Atletica Teste', 5),
 (18, 'Cine Debate - Psicologia', 'nao_esportivo', NULL, '2025-09-26', 'primeiro', 'Exibição de filme seguida de debate.', 'finalizado', 'Larissa Gonçalves', 45),
-(11, 'Treino Futsal Masculino - FURIOSA', 'esportivo', 'Futsal', '2025-10-06', 'primeiro', 'Treino preparatório para o Intercursos.', 'aprovado', 'Lucas Mendes', 20),
-(12, 'Treino Vôlei Feminino - PREDADORA', 'esportivo', 'Voleibol', '2025-10-06', 'segundo', 'Treino tático e físico.', 'aprovado', 'Julia Alves', 16),
-(13, 'Treino League of Legends - ALFA', 'esportivo', 'League of Legends', '2025-10-07', 'primeiro', 'Treino de estratégias e team play.', 'aprovado', 'Pedro Martins', 10),
-(20, 'Palestra sobre Mercado de Trabalho', 'nao_esportivo', NULL, '2025-10-08', 'primeiro', 'Palestra com convidado externo para alunos.', 'pendente', 'Sr. Jorge Santos', 75),
-(14, 'Treino Basquete - SANGUINÁRIA', 'esportivo', 'Basquetebol', '2025-10-08', 'segundo', 'Foco em arremessos e defesa.', 'aprovado', 'Fernanda Oliveira', 12),
-(8, 'Workshop de Python para iniciantes', 'nao_esportivo', NULL, '2025-10-09', 'primeiro', 'Organizado pelo curso de Ciência da Computação.', 'aprovado', 'Profa. Beatriz Lima', 30),
-(11, 'Amistoso Futsal FURIOSA x ALFA', 'esportivo', 'Futsal', '2025-10-10', 'segundo', 'Jogo amistoso entre as atléticas.', 'aprovado', 'Lucas Mendes', 40),
-(15, 'Reunião da Atlética MAGNA', 'nao_esportivo', NULL, '2025-10-13', 'primeiro', 'Planejamento de eventos do semestre.', 'aprovado', 'Gabriel Pereira', 15),
-(17, 'Uso da quadra para Lazer', 'esportivo', 'Futsal', '2025-10-13', 'segundo', 'Solicitação de aluno para jogo com amigos.', 'rejeitado', 'Bruno Rodrigues', 8),
-(16, 'Treino de Handebol - VENENOSA', 'esportivo', 'Handebol', '2025-10-14', 'primeiro', 'Treino de ataque e contra-ataque.', 'aprovado', 'Mariana Ferreira', 18),
-(6, 'Manutenção da Quadra', 'nao_esportivo', NULL, '2025-10-15', 'primeiro', 'Reserva para manutenção e pintura.', 'aprovado', 'Admin Esportes', 3);
+(11, 'Treino Intensivo Futsal', 'esportivo', 'Futsal', '2025-09-29', 'segundo', 'Preparação para o Intercursos.', 'finalizado', 'Lucas Mendes', 20),
 
+-- OUTUBRO 2025 - Mês Atual
+(11, 'Treino Futsal Masculino - FURIOSA', 'esportivo', 'Futsal', '2025-10-01', 'primeiro', 'Treino preparatório para o Intercursos.', 'finalizado', 'Lucas Mendes', 20),
+(12, 'Treino Vôlei Feminino - PREDADORA', 'esportivo', 'Voleibol', '2025-10-02', 'segundo', 'Treino tático e físico.', 'finalizado', 'Julia Alves', 16),
+(13, 'Treino League of Legends - ALFA', 'esportivo', 'League of Legends', '2025-10-03', 'primeiro', 'Treino de estratégias e team play.', 'aprovado', 'Pedro Martins', 10),
+(20, 'Palestra sobre Mercado de Trabalho', 'nao_esportivo', NULL, '2025-10-04', 'primeiro', 'Palestra com convidado externo para alunos.', 'aprovado', 'Sr. Jorge Santos', 75),
+(14, 'Treino Basquete - SANGUINÁRIA', 'esportivo', 'Basquetebol', '2025-10-04', 'segundo', 'Foco em arremessos e defesa.', 'aprovado', 'Fernanda Oliveira', 12),
+(8, 'Workshop de Python para iniciantes', 'nao_esportivo', NULL, '2025-10-05', 'primeiro', 'Organizado pelo curso de Ciência da Computação.', 'aprovado', 'Profa. Beatriz Lima', 30),
+(11, 'Amistoso Futsal FURIOSA x ALFA', 'esportivo', 'Futsal', '2025-10-06', 'segundo', 'Jogo amistoso entre as atléticas.', 'aprovado', 'Lucas Mendes', 40),
+(15, 'Reunião da Atlética MAGNA', 'nao_esportivo', NULL, '2025-10-07', 'primeiro', 'Planejamento de eventos do semestre.', 'aprovado', 'Gabriel Pereira', 15),
+(17, 'Uso da quadra para Lazer', 'esportivo', 'Futsal', '2025-10-08', 'segundo', 'Solicitação de aluno para jogo com amigos.', 'rejeitado', 'Bruno Rodrigues', 8),
+(16, 'Treino de Handebol - VENENOSA', 'esportivo', 'Handebol', '2025-10-09', 'primeiro', 'Treino de ataque e contra-ataque.', 'aprovado', 'Mariana Ferreira', 18),
+(6, 'Manutenção da Quadra', 'nao_esportivo', NULL, '2025-10-10', 'primeiro', 'Reserva para manutenção e pintura.', 'aprovado', 'Admin Esportes', 3),
+(13, 'Campeonato CS:GO - Semifinal', 'esportivo', 'CS:GO', '2025-10-11', 'segundo', 'Semifinal do campeonato interno.', 'aprovado', 'Pedro Martins', 20),
+(12, 'Treino Vôlei de Praia', 'esportivo', 'Vôlei de Praia', '2025-10-12', 'primeiro', 'Treino na quadra externa.', 'aprovado', 'Julia Alves', 12),
+(7, 'Palestra: Gestão de Projetos', 'nao_esportivo', NULL, '2025-10-13', 'segundo', 'Palestra para alunos de Engenharia.', 'aprovado', 'Prof. Carlos Andrade', 65),
+(11, 'Jogo-Treino Futsal vs INSANA', 'esportivo', 'Futsal', '2025-10-14', 'primeiro', 'Preparação tática para o campeonato.', 'aprovado', 'Lucas Mendes', 30),
+(14, 'Workshop de Primeiros Socorros', 'nao_esportivo', NULL, '2025-10-15', 'segundo', 'Capacitação para membros das atléticas.', 'aprovado', 'Fernanda Oliveira', 40),
+(18, 'Palestra: Ansiedade e Desempenho', 'nao_esportivo', NULL, '2025-10-16', 'primeiro', 'Evento do curso de Psicologia.', 'aprovado', 'Larissa Gonçalves', 55),
+(16, 'Torneio de Handebol - Quartas', 'esportivo', 'Handebol', '2025-10-17', 'segundo', 'Quartas de final do torneio.', 'aprovado', 'Mariana Ferreira', 35),
+(9, 'Júri Simulado - Direito', 'nao_esportivo', NULL, '2025-10-18', 'primeiro', 'Atividade prática do curso de Direito.', 'aprovado', 'Prof. Ricardo Souza', 80),
+(13, 'Treino League of Legends - ALFA', 'esportivo', 'League of Legends', '2025-10-19', 'segundo', 'Análise de partidas anteriores.', 'aprovado', 'Pedro Martins', 10),
+(11, 'Treino Futsal - FURIOSA', 'esportivo', 'Futsal', '2025-10-20', 'primeiro', 'Treino de finalizações.', 'aprovado', 'Lucas Mendes', 18),
+(21, 'Aula de Yoga para Atletas', 'esportivo', NULL, '2025-10-21', 'segundo', 'Atividade de relaxamento e alongamento.', 'aprovado', 'Sra. Ana Paula', 25),
+(12, 'Seletiva Final Vôlei', 'esportivo', 'Voleibol', '2025-10-22', 'primeiro', 'Definição do time principal.', 'aprovado', 'Julia Alves', 24),
+(8, 'Hackathon Universitário', 'nao_esportivo', NULL, '2025-10-23', 'segundo', 'Maratona de programação.', 'aprovado', 'Profa. Beatriz Lima', 50),
+(15, 'Evento de Networking', 'nao_esportivo', NULL, '2025-10-24', 'primeiro', 'Conexões para futuros profissionais.', 'pendente', 'Gabriel Pereira', 70),
+(14, 'Amistoso Basquete vs LETAL', 'esportivo', 'Basquetebol', '2025-10-25', 'segundo', 'Jogo preparatório.', 'pendente', 'Fernanda Oliveira', 22),
+(4, 'Reunião de Coordenadores', 'nao_esportivo', NULL, '2025-10-26', 'primeiro', 'Alinhamento mensal.', 'pendente', 'Admin Atletica Teste', 10),
+(11, 'Treino Tático Futsal', 'esportivo', 'Futsal', '2025-10-27', 'segundo', 'Estratégias de jogo.', 'pendente', 'Lucas Mendes', 20),
+(16, 'Treino Handebol - VENENOSA', 'esportivo', 'Handebol', '2025-10-28', 'primeiro', 'Treino de defesa.', 'pendente', 'Mariana Ferreira', 16),
+(13, 'Final CS:GO', 'esportivo', 'CS:GO', '2025-10-29', 'segundo', 'Grande final do campeonato.', 'pendente', 'Pedro Martins', 30),
+(7, 'Semana da Engenharia', 'nao_esportivo', NULL, '2025-10-30', 'primeiro', 'Abertura da semana temática.', 'pendente', 'Prof. Carlos Andrade', 100),
+(12, 'Treino Vôlei Feminino', 'esportivo', 'Voleibol', '2025-10-31', 'segundo', 'Preparação para jogos de novembro.', 'pendente', 'Julia Alves', 18),
+
+-- NOVEMBRO 2025 - Eventos Futuros
+(11, 'Intercursos - Abertura Futsal', 'esportivo', 'Futsal', '2025-11-01', 'primeiro', 'Jogo de abertura do Intercursos.', 'pendente', 'Lucas Mendes', 50),
+(14, 'Intercursos - Basquete Fase 1', 'esportivo', 'Basquetebol', '2025-11-02', 'segundo', 'Primeira fase do torneio.', 'pendente', 'Fernanda Oliveira', 40),
+(12, 'Intercursos - Vôlei Fase 1', 'esportivo', 'Voleibol', '2025-11-03', 'primeiro', 'Jogos da primeira fase.', 'pendente', 'Julia Alves', 45),
+(16, 'Intercursos - Handebol Fase 1', 'esportivo', 'Handebol', '2025-11-04', 'segundo', 'Início do torneio de handebol.', 'pendente', 'Mariana Ferreira', 38),
+(13, 'Intercursos - E-sports LoL', 'esportivo', 'League of Legends', '2025-11-05', 'primeiro', 'Torneio de League of Legends.', 'pendente', 'Pedro Martins', 25),
+(11, 'Intercursos - Futsal Quartas', 'esportivo', 'Futsal', '2025-11-06', 'segundo', 'Quartas de final de futsal.', 'pendente', 'Lucas Mendes', 55),
+(17, 'Intercursos - Queimada', 'esportivo', 'Queimada', '2025-11-07', 'primeiro', 'Torneio de queimada misto.', 'pendente', 'Bruno Rodrigues', 60),
+(12, 'Intercursos - Vôlei Semifinal', 'esportivo', 'Voleibol', '2025-11-08', 'segundo', 'Semifinais de vôlei.', 'pendente', 'Julia Alves', 50),
+(20, 'Palestra: Empreendedorismo', 'nao_esportivo', NULL, '2025-11-09', 'primeiro', 'Palestra com empresário local.', 'pendente', 'Sr. Jorge Santos', 85),
+(14, 'Intercursos - Basquete Semifinal', 'esportivo', 'Basquetebol', '2025-11-10', 'segundo', 'Semifinais de basquete.', 'pendente', 'Fernanda Oliveira', 48),
+(11, 'Intercursos - Futsal Semifinal', 'esportivo', 'Futsal', '2025-11-11', 'primeiro', 'Semifinais de futsal.', 'pendente', 'Lucas Mendes', 60),
+(16, 'Intercursos - Handebol Semifinal', 'esportivo', 'Handebol', '2025-11-12', 'segundo', 'Semifinais de handebol.', 'pendente', 'Mariana Ferreira', 42),
+(8, 'Workshop: Inteligência Artificial', 'nao_esportivo', NULL, '2025-11-13', 'primeiro', 'Introdução a IA e Machine Learning.', 'pendente', 'Profa. Beatriz Lima', 45),
+(12, 'Intercursos - Final Vôlei', 'esportivo', 'Voleibol', '2025-11-14', 'segundo', 'Grande final de vôlei feminino.', 'pendente', 'Julia Alves', 70),
+(14, 'Intercursos - Final Basquete', 'esportivo', 'Basquetebol', '2025-11-15', 'primeiro', 'Grande final de basquete.', 'pendente', 'Fernanda Oliveira', 65),
+(11, 'Intercursos - Final Futsal', 'esportivo', 'Futsal', '2025-11-16', 'segundo', 'Grande final de futsal masculino.', 'pendente', 'Lucas Mendes', 80),
+(16, 'Intercursos - Final Handebol', 'esportivo', 'Handebol', '2025-11-17', 'primeiro', 'Grande final de handebol.', 'pendente', 'Mariana Ferreira', 55),
+(6, 'Intercursos - Cerimônia de Encerramento', 'nao_esportivo', NULL, '2025-11-18', 'segundo', 'Premiação e encerramento do Intercursos.', 'pendente', 'Admin Esportes', 150),
+(15, 'Feira de Profissões', 'nao_esportivo', NULL, '2025-11-20', 'primeiro', 'Evento para calouros e comunidade.', 'pendente', 'Gabriel Pereira', 120),
+(9, 'Seminário de Direito Constitucional', 'nao_esportivo', NULL, '2025-11-21', 'segundo', 'Evento acadêmico do curso.', 'pendente', 'Prof. Ricardo Souza', 75),
+(18, 'Workshop: Saúde Mental na Universidade', 'nao_esportivo', NULL, '2025-11-22', 'primeiro', 'Atividade do curso de Psicologia.', 'pendente', 'Larissa Gonçalves', 50),
+(11, 'Confraternização FURIOSA', 'nao_esportivo', NULL, '2025-11-24', 'primeiro', 'Evento de confraternização da atlética.', 'pendente', 'Lucas Mendes', 35),
+(12, 'Confraternização PREDADORA', 'nao_esportivo', NULL, '2025-11-25', 'segundo', 'Festa de encerramento do semestre.', 'pendente', 'Julia Alves', 40),
+(7, 'Última Aula - Formandos Engenharia', 'nao_esportivo', NULL, '2025-11-27', 'primeiro', 'Despedida dos formandos.', 'pendente', 'Prof. Carlos Andrade', 80),
+(13, 'Torneio de Xadrez', 'esportivo', 'Xadrez', '2025-11-28', 'segundo', 'Campeonato interno de xadrez.', 'pendente', 'Pedro Martins', 20),
+(21, 'Aula Aberta de Meditação', 'nao_esportivo', NULL, '2025-11-29', 'primeiro', 'Técnicas de mindfulness para estudantes.', 'pendente', 'Sra. Ana Paula', 30);
 
 --
 -- Inserindo dados na tabela `inscricoes_modalidade` (IDs baseados na nova ordem de inserção)
@@ -138,133 +198,364 @@ INSERT INTO `inscricoes_modalidade` (`aluno_id`, `modalidade_id`, `atletica_id`,
 
 --
 -- Inserindo dados na tabela `inscricoes_eventos` (FK aponta para `agendamentos`)
+-- Expandido com muitas inscrições em diversos eventos
 --
 INSERT INTO `inscricoes_eventos` (`aluno_id`, `evento_id`, `atletica_id`, `status`) VALUES
-(11, 7, 1, 'aprovado'),
+-- Inscrições em eventos de JULHO
+(11, 1, 1, 'aprovado'), -- Lucas no Treino de Férias Futsal
+(12, 1, 2, 'aprovado'), -- Julia no Treino de Férias Futsal
+(13, 1, 6, 'aprovado'), -- Pedro no Treino de Férias Futsal
+(14, 1, 3, 'aprovado'), -- Fernanda no Treino de Férias Futsal
+(12, 2, 2, 'aprovado'), -- Julia no Jogo Amistoso Vôlei
+(14, 2, 3, 'aprovado'), -- Fernanda no Jogo Amistoso Vôlei
+(16, 2, 8, 'aprovado'), -- Mariana no Jogo Amistoso Vôlei
+(18, 2, 2, 'aprovado'), -- Larissa no Jogo Amistoso Vôlei
+(11, 3, 1, 'aprovado'), -- Curso de Programação em R
 (13, 3, 6, 'aprovado'),
-(17, 6, 6, 'aprovado'),
-(18, 6, 6, 'aprovado'),
-(12, 2, 2, 'aprovado');
+(17, 3, 1, 'aprovado'),
+(18, 3, 5, 'aprovado'),
+(19, 3, 8, 'aprovado'),
+(15, 4, 5, 'aprovado'), -- Planejamento MAGNA
+(18, 4, 5, 'aprovado'),
+(11, 5, 1, 'aprovado'), -- Treino Físico Geral
+(12, 5, 2, 'aprovado'),
+(13, 5, 6, 'aprovado'),
+(14, 5, 3, 'aprovado'),
+(16, 5, 8, 'aprovado'),
+(11, 6, 1, 'aprovado'), -- Palestra Saúde Mental (evento grande)
+(12, 6, 2, 'aprovado'),
+(13, 6, 6, 'aprovado'),
+(14, 6, 3, 'aprovado'),
+(15, 6, 5, 'aprovado'),
+(16, 6, 8, 'aprovado'),
+(17, 6, 1, 'aprovado'),
+(18, 6, 4, 'aprovado'),
+(19, 6, 8, 'aprovado'),
+(13, 7, 6, 'aprovado'), -- Campeonato CS:GO
+(11, 7, 1, 'aprovado'),
+(17, 7, 1, 'aprovado'),
+(18, 7, 7, 'aprovado'),
+(19, 7, 8, 'aprovado'),
+(11, 8, 1, 'aprovado'), -- Ação Social SANGUINÁRIA (evento massivo)
+(12, 8, 2, 'aprovado'),
+(13, 8, 6, 'aprovado'),
+(14, 8, 3, 'aprovado'),
+(15, 8, 5, 'aprovado'),
+(16, 8, 8, 'aprovado'),
+(17, 8, 1, 'aprovado'),
+(18, 8, 4, 'aprovado'),
+(19, 8, 8, 'aprovado'),
+(16, 9, 8, 'aprovado'), -- Treino Handebol Feminino
+
+-- Inscrições em eventos de AGOSTO
+(11, 10, 1, 'aprovado'), -- Volta aos Treinos Futsal
+(13, 10, 6, 'aprovado'),
+(17, 10, 1, 'aprovado'),
+(12, 11, 2, 'aprovado'), -- Seletiva Vôlei
+(14, 11, 3, 'aprovado'),
+(16, 11, 8, 'aprovado'),
+(18, 11, 2, 'aprovado'),
+(11, 12, 1, 'aprovado'), -- Aula Magna Engenharia
+(17, 12, 1, 'aprovado'),
+(13, 13, 6, 'aprovado'), -- Treino Tático Valorant
+(11, 13, 1, 'aprovado'),
+(17, 13, 1, 'aprovado'),
+(16, 14, 8, 'aprovado'), -- Treino Handebol VENENOSA
+(14, 14, 3, 'aprovado'),
+(12, 15, 2, 'aprovado'), -- Simpósio Direito Penal
+(18, 15, 4, 'aprovado'),
+(11, 16, 1, 'aprovado'), -- Treino Rugby
+(13, 16, 6, 'aprovado'),
+(17, 17, 1, 'aprovado'), -- Festival de Queimada
+(18, 17, 4, 'aprovado'),
+(11, 17, 1, 'aprovado'),
+(12, 17, 2, 'aprovado'),
+(13, 17, 6, 'aprovado'),
+(14, 17, 3, 'aprovado'),
+(15, 17, 5, 'aprovado'),
+(16, 17, 8, 'aprovado'),
+(19, 17, 8, 'aprovado'),
+(12, 19, 2, 'aprovado'), -- Treino Polo Aquático
+(14, 19, 3, 'aprovado'),
+(14, 20, 3, 'aprovado'), -- Treino Basquete
+
+-- Inscrições em eventos de SETEMBRO
+(11, 22, 1, 'aprovado'), -- Jogo-Treino Futsal
+(13, 22, 6, 'aprovado'),
+(17, 22, 1, 'aprovado'),
+(13, 23, 6, 'aprovado'), -- Cobertura de Eventos
+(17, 23, 1, 'aprovado'),
+(18, 23, 4, 'aprovado'),
+(15, 25, 5, 'aprovado'), -- Semana do Administrador
+(18, 25, 5, 'aprovado'),
+(12, 26, 2, 'aprovado'), -- Amistoso Vôlei vs IMPÉRIO
+(14, 26, 3, 'aprovado'),
+(16, 26, 8, 'aprovado'),
+(16, 27, 8, 'aprovado'), -- Torneio Handebol Feminino
+(14, 27, 3, 'aprovado'),
+(12, 27, 2, 'aprovado'),
+(18, 29, 4, 'aprovado'), -- Cine Debate Psicologia
+(19, 29, 8, 'aprovado'),
+(11, 30, 1, 'aprovado'), -- Treino Intensivo Futsal
+(13, 30, 6, 'aprovado'),
+
+-- Inscrições em eventos de OUTUBRO (eventos atuais e futuros)
+(11, 31, 1, 'aprovado'), -- Treino Futsal Masculino
+(13, 31, 6, 'aprovado'),
+(17, 31, 1, 'aprovado'),
+(12, 32, 2, 'aprovado'), -- Treino Vôlei Feminino
+(14, 32, 3, 'aprovado'),
+(16, 32, 8, 'aprovado'),
+(13, 33, 6, 'aprovado'), -- Treino LoL ALFA
+(11, 33, 1, 'aprovado'),
+(17, 33, 1, 'aprovado'),
+(19, 33, 8, 'aprovado'),
+(11, 34, 1, 'aprovado'), -- Palestra Mercado de Trabalho
+(12, 34, 2, 'aprovado'),
+(13, 34, 6, 'aprovado'),
+(15, 34, 5, 'aprovado'),
+(17, 34, 1, 'aprovado'),
+(18, 34, 4, 'aprovado'),
+(19, 34, 8, 'aprovado'),
+(14, 35, 3, 'aprovado'), -- Treino Basquete
+(11, 35, 1, 'aprovado'),
+(16, 35, 8, 'aprovado'),
+(11, 36, 1, 'aprovado'), -- Workshop Python
+(13, 36, 6, 'aprovado'),
+(17, 36, 1, 'aprovado'),
+(18, 36, 4, 'aprovado'),
+(19, 36, 8, 'aprovado'),
+(11, 37, 1, 'aprovado'), -- Amistoso Futsal FURIOSA x ALFA
+(13, 37, 6, 'aprovado'),
+(17, 37, 1, 'aprovado'),
+(12, 37, 2, 'aprovado'),
+(14, 37, 3, 'aprovado'),
+(15, 38, 5, 'aprovado'), -- Reunião MAGNA
+(18, 38, 5, 'aprovado'),
+(17, 39, 1, 'recusado'), -- Uso da quadra para Lazer (rejeitado)
+(16, 40, 8, 'aprovado'), -- Treino Handebol
+(14, 40, 3, 'aprovado'),
+(13, 42, 6, 'aprovado'), -- Campeonato CS:GO Semifinal
+(11, 42, 1, 'aprovado'),
+(17, 42, 1, 'aprovado'),
+(19, 42, 8, 'aprovado'),
+(12, 43, 2, 'aprovado'), -- Treino Vôlei de Praia
+(16, 43, 8, 'aprovado'),
+(11, 44, 1, 'aprovado'), -- Palestra Gestão de Projetos
+(17, 44, 1, 'aprovado'),
+(11, 45, 1, 'aprovado'), -- Jogo-Treino vs INSANA
+(13, 45, 6, 'aprovado'),
+(17, 45, 1, 'aprovado'),
+(14, 46, 3, 'aprovado'), -- Workshop Primeiros Socorros
+(16, 46, 8, 'aprovado'),
+(11, 46, 1, 'aprovado'),
+(12, 46, 2, 'aprovado'),
+(18, 47, 4, 'aprovado'), -- Palestra Ansiedade
+(19, 47, 8, 'aprovado'),
+(15, 47, 5, 'aprovado'),
+(16, 48, 8, 'aprovado'), -- Torneio Handebol Quartas
+(14, 48, 3, 'aprovado'),
+(12, 48, 2, 'aprovado'),
+(12, 49, 2, 'aprovado'), -- Júri Simulado Direito
+(18, 49, 4, 'aprovado'),
+(13, 50, 6, 'aprovado'), -- Treino LoL
+(11, 50, 1, 'aprovado'),
+(17, 50, 1, 'aprovado'),
+(11, 51, 1, 'aprovado'), -- Treino Futsal
+(13, 51, 6, 'aprovado'),
+(11, 52, 1, 'pendente'), -- Yoga para Atletas
+(12, 52, 2, 'pendente'),
+(14, 52, 3, 'pendente'),
+(16, 52, 8, 'pendente'),
+(12, 53, 2, 'pendente'), -- Seletiva Final Vôlei
+(14, 53, 3, 'pendente'),
+(16, 53, 8, 'pendente'),
+(18, 53, 2, 'pendente'),
+(11, 54, 1, 'pendente'), -- Hackathon
+(13, 54, 6, 'pendente'),
+(17, 54, 1, 'pendente'),
+(19, 54, 8, 'pendente'),
+(15, 55, 5, 'pendente'), -- Evento Networking
+(18, 55, 5, 'pendente'),
+(11, 55, 1, 'pendente'),
+(12, 55, 2, 'pendente'),
+(13, 55, 6, 'pendente'),
+(14, 56, 3, 'pendente'), -- Amistoso Basquete vs LETAL
+(11, 56, 1, 'pendente'),
+(16, 56, 8, 'pendente'),
+(11, 58, 1, 'pendente'), -- Treino Tático Futsal
+(13, 58, 6, 'pendente'),
+(17, 58, 1, 'pendente'),
+(16, 59, 8, 'pendente'), -- Treino Handebol
+(14, 59, 3, 'pendente'),
+(13, 60, 6, 'pendente'), -- Final CS:GO
+(11, 60, 1, 'pendente'),
+(17, 60, 1, 'pendente'),
+(19, 60, 8, 'pendente'),
+(11, 61, 1, 'pendente'), -- Semana da Engenharia
+(17, 61, 1, 'pendente'),
+(12, 62, 2, 'pendente'), -- Treino Vôlei
+(16, 62, 8, 'pendente'),
+
+-- Inscrições em eventos de NOVEMBRO (Intercursos e eventos futuros)
+(11, 63, 1, 'pendente'), -- Intercursos Abertura Futsal
+(13, 63, 6, 'pendente'),
+(17, 63, 1, 'pendente'),
+(14, 64, 3, 'pendente'), -- Intercursos Basquete Fase 1
+(11, 64, 1, 'pendente'),
+(16, 64, 8, 'pendente'),
+(12, 65, 2, 'pendente'), -- Intercursos Vôlei Fase 1
+(14, 65, 3, 'pendente'),
+(16, 65, 8, 'pendente'),
+(18, 65, 2, 'pendente'),
+(16, 66, 8, 'pendente'), -- Intercursos Handebol Fase 1
+(14, 66, 3, 'pendente'),
+(12, 66, 2, 'pendente'),
+(13, 67, 6, 'pendente'), -- Intercursos E-sports LoL
+(11, 67, 1, 'pendente'),
+(17, 67, 1, 'pendente'),
+(19, 67, 8, 'pendente'),
+(11, 68, 1, 'pendente'), -- Intercursos Futsal Quartas
+(13, 68, 6, 'pendente'),
+(17, 68, 1, 'pendente'),
+(17, 69, 1, 'pendente'), -- Intercursos Queimada
+(18, 69, 4, 'pendente'),
+(11, 69, 1, 'pendente'),
+(12, 69, 2, 'pendente'),
+(13, 69, 6, 'pendente'),
+(14, 69, 3, 'pendente'),
+(15, 69, 5, 'pendente'),
+(16, 69, 8, 'pendente'),
+(19, 69, 8, 'pendente'),
+(12, 70, 2, 'pendente'), -- Intercursos Vôlei Semifinal
+(14, 70, 3, 'pendente'),
+(16, 70, 8, 'pendente'),
+(18, 70, 2, 'pendente'),
+(11, 71, 1, 'pendente'), -- Palestra Empreendedorismo
+(15, 71, 5, 'pendente'),
+(18, 71, 5, 'pendente'),
+(14, 72, 3, 'pendente'), -- Intercursos Basquete Semifinal
+(11, 72, 1, 'pendente'),
+(16, 72, 8, 'pendente'),
+(11, 73, 1, 'pendente'), -- Intercursos Futsal Semifinal
+(13, 73, 6, 'pendente'),
+(17, 73, 1, 'pendente'),
+(16, 74, 8, 'pendente'), -- Intercursos Handebol Semifinal
+(14, 74, 3, 'pendente'),
+(12, 74, 2, 'pendente'),
+(11, 75, 1, 'pendente'), -- Workshop IA
+(13, 75, 6, 'pendente'),
+(17, 75, 1, 'pendente'),
+(19, 75, 8, 'pendente'),
+(12, 76, 2, 'pendente'), -- Intercursos Final Vôlei
+(14, 76, 3, 'pendente'),
+(16, 76, 8, 'pendente'),
+(18, 76, 2, 'pendente'),
+(14, 77, 3, 'pendente'), -- Intercursos Final Basquete
+(11, 77, 1, 'pendente'),
+(16, 77, 8, 'pendente'),
+(11, 78, 1, 'pendente'), -- Intercursos Final Futsal
+(13, 78, 6, 'pendente'),
+(17, 78, 1, 'pendente'),
+(16, 79, 8, 'pendente'), -- Intercursos Final Handebol
+(14, 79, 3, 'pendente'),
+(12, 79, 2, 'pendente'),
+(11, 80, 1, 'pendente'), -- Cerimônia Encerramento Intercursos
+(12, 80, 2, 'pendente'),
+(13, 80, 6, 'pendente'),
+(14, 80, 3, 'pendente'),
+(15, 80, 5, 'pendente'),
+(16, 80, 8, 'pendente'),
+(17, 80, 1, 'pendente'),
+(18, 80, 4, 'pendente'),
+(19, 80, 8, 'pendente'),
+(15, 81, 5, 'pendente'), -- Feira de Profissões
+(18, 81, 5, 'pendente'),
+(12, 82, 2, 'pendente'), -- Seminário Direito Constitucional
+(18, 82, 4, 'pendente'),
+(18, 83, 4, 'pendente'), -- Workshop Saúde Mental
+(19, 83, 8, 'pendente'),
+(15, 83, 5, 'pendente'),
+(11, 84, 1, 'pendente'), -- Confraternização FURIOSA
+(13, 84, 1, 'pendente'),
+(17, 84, 1, 'pendente'),
+(12, 85, 2, 'pendente'), -- Confraternização PREDADORA
+(14, 85, 2, 'pendente'),
+(18, 85, 2, 'pendente'),
+(11, 86, 1, 'pendente'), -- Última Aula Formandos
+(17, 86, 1, 'pendente'),
+(13, 87, 6, 'pendente'), -- Torneio Xadrez
+(15, 87, 5, 'pendente'),
+(11, 88, 1, 'pendente'), -- Aula Meditação
+(12, 88, 2, 'pendente'),
+(18, 88, 4, 'pendente');
 
 --
--- Inserindo dados na tabela `presencas` (IDs baseados na nova ordem de inserção)
--- Usuários válidos: 1-21 (Super Admin até Sra. Ana Paula)
--- Eventos passados (julho-setembro) com várias presenças
+-- Inserindo dados na tabela `presencas`
 --
-INSERT INTO `presencas` (`usuario_id`, `agendamento_id`) VALUES
--- Evento 1: Treino de Férias - Futsal (11 pessoas confirmaram)
-(11, 1),(12, 1),(13, 1),(14, 1),(15, 1),(16, 1),(17, 1),(2, 1),(3, 1),(4, 1),(20, 1),
+INSERT INTO `presencas` (`usuario_id`, `agendamento_id`, `data_presenca`) VALUES
+-- Julho 2025 (IDs 1-9 são eventos finalizados)
+(11, 1, '2025-07-02 19:30:00'),
+(12, 1, '2025-07-02 19:30:00'),
+(13, 1, '2025-07-02 19:30:00'),
+(12, 2, '2025-07-05 21:15:00'),
+(14, 2, '2025-07-05 21:15:00'),
+(16, 2, '2025-07-05 21:15:00'),
 
--- Evento 2: Jogo Amistoso Vôlei (8 pessoas confirmaram)
-(12, 2),(13, 2),(14, 2),(16, 2),(18, 2),(19, 2),(3, 2),(4, 2),
+-- Agosto 2025 (IDs 10-20 são eventos finalizados)
+(11, 10, '2025-08-01 19:20:00'),
+(13, 10, '2025-08-01 19:20:00'),
+(17, 10, '2025-08-01 19:20:00'),
+(12, 11, '2025-08-04 21:15:00'),
+(14, 11, '2025-08-04 21:15:00'),
+(16, 11, '2025-08-04 21:15:00'),
 
--- Evento 3: Curso de Extensão: Programação em R (15 pessoas confirmaram)
-(8, 3),(11, 3),(13, 3),(15, 3),(17, 3),(18, 3),(19, 3),(2, 3),(3, 3),(4, 3),(20, 3),(21, 3),(7, 3),(9, 3),(10, 3),
+-- Setembro 2025 (IDs 31-40 são eventos finalizados, exceto o ID 34 que foi cancelado)
+(11, 31, '2025-09-02 19:15:00'),
+(12, 31, '2025-09-02 19:15:00'),
+(11, 32, '2025-09-05 21:20:00'),
+(13, 32, '2025-09-05 21:20:00'),
+(14, 32, '2025-09-05 21:20:00'),
+(12, 36, '2025-09-18 21:15:00'),
+(13, 36, '2025-09-18 21:15:00'),
+(11, 40, '2025-09-29 21:25:00'),
+(13, 40, '2025-09-29 21:25:00'),
 
--- Evento 4: Planejamento de Eventos MAGNA (5 pessoas confirmaram)
-(15, 4),(11, 4),(13, 4),(16, 4),(18, 4),
-
--- Evento 5: Treino Físico Geral (12 pessoas confirmaram)
-(11, 5),(12, 5),(13, 5),(14, 5),(16, 5),(17, 5),(18, 5),(2, 5),(3, 5),(4, 5),(19, 5),(20, 5),
-
--- Evento 6: Palestra: Saúde Mental no Esporte (18 pessoas confirmaram)
-(20, 6),(11, 6),(12, 6),(13, 6),(14, 6),(15, 6),(16, 6),(17, 6),(18, 6),(19, 6),(2, 6),(3, 6),(4, 6),(7, 6),(8, 6),(9, 6),(10, 6),(21, 6),
-
--- Evento 7: Campeonato Relâmpago de CS:GO (9 pessoas confirmaram)
-(13, 7),(11, 7),(17, 7),(18, 7),(19, 7),(2, 7),(3, 7),(4, 7),(15, 7),
-
--- Evento 8: Ação Social SANGUINÁRIA (21 pessoas confirmaram - quase todos os usuários!)
-(14, 8),(11, 8),(12, 8),(13, 8),(15, 8),(16, 8),(17, 8),(18, 8),(19, 8),(20, 8),(21, 8),(2, 8),(3, 8),(4, 8),(7, 8),(8, 8),(9, 8),(10, 8),(6, 8),(5, 8),(1, 8),
-
--- Eventos futuros (outubro) - algumas pessoas já confirmaram presença
--- Evento 18: Treino Futsal Masculino - FURIOSA (6 pessoas já confirmaram)
-(11, 18),(13, 18),(17, 18),(2, 18),(3, 18),(15, 18),
-
--- Evento 19: Treino Vôlei Feminino - PREDADORA (4 pessoas já confirmaram)
-(12, 19),(14, 19),(16, 19),(18, 19),
-
--- Evento 20: Treino League of Legends - ALFA (7 pessoas já confirmaram)
-(13, 20),(11, 20),(17, 20),(19, 20),(2, 20),(3, 20),(4, 20),
-
--- Evento 22: Treino Basquete - SANGUINÁRIA (5 pessoas já confirmaram)
-(14, 22),(11, 22),(16, 22),(18, 22),(20, 22),
-
--- Evento 23: Workshop de Python para iniciantes (12 pessoas já confirmaram)
-(8, 23),(11, 23),(13, 23),(17, 23),(19, 23),(2, 23),(3, 23),(4, 23),(15, 23),(18, 23),(20, 23),(21, 23),
-
--- Evento 24: Amistoso Futsal FURIOSA x ALFA (8 pessoas já confirmaram)
-(11, 24),(13, 24),(17, 24),(12, 24),(14, 24),(16, 24),(2, 24),(3, 24),
-
--- Evento 25: Reunião da Atlética MAGNA (3 pessoas já confirmaram)
-(15, 25),(18, 25),(20, 25),
-
--- Evento 27: Treino de Handebol - VENENOSA (6 pessoas já confirmaram)
-(16, 27),(14, 27),(12, 27),(18, 27),(19, 27),(20, 27);
+-- Outubro 2025 (apenas eventos finalizados até dia 3)
+(11, 41, '2025-10-01 19:20:00'),
+(13, 41, '2025-10-01 19:20:00'),
+(17, 41, '2025-10-01 19:20:00'),
+(12, 42, '2025-10-02 21:15:00'),
+(14, 42, '2025-10-02 21:15:00'),
+(16, 42, '2025-10-02 21:15:00');
 
 --
 -- Inserindo dados na tabela `notificacoes`
 --
 INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendamento_id`, `lida`, `data_criacao`) VALUES
--- Notificações de agendamentos aprovados
-(11, 'Agendamento Aprovado', 'Seu agendamento "Treino de Férias - Futsal" foi aprovado para o dia 02/07/2025 no primeiro período.', 'agendamento_aprovado', 1, 1, '2025-07-01 10:00:00'),
-(12, 'Agendamento Aprovado', 'Seu agendamento "Jogo Amistoso Vôlei" foi aprovado para o dia 05/07/2025 no segundo período.', 'agendamento_aprovado', 2, 1, '2025-07-04 14:30:00'),
-(8, 'Agendamento Aprovado', 'Seu agendamento "Curso de Extensão: Programação em R" foi aprovado para o dia 08/07/2025 no primeiro período.', 'agendamento_aprovado', 3, 1, '2025-07-07 09:15:00'),
-(15, 'Agendamento Aprovado', 'Seu agendamento "Planejamento de Eventos MAGNA" foi aprovado para o dia 10/07/2025 no primeiro período.', 'agendamento_aprovado', 4, 1, '2025-07-09 16:45:00'),
-(20, 'Agendamento Aprovado', 'Seu agendamento "Palestra: Saúde Mental no Esporte" foi aprovado para o dia 18/07/2025 no primeiro período.', 'agendamento_aprovado', 6, 1, '2025-07-17 11:20:00'),
+-- Notificações mais antigas (Julho/Agosto)
+(11, 'Agendamento Aprovado', 'Seu agendamento "Treino de Férias - Futsal" foi aprovado.', 'agendamento_aprovado', 1, 1, '2025-07-01 10:30:00'),
+(12, 'Agendamento Aprovado', 'Seu agendamento "Jogo Amistoso Vôlei" foi aprovado.', 'agendamento_aprovado', 2, 1, '2025-07-04 14:15:00'),
+(13, 'Presença Confirmada', 'Sua presença no evento "Treino de Férias - Futsal" foi registrada.', 'presenca_confirmada', 1, 1, '2025-07-02 20:00:00'),
 
--- Notificações de agendamento cancelado
-(13, 'Agendamento Cancelado', 'Seu agendamento "Treino Cancelado (Chuva)" foi cancelado devido a problemas na rede elétrica.', 'agendamento_cancelado', 22, 0, '2025-09-11 15:30:00'),
+-- Notificações de Setembro
+(11, 'Lembrete de Evento', 'Não se esqueça do "Jogo-Treino Futsal vs SANGUINÁRIA" amanhã às 21:10.', 'lembrete_evento', 32, 1, '2025-09-04 18:00:00'),
+(12, 'Agendamento Cancelado', 'O evento "Treino Cancelado (Chuva)" foi cancelado devido a problemas técnicos.', 'agendamento_cancelado', 34, 1, '2025-09-11 15:45:00'),
+(14, 'Presença Confirmada', 'Sua presença no evento "Amistoso Vôlei vs IMPÉRIO" foi registrada.', 'presenca_confirmada', 36, 1, '2025-09-18 22:55:00'),
 
--- Notificações de agendamento rejeitado
-(17, 'Agendamento Rejeitado', 'Seu agendamento "Uso da quadra para Lazer" foi rejeitado. A quadra é destinada para atividades oficiais das atléticas.', 'agendamento_rejeitado', 33, 0, '2025-10-12 10:45:00'),
+-- Notificações Recentes (Outubro)
+(11, 'Agendamento Aprovado', 'Seu agendamento "Treino Futsal Masculino - FURIOSA" foi aprovado.', 'agendamento_aprovado', 41, 0, '2025-10-01 08:30:00'),
+(13, 'Lembrete de Evento', 'Seu evento "Treino League of Legends - ALFA" começa em 1 hora.', 'lembrete_evento', 33, 0, '2025-10-03 18:15:00'),
+(12, 'Presença Confirmada', 'Sua presença no evento "Treino Vôlei Feminino - PREDADORA" foi registrada.', 'presenca_confirmada', 42, 0, '2025-10-02 22:55:00'),
+(17, 'Agendamento Rejeitado', 'Seu agendamento "Uso da quadra para Lazer" foi rejeitado. Motivo: Horário reservado para treinos oficiais.', 'agendamento_rejeitado', 39, 0, '2025-10-01 16:20:00'),
 
--- Notificações de confirmação de presença
-(11, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Treino de Férias - Futsal" do dia 02/07/2025.', 'presenca_confirmada', 1, 1, '2025-07-02 19:00:00'),
-(12, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Jogo Amistoso Vôlei" do dia 05/07/2025.', 'presenca_confirmada', 2, 1, '2025-07-05 21:00:00'),
-(14, 'Presença Confirmada', 'Sua presença foi confirmada no evento "Ação Social SANGUINÁRIA" do dia 26/07/2025.', 'presenca_confirmada', 8, 1, '2025-07-26 19:15:00'),
+-- Notificações Informativas Gerais
+(11, 'Aviso Importante', 'Os treinos de futsal serão intensificados devido à proximidade do Intercursos.', 'aviso', NULL, 0, '2025-10-02 09:00:00'),
+(12, 'Informação', 'Nova política de uso da quadra implementada. Confira as atualizações.', 'info', NULL, 0, '2025-10-01 14:30:00'),
+(13, 'Aviso de Manutenção', 'A sala de e-sports ficará fechada para manutenção dia 23/10.', 'aviso', NULL, 0, '2025-10-02 11:45:00'),
+(14, 'Lembrete de Documentação', 'Não se esqueça de atualizar seu atestado médico para participar dos treinos.', 'info', NULL, 0, '2025-10-01 10:15:00'),
+(15, 'Aviso de Evento', 'As inscrições para o Intercursos 2025 serão abertas em breve.', 'info', NULL, 0, '2025-10-03 08:00:00');
 
--- Lembretes de eventos futuros
-(11, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Futsal Masculino - FURIOSA" amanhã às 19:15.', 'lembrete_evento', 26, 0, '2025-10-05 18:00:00'),
-(12, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Vôlei Feminino - PREDADORA" amanhã às 21:10.', 'lembrete_evento', 27, 0, '2025-10-05 20:00:00'),
-(13, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino League of Legends - ALFA" hoje às 19:15.', 'lembrete_evento', 28, 0, '2025-10-07 17:00:00'),
-(14, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Treino Basquete - SANGUINÁRIA" hoje às 21:10.', 'lembrete_evento', 30, 0, '2025-10-08 19:00:00'),
-(8, 'Lembrete de Evento', 'Lembrete: Você tem o evento "Workshop de Python para iniciantes" amanhã às 19:15.', 'lembrete_evento', 31, 0, '2025-10-08 18:30:00'),
-
--- Notificações informativas
-(1, 'Nova Funcionalidade', 'O sistema de notificações foi implementado! Agora você receberá atualizações sobre seus agendamentos.', 'info', NULL, 0, '2025-10-01 08:00:00'),
-(2, 'Manutenção da Quadra', 'A quadra passará por manutenção no dia 15/10/2025. Não haverá atividades neste dia.', 'info', 35, 1, '2025-10-01 09:00:00'),
-(3, 'Sistema de Presenças', 'Lembre-se de confirmar sua presença nos eventos através do sistema.', 'info', NULL, 1, '2025-09-28 14:00:00'),
-
--- Avisos gerais
-(11, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-(12, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-(13, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-(14, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-(15, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-(16, 'Intercursos 2025', 'As inscrições para o Intercursos 2025 começam na próxima semana. Fique atento!', 'aviso', NULL, 0, '2025-10-01 10:00:00'),
-
--- Mais notificações variadas
-(4, 'Reunião de Admins', 'Reunião mensal dos administradores das atléticas marcada para 20/10/2025.', 'info', NULL, 0, '2025-10-01 11:00:00'),
-(6, 'Atualização do Sistema', 'O sistema será atualizado durante a madrugada de 10/10/2025. Pode haver instabilidade.', 'aviso', NULL, 1, '2025-10-09 22:00:00'),
-(7, 'Evento Acadêmico', 'Seu evento "Aula Magna Engenharia Civil" teve grande participação. Parabéns!', 'info', 11, 1, '2025-08-06 10:00:00'),
-(9, 'Feedback do Evento', 'O "Simpósio de Direito Penal" foi muito bem avaliado pelos participantes.', 'info', 14, 1, '2025-08-16 09:30:00'),
-(18, 'Inscrição Aprovada', 'Sua inscrição na modalidade de Vôlei foi aprovada pela atlética PREDADORA.', 'info', NULL, 0, '2025-09-15 16:20:00'),
-(17, 'Inscrição Pendente', 'Sua inscrição na modalidade de Futsal está pendente de aprovação pela atlética FURIOSA.', 'info', NULL, 0, '2025-09-20 11:45:00'),
-
--- Notificações sobre eventos futuros específicos
-(20, 'Status do Agendamento', 'Seu agendamento "Palestra sobre Mercado de Trabalho" ainda está pendente de aprovação.', 'info', 29, 0, '2025-10-07 14:00:00'),
-(15, 'Confirmação de Evento', 'Lembrete: Reunião da Atlética MAGNA confirmada para 13/10/2025 às 19:15.', 'lembrete_evento', 33, 0, '2025-10-12 17:00:00'),
-(16, 'Treino Confirmado', 'Seu treino de Handebol foi confirmado para 14/10/2025. Compareça com antecedência!', 'lembrete_evento', 34, 0, '2025-10-13 19:00:00'),
-
--- Notificações sobre materiais e infraestrutura
-(11, 'Materiais Disponíveis', 'Os materiais para o treino de futsal estão disponíveis na secretaria.', 'info', 26, 0, '2025-10-05 15:00:00'),
-(13, 'Equipamentos E-sports', 'Os computadores da sala de e-sports foram atualizados. Aproveitem!', 'info', 24, 1, '2025-09-24 08:00:00'),
-
--- Notificações de boas-vindas e orientações
-(19, 'Bem-vindo ao SGE', 'Bem-vindo ao Sistema de Gestão Esportiva! Explore as funcionalidades disponíveis.', 'info', NULL, 1, '2025-09-01 09:00:00'),
-(21, 'Como Agendar Eventos', 'Acesse o menu "Agendar Evento" para solicitar o uso da quadra poliesportiva.', 'info', NULL, 1, '2025-09-15 10:30:00');
-
--- Reativa a verificação de chaves estrangeiras.
-SET FOREIGN_KEY_CHECKS=1;
--- Confirma a transação.
+-- Comitando as alterações
 COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
