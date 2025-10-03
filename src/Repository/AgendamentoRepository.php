@@ -317,13 +317,14 @@ class AgendamentoRepository
         return $stmt->fetch();
     }
 
-    public function findByDate(string $date): array
+    public function updatePastEventsToFinalized(): bool
     {
-        $sql = "SELECT * FROM agendamentos WHERE data_agendamento = :date AND status = 'aprovado'";
+        $sql = "UPDATE agendamentos 
+                SET status = 'finalizado' 
+                WHERE status = 'aprovado' 
+                AND data_agendamento < CURDATE()";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':date', $date);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->execute();
     }
 
     public function getPresencasByAgendamento(int $agendamentoId): array
@@ -337,5 +338,33 @@ class AgendamentoRepository
         $stmt->execute();
         return $stmt->fetchAll();
     }
-}
 
+    public function findByIdWithDetails(int $id)
+    {
+        try {
+            $sql = "SELECT a.*, 
+                           u.nome as criador_nome, 
+                           u.email as criador_email, 
+                           u.telefone as criador_telefone,
+                           u.tipo_usuario_detalhado as criador_tipo,
+                           at.nome as atletica_nome,
+                           at_conf.nome as atletica_confirmada_nome,
+                           (SELECT COUNT(*) FROM presencas p WHERE p.agendamento_id = a.id) as total_presencas
+                    FROM agendamentos a
+                    JOIN usuarios u ON a.usuario_id = u.id
+                    LEFT JOIN atleticas at ON u.atletica_id = at.id
+                    LEFT JOIN atleticas at_conf ON a.atletica_id_confirmada = at_conf.id
+                    WHERE a.id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetch();
+            return $result ?: null;
+
+        } catch (\PDOException $e) {
+            error_log('Erro SQL em findByIdWithDetails: ' . $e->getMessage());
+            throw new \Exception('Erro ao buscar detalhes do agendamento: ' . $e->getMessage());
+        }
+    }
+}

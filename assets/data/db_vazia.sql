@@ -38,7 +38,7 @@ CREATE TABLE `agendamentos` (
   `data_agendamento` date NOT NULL,
   `periodo` enum('primeiro','segundo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'primeiro: 19:15-20:55, segundo: 21:10-22:50',
   `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `status` enum('aprovado','pendente','rejeitado','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `status` enum('aprovado','pendente','rejeitado','cancelado','finalizado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
   `motivo_rejeicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `atletica_confirmada` tinyint(1) NOT NULL DEFAULT '0',

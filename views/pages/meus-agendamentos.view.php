@@ -37,7 +37,7 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($agendamentos as $evento): ?>
-                        <tr>
+                        <tr class="event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
                             <td>
                                 <strong><?php echo htmlspecialchars($evento['titulo']); ?></strong>
                                 <?php if (!empty($evento['subtipo_evento'])): ?>
@@ -74,14 +74,15 @@
                                     'pendente' => ['class' => 'bg-warning text-dark', 'text' => 'Pendente'],
                                     'aprovado' => ['class' => 'bg-success', 'text' => 'Aprovado'],
                                     'rejeitado' => ['class' => 'bg-danger', 'text' => 'Rejeitado'],
-                                    'cancelado' => ['class' => 'bg-secondary', 'text' => 'Cancelado']
+                                    'cancelado' => ['class' => 'bg-secondary', 'text' => 'Cancelado'],
+                                    'finalizado' => ['class' => 'bg-info', 'text' => 'Finalizado']
                                 ];
                                 $status_info = $status_map[$evento['status']] ?? ['class' => 'bg-secondary', 'text' => 'Desconhecido'];
                                 ?>
                                 <span class="badge <?php echo $status_info['class']; ?>"><?php echo $status_info['text']; ?></span>
                             </td>
                             <td><?php echo htmlspecialchars($evento['motivo_rejeicao'] ?? '-'); ?></td>
-                            <td>
+                            <td onclick="event.stopPropagation();">
                                 <?php if ($evento['status'] === 'pendente'): ?>
                                     <a href="/agendamento/editar?id=<?php echo $evento['id']; ?>" class="btn btn-sm btn-info" title="Editar">
                                         <i class="bi bi-pencil"></i>
