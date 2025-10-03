@@ -19,7 +19,7 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
 
 ### 📅 Gestão de Agendamentos
 - **Calendário Interativo**: Navegação mensal com AJAX
-- **2 Períodos por Dia**: 
+- **2 Períodos por Dia**:
   - Primeiro período: 19:15 - 20:55
   - Segundo período: 21:10 - 22:50
 - **Tipos de Eventos**:
@@ -30,7 +30,7 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
   - Verificação de conflitos de horário
   - Restrição de datas passadas
 - **Workflow de Aprovação**: Pendente → Aprovado/Rejeitado
-- **Formulário Completo**: 
+- **Formulário Completo**:
   - Informações de responsável
   - Materiais necessários
   - Lista de participantes
@@ -82,6 +82,61 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
 - **Limpeza Automática**: Notificações antigas removidas após 30 dias
 - **Script Diário**: `daily_notifications.php` para lembretes automáticos
 
+### 🎯 Popup de Detalhes do Evento (NOVO)
+- **Visualização Completa de Eventos**: Modal dinâmico com todas as informações
+- **Clique em Qualquer Evento**: Abre popup instantâneo via AJAX
+- **Informações Detalhadas**:
+  - Título, data e horário do evento
+  - Tipo e subtipo (esportivo/não esportivo)
+  - Status com badges coloridos (aprovado, pendente, rejeitado, cancelado)
+  - Responsável pelo evento
+  - Descrição e observações
+  - Detalhes específicos:
+    - **Eventos Esportivos**: Modalidade, árbitro, atlética adversária, materiais
+    - **Eventos Não Esportivos**: Público-alvo, aberto ao público, infraestrutura
+  - Lista de participantes (RAs)
+  - Motivo de rejeição (quando aplicável)
+- **Lista de Presenças Confirmadas** (apenas para Admins e Super Admins):
+  - Contador de pessoas confirmadas
+  - Nomes dos participantes
+  - Informações de contato
+- **Interface Moderna**:
+  - Design responsivo
+  - Animações suaves
+  - Fechamento ao clicar fora ou no X
+  - CSS dedicado em `public/css/event-popup.css`
+- **Implementação Técnica**:
+  - Classe JavaScript `EventPopup` em `public/js/event-popup.js`
+  - Endpoint AJAX: `GET /agendamento/detalhes?id={eventId}`
+  - Controller: `AgendamentoController@getEventDetails`
+  - Integrado com sistema de permissões
+
+### ✅ Sistema de Confirmação de Presença (NOVO)
+- **Marcar Presença em Eventos**: Usuários podem confirmar participação em eventos aprovados
+- **Funcionalidades**:
+  - Botão "Marcar Presença" em cada evento da agenda
+  - Toggle instantâneo (marcar/desmarcar)
+  - Feedback visual imediato (botão muda de cor)
+  - Contador dinâmico de pessoas confirmadas
+  - Validação de eventos aprovados
+- **Notificações Automáticas**:
+  - Confirmação imediata ao marcar presença
+  - Lembrete enviado 1 dia antes do evento (via script diário)
+  - Notificação de cancelamento (se evento for cancelado)
+- **Armazenamento**:
+  - Tabela `agendamento_presencas` no banco de dados
+  - Chave única: (usuario_id, agendamento_id)
+  - Timestamp de confirmação
+- **Implementação Técnica**:
+  - Endpoint AJAX: `POST /agenda/presenca`
+  - Controller: `AgendaController@handlePresenca`
+  - JavaScript: `public/js/calendar.js` e `public/js/event-popup.js`
+  - Método Repository: `AgendamentoRepository->togglePresenca()`
+- **Visualização de Presenças**:
+  - Admins e Super Admins visualizam lista completa no popup
+  - Contador público para todos os usuários
+  - Relatórios de participação disponíveis
+
 ---
 
 ## 🏗️ Arquitetura e Tecnologias
@@ -98,7 +153,7 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
 - **HTML5 + CSS3**: Layouts responsivos e modernos
 - **JavaScript Vanilla**: Interações dinâmicas sem frameworks
 - **AJAX**: Requisições assíncronas para calendário e notificações
-- **CSS Modular**: 
+- **CSS Modular**:
   - `auth.css` - Estilos de autenticação
   - `calendar.css` - Calendário interativo
   - `dashboard.css` - Painéis administrativos
@@ -642,7 +697,7 @@ services:
   sge-php:
     ports:
       - '8080:80'  # Altere 80 para outra porta
-  
+
   sge-db:
     ports:
       - '3308:3306'  # Altere 3307 para outra porta
@@ -949,6 +1004,6 @@ Desenvolvido para o **Centro Universitário UNIFIO** com o objetivo de moderniza
 
 ---
 
-**Versão**: 1.0.0  
-**Última Atualização**: Outubro 2025 
+**Versão**: 1.0.0
+**Última Atualização**: Outubro 2025
 **Status**: ✅ Produção
