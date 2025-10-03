@@ -3,6 +3,9 @@
 # View com o formulário de login principal da aplicação.
 #
 ?>
+
+<link rel="stylesheet" href="/img/default.css">
+
 <div class="auth-card">
     <h1 class="auth-title">Jogos Acadêmicos</h1>
     <p class="auth-subtitle">Inscrição dos jogos acadêmicos UNIFIO<br>entre atléticas</p>
