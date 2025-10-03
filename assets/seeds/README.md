@@ -16,10 +16,10 @@ Contém dados de exemplo para todas as tabelas:
 
 ## 🚀 Como Usar
 
-### Via Terminal (Recomendado)
+### Via Terminal PowerShell (Recomendado)
 
 ```bash
-docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
+Get-Content assets/seeds/db_populate.sql | docker exec -i mysql mysql -uroot -prootpass application
 ```
 
 ### Via phpMyAdmin
