@@ -1,13 +1,7 @@
 {
-    "name": "unifio/sge",
-    "description": "Sistema de Gerenciamento de Eventos (SGE) da UNIFIO",
     "autoload": {
         "psr-4": {
             "Application\\": "src/"
-        },
-        "files": [
-            "src/Core/helpers.php"
-        ]
-    },
-    "require": {}
+        }
+    }
 }

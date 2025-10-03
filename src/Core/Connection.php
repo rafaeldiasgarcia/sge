@@ -20,11 +20,11 @@ class Connection
     public static function getInstance(): PDO
     {
         if (self::$instance === null) {
-            // Lê as configurações do banco de dados das variáveis de ambiente do Docker.
-            $host = getenv('DB_HOST');
-            $dbname = getenv('DB_NAME');
-            $username = getenv('DB_USER');
-            $password = getenv('DB_PASS');
+            // Configurações do banco de dados conforme docker-compose.yml
+            $host = 'db';
+            $dbname = 'application';
+            $username = 'appuser';
+            $password = 'apppass';
             $charset = 'utf8mb4';
 
             $dsn = "mysql:host={$host};dbname={$dbname};charset={$charset}";
