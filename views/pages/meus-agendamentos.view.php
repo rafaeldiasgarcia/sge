@@ -124,7 +124,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não, manter evento</button>
                 <form method="post" action="/agendamento/cancelar" id="formCancelamento" class="d-inline">
-                    <input type="hidden" name="id" id="eventoIdCancelamento">
+                    <input type="hidden" name="agendamento_id" id="eventoIdCancelamento">
                     <button type="submit" class="btn btn-warning">
                         <i class="bi bi-x-circle"></i> Sim, cancelar evento
                     </button>
