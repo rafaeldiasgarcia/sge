@@ -28,7 +28,7 @@ services:
     volumes:
       - ./assets/data:/docker-entrypoint-initdb.d
     ports:
-      - '3307:3306'
+      - '3306:3306'  # Ou 3307, se preferir
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

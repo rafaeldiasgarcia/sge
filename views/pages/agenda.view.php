@@ -36,7 +36,9 @@
                 <?php if (!empty($eventos_futuros_esportivos)): ?>
                     <div class="list-group">
                         <?php foreach ($eventos_futuros_esportivos as $evento): ?>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-primary">
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-primary event-clickable"
+                                 data-event-id="<?php echo $evento['id']; ?>"
+                                 style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1 text-primary"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                     <small class="text-primary fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
@@ -67,20 +69,22 @@
                                     </span>
                                 </div>
 
-                                <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn"
-                                            data-agendamento-id="<?php echo $evento['id']; ?>"
-                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                        <?php if ($evento['presenca_id']): ?>
-                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                        <?php else: ?>
-                                            <i class="bi bi-check-circle"></i> Marcar Presença
-                                        <?php endif; ?>
-                                    </button>
-                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
+                                <?php if (in_array($role, ['admin', 'superadmin'])): ?>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                                data-agendamento-id="<?php echo $evento['id']; ?>"
+                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                            <?php if ($evento['presenca_id']): ?>
+                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                            <?php else: ?>
+                                                <i class="bi bi-check-circle"></i> Marcar Presença
+                                            <?php endif; ?>
+                                        </button>
+                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                            <span class="visually-hidden">Carregando...</span>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -103,7 +107,9 @@
                 <?php if (!empty($eventos_futuros_nao_esportivos)): ?>
                     <div class="list-group">
                         <?php foreach ($eventos_futuros_nao_esportivos as $evento): ?>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-success">
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-success event-clickable"
+                                 data-event-id="<?php echo $evento['id']; ?>"
+                                 style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1 text-success"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                     <small class="text-success fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
@@ -124,20 +130,22 @@
                                     </span>
                                 </div>
 
-                                <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn"
-                                            data-agendamento-id="<?php echo $evento['id']; ?>"
-                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                        <?php if ($evento['presenca_id']): ?>
-                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                        <?php else: ?>
-                                            <i class="bi bi-check-circle"></i> Marcar Presença
-                                        <?php endif; ?>
-                                    </button>
-                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
+                                <?php if (in_array($role, ['admin', 'superadmin'])): ?>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                                data-agendamento-id="<?php echo $evento['id']; ?>"
+                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                            <?php if ($evento['presenca_id']): ?>
+                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                            <?php else: ?>
+                                                <i class="bi bi-check-circle"></i> Marcar Presença
+                                            <?php endif; ?>
+                                        </button>
+                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                            <span class="visually-hidden">Carregando...</span>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -276,8 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Gerenciar cliques nos botões de presença
 document.addEventListener('click', function(event) {
-    if (event.target.closest('.presenca-btn')) {
-        const btn = event.target.closest('.presenca-btn');
+    // Verificar se clicou no botão de presença ou em um elemento dentro dele (como o ícone)
+    const presencaBtn = event.target.closest('.presenca-btn');
+
+    if (presencaBtn) {
+        // IMPORTANTE: Parar a propagação IMEDIATAMENTE para não abrir o popup
+        event.stopPropagation();
+        event.preventDefault();
+
+        const btn = presencaBtn;
         const agendamentoId = btn.getAttribute('data-agendamento-id');
         const action = btn.getAttribute('data-action');
         const spinner = btn.nextElementSibling;
@@ -299,7 +314,9 @@ document.addEventListener('click', function(event) {
             },
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            return response.json();
+        })
         .then(data => {
             // Atualizar interface com base na resposta
             if (data.success) {
@@ -330,12 +347,15 @@ document.addEventListener('click', function(event) {
                         badgePresencas.innerHTML = '<i class="bi bi-people-fill"></i> ' + Math.max(0, currentCount - 1) + ' pessoa(s) confirmaram presença';
                     }
                 }
+
+                console.log('Interface atualizada com sucesso!');
             } else {
+                console.error('Erro na resposta:', data.message);
                 alert('Erro ao atualizar presença. Tente novamente mais tarde.');
             }
         })
         .catch(error => {
-            console.error('Erro:', error);
+            console.error('Erro na requisição:', error);
             alert('Erro ao atualizar presença. Tente novamente mais tarde.');
         })
         .finally(() => {

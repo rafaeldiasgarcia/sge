@@ -53,7 +53,8 @@ class AgendaController extends BaseController
                 'eventos_passados' => $eventos_passados,
                 'data_atual' => $data_atual,
                 'role' => Auth::role(),
-                'atletica_id' => Auth::get('atletica_id')
+                'atletica_id' => Auth::get('atletica_id'),
+                'tipo_usuario_detalhado' => Auth::get('tipo_usuario_detalhado')
             ]);
         } catch (\Exception $e) {
             die("Erro ao carregar a agenda: " . $e->getMessage());
@@ -63,6 +64,27 @@ class AgendaController extends BaseController
     public function handlePresenca()
     {
         Auth::protect();
+
+        // Verificar se o usuário tem permissão (APENAS admin ou superadmin)
+        $role = Auth::role();
+
+        $temPermissao = in_array($role, ['admin', 'superadmin']);
+
+        if (!$temPermissao) {
+            // Verificar se é uma requisição AJAX
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Você não tem permissão para marcar presença']);
+                return;
+            }
+
+            $_SESSION['error_message'] = "Você não tem permissão para marcar presença.";
+            redirect('/agenda');
+            return;
+        }
 
         // Verificar se é uma requisição AJAX
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&

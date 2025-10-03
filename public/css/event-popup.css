@@ -1,0 +1,451 @@
+/*
+ * Estilos para o Popup de Detalhes do Evento
+ * Exibe todas as informações do evento com opção de salvar como PDF
+ */
+
+.event-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.event-popup-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.event-popup-container {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease;
+    position: relative;
+}
+
+.event-popup-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+}
+
+.event-popup-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.event-popup-header .event-type-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.event-popup-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.event-popup-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.event-popup-body {
+    padding: 30px;
+}
+
+.event-popup-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.event-popup-section:last-child {
+    border-bottom: none;
+}
+
+.event-popup-section h3 {
+    color: #667eea;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.event-popup-section h3 i {
+    font-size: 24px;
+}
+
+.event-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.event-info-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.event-info-item label {
+    display: block;
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.event-info-item .value {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.event-info-full {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    margin-top: 15px;
+}
+
+.event-info-full label {
+    display: block;
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.event-info-full .value {
+    color: #333;
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.event-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.event-status-badge.status-aprovado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.event-status-badge.status-pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.event-status-badge.status-rejeitado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.event-status-badge.status-cancelado {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.event-status-badge.status-finalizado {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.presencas-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.presenca-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #667eea;
+}
+
+.presenca-item i {
+    color: #667eea;
+    font-size: 20px;
+}
+
+.presenca-info {
+    flex: 1;
+}
+
+.presenca-info .name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.presenca-info .email {
+    font-size: 13px;
+    color: #666;
+}
+
+.event-popup-footer {
+    padding: 20px 30px;
+    background: #f8f9fa;
+    border-radius: 0 0 16px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-download-pdf {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-download-pdf:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-download-pdf i {
+    font-size: 20px;
+}
+
+.btn-close-popup {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-close-popup:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.event-loading {
+    text-align: center;
+    padding: 60px 30px;
+}
+
+.event-loading .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.event-loading p {
+    color: #666;
+    font-size: 16px;
+}
+
+.event-error {
+    text-align: center;
+    padding: 60px 30px;
+    color: #dc3545;
+}
+
+.event-error i {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.event-error p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Scrollbar personalizada */
+.event-popup-container::-webkit-scrollbar,
+.presencas-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.event-popup-container::-webkit-scrollbar-track,
+.presencas-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.event-popup-container::-webkit-scrollbar-thumb,
+.presencas-list::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+}
+
+.event-popup-container::-webkit-scrollbar-thumb:hover,
+.presencas-list::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .event-popup-container {
+        max-width: 100%;
+        margin: 10px;
+        max-height: 95vh;
+    }
+
+    .event-popup-header {
+        padding: 20px;
+    }
+
+    .event-popup-header h2 {
+        font-size: 22px;
+    }
+
+    .event-popup-body {
+        padding: 20px;
+    }
+
+    .event-info-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .event-popup-footer {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    .btn-download-pdf,
+    .btn-close-popup {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Estilos para impressão/PDF */
+@media print {
+    .event-popup-overlay {
+        background: white;
+    }
+
+    .event-popup-close,
+    .event-popup-footer {
+        display: none !important;
+    }
+
+    .event-popup-container {
+        box-shadow: none;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .event-popup-header {
+        background: #667eea !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* Classe helper para tornar eventos clicáveis */
+.event-clickable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.event-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+

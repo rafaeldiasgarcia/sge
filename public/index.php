@@ -35,10 +35,31 @@ try {
     // Usa o roteador para encontrar e executar a ação do controller correspondente.
     Application\Core\Router::dispatch($url, $method);
 } catch (Exception $e) {
-    // Em caso de erro, exibe uma mensagem amigável.
-    if (ob_get_level() > 0) ob_end_clean();
-    http_response_code(500);
-    echo "<h1>Erro na Aplicação</h1>";
-    echo "<p>Ocorreu um erro inesperado. Detalhes:</p>";
-    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    // Em caso de erro, verificar se é uma requisição AJAX
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+              strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+    // Ou verificar se a URL é de uma API/endpoint JSON
+    $isJsonEndpoint = strpos($url, '/agendamento/detalhes') !== false;
+
+    if ($isAjax || $isJsonEndpoint) {
+        // Retornar erro em JSON
+        if (ob_get_level() > 0) ob_end_clean();
+        header('Content-Type: application/json');
+        http_response_code(500);
+        echo json_encode([
+            'error' => 'Erro no servidor',
+            'message' => $e->getMessage(),
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString())
+        ]);
+    } else {
+        // Retornar erro em HTML
+        if (ob_get_level() > 0) ob_end_clean();
+        http_response_code(500);
+        echo "<h1>Erro na Aplicação</h1>";
+        echo "<p>Ocorreu um erro inesperado. Detalhes:</p>";
+        echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    }
 }

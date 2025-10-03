@@ -11,6 +11,7 @@ class SimpleNotifications {
         this.list = null;
         this.markAllBtn = null;
         this.isOpen = false;
+        this.notificationContainer = null; // Container que engloba o sino e o dropdown
 
         this.init();
     }
@@ -22,6 +23,7 @@ class SimpleNotifications {
         this.dropdown = document.getElementById('notification-dropdown');
         this.list = document.getElementById('notification-list');
         this.markAllBtn = document.getElementById('mark-all-read');
+        this.notificationContainer = document.querySelector('.notifications'); // li.nav-item.notifications
 
         if (!this.badge || !this.bell) {
             console.log('Elementos de notificação não encontrados');
@@ -49,7 +51,18 @@ class SimpleNotifications {
     }
 
     setupEvents() {
-        // Clique no sino
+        // Mouse entra na área das notificações (sino ou dropdown)
+        if (this.notificationContainer) {
+            this.notificationContainer.addEventListener('mouseenter', () => {
+                this.openDropdown();
+            });
+
+            this.notificationContainer.addEventListener('mouseleave', () => {
+                this.closeDropdown();
+            });
+        }
+
+        // Clique no sino (manter para mobile/touch)
         this.bell.addEventListener('click', (e) => {
             e.preventDefault();
             this.toggleDropdown();
@@ -64,7 +77,7 @@ class SimpleNotifications {
 
         // Fechar ao clicar fora
         document.addEventListener('click', (e) => {
-            if (!this.bell.contains(e.target) && !this.dropdown.contains(e.target)) {
+            if (this.notificationContainer && !this.notificationContainer.contains(e.target)) {
                 this.closeDropdown();
             }
         });

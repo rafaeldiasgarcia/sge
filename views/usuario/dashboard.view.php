@@ -218,7 +218,7 @@
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($eventosEsportivos as $evento): ?>
-                                        <div class="card mb-3 border-success">
+                                        <div class="card mb-3 border-success event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
                                             <div class="card-body">
                                                 <h6 class="card-title text-success"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                                                 <?php if ($evento['esporte_tipo']): ?>
@@ -249,7 +249,7 @@
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($eventosNaoEsportivos as $evento): ?>
-                                        <div class="card mb-3 border-primary">
+                                        <div class="card mb-3 border-primary event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
                                             <div class="card-body">
                                                 <h6 class="card-title text-primary"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                                                 <p class="card-text mb-2">

@@ -180,6 +180,10 @@ class AgendamentoController extends BaseController
         Auth::protect();
         $this->_checkSchedulingPermission();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
+
+        // Atualizar eventos aprovados que já passaram para 'finalizado'
+        $agendamentoRepo->updatePastEventsToFinalized();
+
         $agendamentos = $agendamentoRepo->findByUserId(Auth::id());
         view('pages/meus-agendamentos', [
             'title' => 'Meus Agendamentos',
@@ -289,5 +293,71 @@ class AgendamentoController extends BaseController
         }
 
         redirect('/meus-agendamentos');
+    }
+
+    public function getEventDetails()
+    {
+        // Desabilitar qualquer buffer de saída anterior
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // Iniciar novo buffer
+        ob_start();
+
+        // Verificar autenticação sem redirecionamento
+        if (!Auth::check()) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(401);
+            echo json_encode(['error' => 'Não autenticado']);
+            ob_end_flush();
+            exit;
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $id = (int)($_GET['id'] ?? 0);
+
+            if ($id <= 0) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID inválido', 'id_recebido' => $id]);
+                ob_end_flush();
+                exit;
+            }
+
+            $agendamentoRepo = $this->repository('AgendamentoRepository');
+            $evento = $agendamentoRepo->findByIdWithDetails($id);
+
+            if (!$evento) {
+                http_response_code(404);
+                echo json_encode(['error' => 'Evento não encontrado', 'id' => $id]);
+                ob_end_flush();
+                exit;
+            }
+
+            // Buscar lista de presenças
+            try {
+                $presencas = $agendamentoRepo->getPresencasByAgendamento($id);
+                $evento['presencas'] = is_array($presencas) ? $presencas : [];
+            } catch (\Exception $e) {
+                // Se houver erro ao buscar presenças, continuar sem elas
+                $evento['presencas'] = [];
+            }
+
+            http_response_code(200);
+            echo json_encode($evento, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            ob_end_flush();
+            exit;
+
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Erro interno do servidor',
+                'message' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE);
+            ob_end_flush();
+            exit;
+        }
     }
 }

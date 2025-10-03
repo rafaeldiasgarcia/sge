@@ -2,371 +2,1008 @@
 
 Sistema web completo para gerenciamento de agendamentos de quadras esportivas, administração de atléticas, cursos e usuários da UNIFIO. O sistema oferece funcionalidades abrangentes desde o agendamento de eventos até relatórios detalhados, com diferentes níveis de acesso e um calendário interativo.
 
-Desenvolvido com arquitetura MVC moderna e containerizado com **Docker**, garantindo um ambiente de desenvolvimento consistente, seguro, escalável e de fácil manutenção.
+Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado com Docker**, garantindo um ambiente de desenvolvimento consistente, seguro, escalável e de fácil manutenção.
+
+---
+
+## 🎯 Funcionalidades Principais
+
+### 👤 Sistema de Autenticação e Autorização
+- **Login com Verificação em 2 Etapas**: Código de 6 dígitos enviado por email
+- **Recuperação de Senha**: Sistema completo com token temporário
+- **Cadastro de Usuários**: Com validação de RA, curso e tipo de usuário
+- **3 Níveis de Acesso**:
+  - **Usuário Comum**: Alunos, Professores, Comunidade Externa
+  - **Admin de Atlética**: Gerencia membros e eventos da atlética
+  - **Super Admin**: Controle total do sistema
+
+### 📅 Gestão de Agendamentos
+- **Calendário Interativo**: Navegação mensal com AJAX
+- **2 Períodos por Dia**:
+  - Primeiro período: 19:15 - 20:55
+  - Segundo período: 21:10 - 22:50
+- **Tipos de Eventos**:
+  - Esportivos (treinos, campeonatos)
+  - Não Esportivos (palestras, workshops, formaturas)
+- **Validações Inteligentes**:
+  - Antecedência mínima de 4 dias (exceto campeonatos)
+  - Verificação de conflitos de horário
+  - Restrição de datas passadas
+- **Workflow de Aprovação**: Pendente → Aprovado/Rejeitado
+- **Formulário Completo**:
+  - Informações de responsável
+  - Materiais necessários
+  - Lista de participantes
+  - Árbitro (para eventos esportivos)
+  - Infraestrutura adicional
+
+### 📊 Painel do Super Admin
+- **Gerenciamento de Agendamentos**: Aprovar/Rejeitar solicitações
+- **Gestão de Usuários**: CRUD completo com edição de perfis
+- **Estrutura Acadêmica**: Gerenciar Cursos e Atléticas
+- **Modalidades Esportivas**: Cadastro e edição
+- **Gestão de Admins**: Promover/Rebaixar usuários
+- **Relatórios Avançados**:
+  - Agendamentos por período
+  - Estatísticas de uso
+  - Participação de atléticas
+  - Eventos mais populares
+  - Versão para impressão
+- **Notificações Globais**: Enviar avisos para todos os usuários
+
+### 🏃 Painel do Admin de Atlética
+- **Dashboard Personalizado**: Estatísticas da atlética
+- **Gestão de Membros**: Aprovar/Recusar solicitações de entrada
+- **Gestão de Membros da Atlética**: Adicionar/Remover membros
+- **Inscrições em Modalidades**: Aprovar atletas para competições
+- **Inscrições em Eventos**: Gerenciar participação em eventos
+- **Visualização de Eventos**: Calendário filtrado da atlética
+
+### 👥 Painel do Usuário
+- **Dashboard**: Visão geral de eventos e notificações
+- **Perfil**: Editar dados pessoais, foto, senha
+- **Solicitar Entrada em Atlética**: Sistema de requisição
+- **Inscrições em Modalidades**: Escolher esportes de interesse
+- **Meus Agendamentos**: Visualizar, editar e cancelar
+- **Agenda Pública**: Ver todos os eventos aprovados
+- **Marcar Presença**: Confirmar participação em eventos
+- **Agendar Eventos**: Solicitar uso da quadra (Professores e Admins)
+
+### 🔔 Sistema de Notificações
+- **Notificações em Tempo Real**: Contador de não lidas no header
+- **Tipos de Notificações**:
+  - Agendamento aprovado/rejeitado/cancelado
+  - Presença confirmada
+  - Lembretes de eventos (1 dia antes)
+  - Informações do sistema
+  - Avisos importantes
+- **Interface AJAX**: Atualização sem recarregar a página
+- **Marcar como Lida**: Individual ou todas de uma vez
+- **Limpeza Automática**: Notificações antigas removidas após 30 dias
+- **Script Diário**: `daily_notifications.php` para lembretes automáticos
+
+### 🎯 Popup de Detalhes do Evento (NOVO)
+- **Visualização Completa de Eventos**: Modal dinâmico com todas as informações
+- **Clique em Qualquer Evento**: Abre popup instantâneo via AJAX
+- **Informações Detalhadas**:
+  - Título, data e horário do evento
+  - Tipo e subtipo (esportivo/não esportivo)
+  - Status com badges coloridos (aprovado, pendente, rejeitado, cancelado)
+  - Responsável pelo evento
+  - Descrição e observações
+  - Detalhes específicos:
+    - **Eventos Esportivos**: Modalidade, árbitro, atlética adversária, materiais
+    - **Eventos Não Esportivos**: Público-alvo, aberto ao público, infraestrutura
+  - Lista de participantes (RAs)
+  - Motivo de rejeição (quando aplicável)
+- **Lista de Presenças Confirmadas** (apenas para Admins e Super Admins):
+  - Contador de pessoas confirmadas
+  - Nomes dos participantes
+  - Informações de contato
+- **Interface Moderna**:
+  - Design responsivo
+  - Animações suaves
+  - Fechamento ao clicar fora ou no X
+  - CSS dedicado em `public/css/event-popup.css`
+- **Implementação Técnica**:
+  - Classe JavaScript `EventPopup` em `public/js/event-popup.js`
+  - Endpoint AJAX: `GET /agendamento/detalhes?id={eventId}`
+  - Controller: `AgendamentoController@getEventDetails`
+  - Integrado com sistema de permissões
+
+### ✅ Sistema de Confirmação de Presença (NOVO)
+- **Marcar Presença em Eventos**: Usuários podem confirmar participação em eventos aprovados
+- **Funcionalidades**:
+  - Botão "Marcar Presença" em cada evento da agenda
+  - Toggle instantâneo (marcar/desmarcar)
+  - Feedback visual imediato (botão muda de cor)
+  - Contador dinâmico de pessoas confirmadas
+  - Validação de eventos aprovados
+- **Notificações Automáticas**:
+  - Confirmação imediata ao marcar presença
+  - Lembrete enviado 1 dia antes do evento (via script diário)
+  - Notificação de cancelamento (se evento for cancelado)
+- **Armazenamento**:
+  - Tabela `agendamento_presencas` no banco de dados
+  - Chave única: (usuario_id, agendamento_id)
+  - Timestamp de confirmação
+- **Implementação Técnica**:
+  - Endpoint AJAX: `POST /agenda/presenca`
+  - Controller: `AgendaController@handlePresenca`
+  - JavaScript: `public/js/calendar.js` e `public/js/event-popup.js`
+  - Método Repository: `AgendamentoRepository->togglePresenca()`
+- **Visualização de Presenças**:
+  - Admins e Super Admins visualizam lista completa no popup
+  - Contador público para todos os usuários
+  - Relatórios de participação disponíveis
+
+---
 
 ## 🏗️ Arquitetura e Tecnologias
 
 ### Stack Tecnológica
 
--   **Docker & Docker Compose:** Ambiente completamente containerizado com serviços isolados
-    -   **Web Server:** PHP 8.2 + Apache com mod_rewrite habilitado
-    -   **Database:** MySQL 9.4 com timezone configurado para America/Sao_Paulo  
-    -   **Database Management:** phpMyAdmin para administração visual do banco
--   **PHP 8.2:** Linguagem principal com extensões PDO, PDO_MySQL e Intl
--   **MySQL:** Sistema de gerenciamento de banco de dados relacional
--   **Composer:** Gerenciador de dependências com autoloading PSR-4
--   **JavaScript/AJAX:** Interações assíncronas para calendário e notificações
+#### Backend
+- **PHP 8.2**: Linguagem principal com recursos modernos
+- **Extensões PHP**: PDO, PDO_MySQL, Intl (formatação de datas)
+- **Composer**: Gerenciador de dependências com autoloading PSR-4
+- **MySQL 9.4**: Banco de dados relacional
+
+#### Frontend
+- **HTML5 + CSS3**: Layouts responsivos e modernos
+- **JavaScript Vanilla**: Interações dinâmicas sem frameworks
+- **AJAX**: Requisições assíncronas para calendário e notificações
+- **CSS Modular**:
+  - `auth.css` - Estilos de autenticação
+  - `calendar.css` - Calendário interativo
+  - `dashboard.css` - Painéis administrativos
+  - `default.css` - Estilos globais
+  - `header.css` - Navegação e header
+  - `notifications.css` - Sistema de notificações
+
+#### DevOps e Infraestrutura
+- **Docker + Docker Compose**: Ambiente completamente containerizado
+  - **Container Web (sge-php)**: PHP 8.2 + Apache com mod_rewrite
+  - **Container DB (sge-db)**: MySQL 9.4 com timezone America/Sao_Paulo
+  - **Container phpMyAdmin**: Administração visual do banco
+- **Volumes Docker**: Persistência de dados e código
+- **Variáveis de Ambiente**: Configuração via `.env`
 
 ### Arquitetura MVC
 
--   **Models (Repository Pattern - `src/Repository/`):** 
-    -   Isolamento completo da lógica de banco de dados
-    -   Repositories especializados por entidade (Usuario, Agendamento, Atletica, etc.)
--   **Views (Template Engine - `views/`):** 
-    -   Templates PHP organizados por funcionalidade
-    -   Partials reutilizáveis (header, footer, calendar)
-    -   Layouts responsivos com CSS moderno
--   **Controllers (Business Logic - `src/Controller/`):** 
-    -   Controladores especializados por domínio
-    -   Sistema de autenticação e autorização integrado
-    -   Validação de dados e tratamento de erros
-
-### Funcionalidades Técnicas
-
--   **Roteamento:** Sistema de rotas RESTful com Router personalizado
--   **Autenticação:** Login com verificação em duas etapas (2FA simulado)
--   **Autorização:** Sistema de roles (usuario, admin, superadmin) e permissões granulares
--   **Sessões:** Gerenciamento seguro de sessões PHP
--   **API REST:** Endpoints JSON para notificações e interações AJAX
--   **Calendário Interativo:** Interface de agendamento com navegação assíncrona
-
-## 📁 Estrutura do Projeto
-
-Organização seguindo as melhores práticas de projetos web modernos, com separação clara entre código público e privado.
-
 ```
-sge/
-├── assets/                     # Recursos e dados do projeto
-│   └── data/
-│       ├── 0-schema.sql        # Schema completo do banco de dados
-│       ├── db_populate.sql     # Dados de exemplo para desenvolvimento
-│       └── db_vazia.sql        # Schema limpo para produção
-├── public/                     # 🌐 Raiz pública do site (DocumentRoot)
-│   ├── index.php               # 🎯 Front Controller (ponto de entrada único)
-│   ├── css/                    # Estilos da aplicação
-│   │   ├── auth.css            # Estilos para autenticação
-│   │   ├── calendar.css        # Estilos do calendário interativo
-│   │   └── default.css         # Estilos globais da aplicação
-│   ├── js/                     # Scripts JavaScript
-│   │   └── calendar.js         # Lógica do calendário AJAX
-│   └── img/                    # Imagens e assets visuais
-├── src/                        # 🔒 Código da aplicação (não acessível via web)
-│   ├── Controller/             # 🎮 Controladores MVC
-│   │   ├── AuthController.php          # Autenticação e registro
-│   │   ├── HomeController.php          # Página inicial e redirecionamentos
-│   │   ├── UsuarioController.php       # Dashboard e perfil do usuário
-│   │   ├── AgendamentoController.php   # Gestão de agendamentos
-│   │   ├── AgendaController.php        # Visualização de eventos públicos
-│   │   ├── AdminAtleticaController.php # Painel do admin de atlética
-│   │   ├── SuperAdminController.php    # Painel do super administrador
-│   │   ├── NotificationController.php  # API de notificações
-│   │   └── BaseController.php          # Controlador base
-│   ├── Core/                   # 🔧 Classes centrais do sistema
-│   │   ├── Auth.php            # Sistema de autenticação e autorização
-│   │   ├── Connection.php      # Conexão PDO com MySQL
-│   │   ├── Router.php          # Roteador de URLs
-│   │   └── helpers.php         # Funções utilitárias globais
-│   ├── Repository/             # 🗄️ Camada de acesso aos dados
-│   │   ├── UsuarioRepository.php       # Gestão de usuários
-│   │   ├── AgendamentoRepository.php   # Gestão de agendamentos
-│   │   ├── AtleticaRepository.php      # Gestão de atléticas
-│   │   ├── CursoRepository.php         # Gestão de cursos
-│   │   ├── ModalidadeRepository.php    # Gestão de modalidades esportivas
-│   │   ├── RelatorioRepository.php     # Geração de relatórios
-│   │   ├── NotificationRepository.php  # Sistema de notificações
-│   │   └── AdminAtleticaRepository.php # Funcionalidades de admin
-│   └── routes.php              # 🗺️ Definição de todas as rotas da aplicação
-├── views/                      # 🎨 Templates e interfaces
-│   ├── _partials/              # Componentes reutilizáveis
-│   │   ├── header.php          # Cabeçalho com navegação
-│   │   ├── footer.php          # Rodapé da aplicação
-│   │   └── calendar.php        # Componente do calendário
-│   ├── auth/                   # Interfaces de autenticação
-│   │   ├── login.view.php              # Tela de login
-│   │   ├── login-verify.view.php       # Verificação 2FA
-│   │   ├── registro.view.php           # Cadastro de usuários
-│   │   ├── esqueci-senha.view.php      # Recuperação de senha
-│   │   └── redefinir-senha.view.php    # Redefinição de senha
-│   ├── usuario/                # Painel do usuário comum
-│   │   ├── dashboard.view.php          # Dashboard principal
-│   │   └── perfil.view.php             # Gestão de perfil
-│   ├── pages/                  # Páginas principais
-│   │   ├── agenda.view.php             # Agenda pública de eventos
-│   │   ├── agendar-evento.view.php     # Formulário de agendamento
-│   │   ├── editar-agendamento.view.php # Edição de agendamentos
-│   │   └── meus-agendamentos.view.php  # Lista de agendamentos do usuário
-│   ├── admin_atletica/         # Painel do admin de atlética
-│   │   ├── dashboard.view.php          # Dashboard do admin
-│   │   ├── gerenciar-membros.view.php  # Aprovação de membros
-│   │   ├── gerenciar-inscricoes.view.php # Gestão de inscrições
-│   │   └── gerenciar-eventos.view.php  # Gestão de participação em eventos
-│   └── super_admin/            # Painel do super administrador
-│       ├── dashboard.view.php          # Dashboard administrativo
-│       ├── gerenciar-usuarios.view.php # CRUD de usuários
-│       ├── gerenciar-agendamentos.view.php # Aprovação de agendamentos
-│       ├── gerenciar-estrutura.view.php    # Gestão de cursos e atléticas
-│       ├── gerenciar-modalidades.view.php  # CRUD de modalidades
-│       ├── gerenciar-admins.view.php       # Promoção de administradores
-│       ├── relatorios.view.php             # Sistema de relatórios
-│       └── relatorio-print.view.php        # Versão para impressão
-├── vendor/                     # 📦 Dependências do Composer
-├── .env                        # ⚙️ Variáveis de ambiente
-├── .gitignore                  # 🚫 Arquivos ignorados pelo Git
-├── composer.json               # 📋 Configuração do Composer
-├── composer.lock               # 🔒 Lock das versões das dependências
-├── Dockerfile                  # 🐳 Imagem Docker da aplicação
-├── docker-compose.yml          # 🐙 Orquestração dos contêineres
-└── README.md                   # 📖 Documentação do projeto
+┌─────────────────────────────────────────────────────────┐
+│                    FRONT CONTROLLER                     │
+│                   (public/index.php)                    │
+│           Todas as requisições passam aqui             │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│                      ROUTER                             │
+│                  (src/Core/Router.php)                  │
+│         Mapeia URLs para Controllers/Actions            │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│                   CONTROLLERS                           │
+│              (src/Controller/*.php)                     │
+│       - AuthController (login, registro)                │
+│       - UsuarioController (dashboard, perfil)           │
+│       - AgendamentoController (criar, editar)           │
+│       - AdminAtleticaController (gestão atlética)       │
+│       - SuperAdminController (admin completo)           │
+│       - NotificationController (API de notificações)    │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+        ▼                     ▼
+┌──────────────┐      ┌──────────────┐
+│  REPOSITORIES│      │    VIEWS     │
+│ (Data Layer) │      │  (Templates) │
+│              │      │              │
+│ - Isolamento │      │ - Partials   │
+│ - PDO        │      │ - Layouts    │
+│ - Queries    │      │ - CSS/JS     │
+└──────┬───────┘      └──────────────┘
+       │
+       ▼
+┌──────────────┐
+│   DATABASE   │
+│  MySQL 9.4   │
+└──────────────┘
 ```
 
-## 🚀 Como Rodar o Projeto
+#### Camadas da Aplicação
 
-### Pré-requisitos
+**1. Controllers (src/Controller/)**
+- `BaseController.php`: Classe base com métodos reutilizáveis
+- `AuthController.php`: Autenticação, registro, recuperação de senha
+- `HomeController.php`: Redirecionamento baseado em role
+- `UsuarioController.php`: Dashboard e perfil do usuário
+- `AgendamentoController.php`: CRUD de agendamentos
+- `AgendaController.php`: Visualização pública de eventos
+- `AdminAtleticaController.php`: Painel administrativo da atlética
+- `SuperAdminController.php`: Painel do super administrador
+- `NotificationController.php`: API REST para notificações
 
-1.  **Docker Desktop** instalado e em execução
-2.  **Git** para clonar o repositório
-3.  **VS Code** com a extensão **"Dev Containers"** da Microsoft (opcional, mas recomendado)
+**2. Repositories (src/Repository/)**
+- `UsuarioRepository.php`: Gestão de usuários
+- `AgendamentoRepository.php`: Gestão de agendamentos
+- `AtleticaRepository.php`: Gestão de atléticas
+- `CursoRepository.php`: Gestão de cursos
+- `ModalidadeRepository.php`: Gestão de modalidades esportivas
+- `NotificationRepository.php`: Sistema de notificações
+- `RelatorioRepository.php`: Geração de relatórios
+- `AdminAtleticaRepository.php`: Funcionalidades específicas de admin
 
-### Serviços Docker
+**3. Core (src/Core/)**
+- `Connection.php`: Singleton PDO com MySQL
+- `Router.php`: Sistema de roteamento RESTful
+- `Auth.php`: Autenticação e autorização (middleware)
+- `NotificationService.php`: Lógica de negócio de notificações
+- `helpers.php`: Funções globais (view, redirect)
 
-O projeto utiliza 3 contêineres Docker:
-
-- **sge-php**: Aplicação PHP 8.2 + Apache (porta 80)
-- **sge-db**: MySQL 9.4 (porta 3306) 
-- **phpmyadmin**: Interface web para MySQL (porta 8080)
-
-### Passos para a Instalação
-
-1.  **Clonar o Repositório:**
-    ```bash
-    git clone https://github.com/rafaeldiasgarcia/sge.git
-    cd sge
-    ```
-
-2.  **Opção A - Usando Dev Container (Recomendado):**
-    -   Abra a pasta do projeto no VS Code.
-    -   O VS Code detectará a pasta `.devcontainer` e mostrará uma notificação no canto inferior direito. Clique em **"Reopen in Container"**.
-    -   Aguarde o VS Code construir a imagem e iniciar o ambiente. O terminal integrado agora estará dentro do contêiner.
-    -   Execute o Composer para gerar o autoloader:
-        ```bash
-        composer install
-        ```
-
-3.  **Opção B - Usando Docker Compose Diretamente:**
-    -   Instale as dependências do PHP:
-        ```bash
-        docker-compose run --rm sge-php composer install
-        ```
-    -   Inicie os serviços:
-        ```bash
-        docker-compose up -d --build
-        ```
-
-4.  **Acessar a Aplicação:**
-    - **Aplicação Principal:** [http://localhost](http://localhost)
-    - **phpMyAdmin:** [http://localhost:8080](http://localhost:8080)
-    
-    ### Credenciais de Acesso Padrão
-    
-    - **Super Admin:** `sadmin` / `sadmin`
-    - **Admin Atlética:** `admin.atletica@sge.com` / `sadmin`
-    - **Aluno:** `aluno@sge.com` / `sadmin`
-    - **Membro das Atléticas:** `membro@sge.com` / `sadmin`
-    - **Comunidade Externa:** `comunidade@email.com` / `sadmin`
-
-## ⚡ Funcionalidades Implementadas
-
-Sistema completo com três níveis de acesso e funcionalidades especializadas para cada perfil de usuário.
-
-### 🔐 Sistema de Autenticação
-
-- **Login com 2FA:** Verificação em duas etapas com código temporário (simulado)
-- **Registro Inteligente:** Validação de e-mail institucional e associação automática com atléticas
-- **Recuperação de Senha:** Sistema completo com tokens seguros
-- **Gestão de Sessões:** Controle seguro de sessões com regeneração de ID
-
-### 👤 Painel do Usuário
-
-#### Tipos de Usuário
-- **Aluno:** Acesso básico à agenda e perfil
-- **Membro de Atlética:** Funcionalidades de inscrição em modalidades
-- **Professor:** Permissões de agendamento de eventos
-- **Comunidade Externa:** Acesso limitado ao sistema
-
-#### Funcionalidades Principais
-- **Dashboard Personalizado:** Visão geral das atividades e notificações
-- **Gestão de Perfil:** Edição de dados pessoais e solicitação de entrada em atléticas
-- **Agenda Pública:** Visualização de todos os eventos aprovados com sistema de presenças
-- **Sistema de Inscrições:** Solicitação de participação em modalidades esportivas
-
-### 📅 Sistema de Agendamentos (Professores e Admins)
-
-#### Calendário Interativo
-- **Visualização em Tempo Real:** Status de ocupação por cores (livre/ocupado/indisponível)
-- **Navegação AJAX:** Troca de meses sem recarregamento da página
-- **Seleção Intuitiva:** Clique direto nos horários disponíveis
-- **Responsivo:** Funciona perfeitamente em dispositivos móveis
-
-#### Gestão de Eventos
-- **Tipos de Evento:** Esportivos e não-esportivos com campos específicos
-- **Validações Inteligentes:** 
-  - Antecedência mínima de 4 dias (exceto campeonatos)
-  - Verificação de conflitos de horário
-  - Limite de treinos por atlética por semana
-- **Estados de Solicitação:** Pendente, Aprovado, Rejeitado, Cancelado
-- **Edição e Cancelamento:** Controle completo das solicitações próprias
-
-### 🏆 Painel do Admin de Atlética
-
-#### Dashboard Administrativo
-- **Indicadores Visuais:** Estatísticas de membros pendentes, aprovados e modalidades ativas
-- **Visão Geral:** Resumo das atividades da atlética
-
-#### Gestão de Membros
-- **Aprovação de Solicitações:** Controle de entrada de novos membros na atlética
-- **Gerenciamento Ativo:** Visualização e gestão de todos os membros ativos
-- **Histórico de Ações:** Registro de todas as aprovações e recusas
-
-#### Gestão de Modalidades
-- **Controle de Inscrições:** Aprovação/recusa de inscrições em modalidades esportivas
-- **Gestão de Atletas:** Organização dos membros por modalidade
-- **Acompanhamento de Performance:** Visualização da participação em eventos
-
-#### Gestão de Eventos
-- **Inscrição em Massa:** Inscrever membros da atlética em eventos aprovados
-- **Controle de Participação:** Adicionar/remover participantes de eventos
-- **Relatórios de Presença:** Acompanhamento da participação dos membros
-
-### 👑 Painel do Super Administrador
-
-#### Gestão de Agendamentos
-- **Aprovação Final:** Controle absoluto sobre todas as solicitações de agendamento
-- **Verificação de Conflitos:** Sistema automático de detecção de sobreposições
-- **Gestão de Rejeições:** Possibilidade de adicionar motivos para rejeições
-- **Histórico Completo:** Visualização de todos os agendamentos do sistema
-
-#### Administração de Usuários
-- **CRUD Completo:** Criar, visualizar, editar e excluir usuários
-- **Gestão de Perfis:** Edição de informações pessoais e acadêmicas
-- **Controle de Permissões:** Alteração de roles e tipos de usuário
-- **Associações:** Gerenciamento de vínculos com cursos e atléticas
-
-#### Estrutura Acadêmica
-- **Gestão de Cursos:** CRUD completo com associação a atléticas e coordenadores
-- **Administração de Atléticas:** Controle total das organizações atléticas
-- **Vínculos Inteligentes:** Sistema de associação automática curso-atlética
-- **Coordenadores:** Designação de professores como coordenadores de curso
-
-#### Modalidades Esportivas
-- **Catálogo Completo:** Gestão de todas as modalidades disponíveis
-- **Modalidades Tradicionais:** Futsal, Vôlei, Basquete, Handebol, Natação, etc.
-- **E-Sports:** League of Legends, CS:GO, Valorant
-- **Modalidades Especiais:** Xadrez, Queimada, Tênis de Mesa
-
-#### Gestão de Administradores
-- **Promoção de Usuários:** Transformar membros em admins de suas atléticas
-- **Controle Hierárquico:** Rebaixar administradores quando necessário
-- **Auditoria:** Registro de todas as mudanças de permissão
-
-#### Sistema de Relatórios Avançados
-
-##### Tipos de Relatório
-1. **Relatório por Período**
-   - Estatísticas gerais de eventos no período
-   - Lista detalhada de todos os eventos
-   - Métricas de ocupação da quadra
-
-2. **Relatório por Evento Específico**
-   - Detalhes completos do evento
-   - Lista de participantes com dados formatados
-   - Controle de presenças confirmadas
-   - Informações de responsáveis e materiais
-
-3. **Relatório por Usuário**
-   - Histórico completo de agendamentos do usuário
-   - Participações em eventos
-   - Estatísticas de presenças
-
-##### Funcionalidades dos Relatórios
-- **Filtros Inteligentes:** Seleção por data, evento ou usuário específico
-- **Dados Detalhados:** Informações completas incluindo participantes e presenças
-- **Versão para Impressão:** Layout otimizado para impressão/PDF
-- **Exportação:** Relatórios prontos para documentação oficial
-
-## 🗄️ Banco de Dados
-
-### Estrutura Principal
-
-O sistema utiliza um banco de dados MySQL com as seguintes tabelas principais:
-
-#### Entidades Principais
-- **`usuarios`**: Dados dos usuários com roles, vínculos acadêmicos e status de atlética
-- **`cursos`**: Cursos da instituição com coordenadores e atléticas associadas
-- **`atleticas`**: Organizações atléticas dos cursos
-- **`modalidades`**: Modalidades esportivas disponíveis (15 modalidades cadastradas)
-
-#### Sistema de Agendamentos
-- **`agendamentos`**: Solicitações de eventos com dados completos e status
-- **`presencas`**: Sistema de controle de presença em eventos
-- **`inscricoes_eventos`**: Inscrições de membros de atléticas em eventos
-- **`inscricoes_modalidade`**: Inscrições de membros em modalidades esportivas
-
-#### Funcionalidades Especiais
-- **Códigos de Verificação**: Campos para 2FA e recuperação de senha
-- **Relacionamentos Complexos**: FKs com cascade e set null apropriados
-- **Dados de Exemplo**: 36+ agendamentos, 21 usuários, 10 atléticas
-- **Timezone**: Configurado para America/Sao_Paulo
-
-### Scripts Disponíveis
-- **`0-schema.sql`**: Schema completo com dados de exemplo
-- **`db_populate.sql`**: Apenas dados para popular o banco
-- **`db_vazia.sql`**: Schema limpo para produção
-
-## 🛠️ Desenvolvimento
-
-### Padrões de Código
-- **PSR-4**: Autoloading de classes
-- **MVC**: Separação clara de responsabilidades
-- **Repository Pattern**: Isolamento da lógica de banco
-- **RESTful Routes**: URLs semânticas e organizadas
-
-### Funcionalidades Técnicas Avançadas
-- **AJAX**: Calendário e notificações assíncronas
-- **Validação Robusta**: Validações client-side e server-side
-- **Segurança**: Proteção contra SQL Injection, XSS e CSRF
-- **Sessões Seguras**: Regeneração de ID e controle de timeout
-- **Notificações**: Sistema de notificações em tempo real
-
-## 🤝 Contribuindo
-
-Para contribuir com o projeto:
-
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Faça commit das suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Faça push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
-### Diretrizes de Desenvolvimento
-- Siga os padrões PSR estabelecidos
-- Documente adequadamente o código
-- Teste as funcionalidades antes do commit
-- Mantenha a compatibilidade com PHP 8.2+
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais e institucionais da UNIFIO.
+**4. Views (views/)**
+- `_partials/`: Componentes reutilizáveis (header, footer, calendar)
+- `auth/`: Telas de login, registro, recuperação
+- `usuario/`: Dashboard e perfil do usuário
+- `pages/`: Agenda, agendamentos, edição
+- `admin_atletica/`: Painel do admin da atlética
+- `super_admin/`: Painel do super administrador
 
 ---
 
-**Desenvolvido com ❤️ para a UNIFIO**
+## 📁 Estrutura Completa do Projeto
+
+```
+sge/
+├── 🐳 Docker Configuration
+│   ├── docker-compose.yml        # Orquestração de containers
+│   ├── Dockerfile                # Imagem PHP 8.2 + Apache
+│   └── .env                      # Variáveis de ambiente
+│
+├── 📦 Dependencies
+│   ├── composer.json             # Configuração PSR-4
+│   ├── composer.lock             # Lock de versões
+│   └── vendor/                   # Dependências do Composer
+│
+├── 🗄️ Database
+│   └── assets/data/
+│       ├── 0-schema.sql          # Schema completo + dados
+│       ├── db_populate.sql       # Dados de exemplo
+│       └── db_vazia.sql          # Schema limpo
+│
+├── 🌐 Public (DocumentRoot)
+│   └── public/
+│       ├── index.php             # 🎯 Front Controller
+│       ├── .htaccess             # Rewrite rules
+│       ├── css/                  # Estilos CSS
+│       ├── js/                   # Scripts JavaScript
+│       └── img/                  # Imagens e logos
+│
+├── 💻 Application Code
+│   └── src/
+│       ├── routes.php            # Definição de rotas
+│       ├── Controller/           # Camada de controle
+│       ├── Repository/           # Camada de dados
+│       └── Core/                 # Classes principais
+│
+├── 🎨 Views
+│   └── views/
+│       ├── _partials/            # Componentes reutilizáveis
+│       ├── auth/                 # Autenticação
+│       ├── usuario/              # Painel usuário
+│       ├── pages/                # Páginas gerais
+│       ├── admin_atletica/       # Painel do admin da atlética
+│       └── super_admin/          # Painel do super administrador
+│
+├── ⚙️ Scripts
+│   └── scripts/
+│       └── daily_notifications.php  # Cron de lembretes
+│
+└── 📖 Documentation
+    └── README.md                 # Este arquivo
+```
+
+---
+
+## 🚀 Instalação e Configuração
+
+### Pré-requisitos
+
+- **Docker Desktop**: Versão mais recente instalada
+- **Git**: Para clonar o repositório
+- **Porta 80, 3307 e 8080**: Devem estar disponíveis
+
+### Passo a Passo
+
+#### 1. Clone o Repositório
+
+```bash
+git clone <url-do-repositorio>
+cd sge
+```
+
+#### 2. Configure as Variáveis de Ambiente
+
+O arquivo `.env` já está configurado com as credenciais padrão:
+
+```env
+DB_HOST=sge-db
+DB_NAME=sge_db
+DB_USER=root
+DB_PASS=rootpass
+```
+
+**Atenção**: Em produção, altere as credenciais!
+
+#### 3. Inicie os Containers Docker
+
+```bash
+docker-compose up -d
+```
+
+Isso iniciará 3 containers:
+- **sge-php**: Aplicação PHP + Apache (porta 80)
+- **sge-db**: MySQL 9.4 (porta 3307)
+- **phpmyadmin**: Interface de administração (porta 8080)
+
+#### 4. Verifique o Status dos Containers
+
+```bash
+docker-compose ps
+```
+
+Todos devem estar com status "Up".
+
+#### 5. Instale as Dependências do Composer
+
+```bash
+docker exec -it sge-php composer install
+```
+
+#### 6. Importe o Banco de Dados
+
+O banco é importado automaticamente na primeira inicialização através do volume:
+```yaml
+volumes:
+  - ./assets/data:/docker-entrypoint-initdb.d
+```
+
+Caso precise reimportar manualmente:
+
+**Via phpMyAdmin**:
+1. Acesse http://localhost:8080
+2. Login: `root` / Senha: `rootpass`
+3. Importe o arquivo `assets/data/0-schema.sql`
+
+**Via Terminal**:
+```bash
+docker exec -i sge-db mysql -uroot -prootpass sge_db < assets/data/0-schema.sql
+```
+
+#### 7. Acesse a Aplicação
+
+Abra o navegador em: **http://localhost**
+
+---
+
+## 🔑 Credenciais de Acesso
+
+### Super Admin (Acesso Total)
+- **Email**: `sadmin`
+- **Senha**: `sadmin`
+
+### Admin de Atlética
+- **Email**: `admin.atletica@sge.com`
+- **Senha**: `sadmin`
+- **Atlética**: A.A.A. FURIOSA
+
+### Usuário Comum (Aluno)
+- **Email**: `aluno@sge.com`
+- **Senha**: `sadmin`
+
+### Membro de Atlética
+- **Email**: `membro@sge.com`
+- **Senha**: `sadmin`
+- **Atlética**: A.A.A. FURIOSA (aprovado)
+
+### Professor (Pode Agendar Eventos)
+- **Email**: `carlos.andrade@prof.sge.com`
+- **Senha**: `sadmin`
+- **Curso**: Engenharia Civil (Coordenador)
+
+### Comunidade Externa
+- **Email**: `comunidade@email.com`
+- **Senha**: `sadmin`
+
+**Nota**: Todos os usuários de teste têm a senha `sadmin` (hash: `$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O`)
+
+---
+
+## 📖 Como Usar
+
+### Fluxo de Agendamento de Eventos
+
+#### 1. Usuário Solicita Agendamento
+- Professor ou Admin de Atlética acessa "Agendar Evento"
+- Preenche formulário completo:
+  - Título e tipo (esportivo/não esportivo)
+  - Data e período
+  - Informações do responsável
+  - Materiais necessários
+  - Lista de participantes
+  - Observações
+- Sistema valida:
+  - Data futura
+  - Antecedência mínima de 4 dias
+  - Disponibilidade do horário
+- Agendamento fica com status **"Pendente"**
+
+#### 2. Super Admin Aprova/Rejeita
+- Acessa "Gerenciar Agendamentos"
+- Visualiza detalhes completos
+- Aprova ou rejeita (com motivo)
+- Sistema envia **notificação automática** ao solicitante
+
+#### 3. Evento Aprovado
+- Aparece na agenda pública
+- Usuários podem marcar presença
+- Sistema envia **lembrete 1 dia antes** (via script diário)
+
+#### 4. Confirmação de Presença
+- Usuários acessam "Agenda"
+- Clicam em "Marcar Presença"
+- Recebem notificação de confirmação
+
+#### 5. Gestão de Agendamentos
+- Usuário pode editar/cancelar seus agendamentos
+- Admin pode visualizar estatísticas
+- Super Admin gera relatórios
+
+### Sistema de Notificações
+
+#### Backend (Automático)
+```php
+// Criar notificação para aprovação
+$notificationService->notifyAgendamentoAprovado($agendamentoId);
+
+// Criar notificação para rejeição
+$notificationService->notifyAgendamentoRejeitado($agendamentoId, $motivo);
+
+// Criar notificação de presença
+$notificationService->notifyPresencaConfirmada($userId, $agendamentoId);
+
+// Notificação global (Super Admin)
+$notificationRepo->createGlobalNotification($titulo, $mensagem, 'sistema');
+```
+
+#### Frontend (AJAX)
+- Contador atualizado automaticamente no header
+- Dropdown com notificações recentes
+- Marcar como lida sem recarregar página
+
+#### Script Diário (Cron Job)
+Execute diariamente para enviar lembretes:
+
+**Linux/Mac**:
+```bash
+# Adicionar ao crontab
+0 20 * * * docker exec sge-php php /var/www/html/scripts/daily_notifications.php
+```
+
+**Windows (Task Scheduler)**:
+```cmd
+docker exec sge-php php /var/www/html/scripts/daily_notifications.php
+```
+
+---
+
+## 🔒 Sistema de Permissões
+
+### Níveis de Acesso
+
+| Funcionalidade | Usuário | Admin Atlética | Super Admin |
+|----------------|---------|----------------|-------------|
+| Ver agenda pública | ✅ | ✅ | ✅ |
+| Marcar presença | ✅ | ✅ | ✅ |
+| Editar perfil | ✅ | ✅ | ✅ |
+| Solicitar entrada em atlética | ✅ | ❌ | ❌ |
+| Inscrever-se em modalidades | ✅ | ✅ | ✅ |
+| **Agendar eventos** | ❌* | ✅** | ✅ |
+| Editar próprios agendamentos | ✅ | ✅ | ✅ |
+| Gerenciar membros atlética | ❌ | ✅ | ✅ |
+| Aprovar inscrições modalidades | ❌ | ✅ | ✅ |
+| Gerenciar eventos atlética | ❌ | ✅ | ✅ |
+| **Aprovar/Rejeitar agendamentos** | ❌ | ❌ | ✅ |
+| Gerenciar usuários | ❌ | ❌ | ✅ |
+| Gerenciar estrutura (cursos/atléticas) | ❌ | ❌ | ✅ |
+| Gerenciar modalidades | ❌ | ❌ | ✅ |
+| Promover/Rebaixar admins | ❌ | ❌ | ✅ |
+| Gerar relatórios | ❌ | ❌ | ✅ |
+| Enviar notificação global | ❌ | ❌ | ✅ |
+
+**Observações**:
+- *Usuários comuns só podem agendar se forem **Professores**
+- **Admin de Atlética só pode agendar se for também **"Membro das Atléticas"**
+
+### Middleware de Proteção
+
+```php
+// Proteger rota (requer login)
+Auth::protect();
+
+// Proteger rota de admin de atlética
+Auth::protectAdmin();
+
+// Proteger rota de super admin
+Auth::protectSuperAdmin();
+
+// Verificar permissão personalizada
+if (Auth::role() === 'superadmin') {
+    // Código restrito
+}
+```
+
+---
+
+## 🗃️ Estrutura do Banco de Dados
+
+### Principais Tabelas
+
+#### `usuarios`
+- Dados pessoais (nome, email, senha, RA, telefone)
+- Relacionamento com `cursos` e `atleticas`
+- `role`: usuario, admin, superadmin
+- `tipo_usuario_detalhado`: Aluno, Professor, Membro das Atléticas, Comunidade Externa
+- `is_coordenador`: Se é coordenador de curso
+- `atletica_join_status`: Status de solicitação de entrada na atlética
+- Campos para 2FA: `login_code`, `login_code_expires`
+- Campos para recuperação: `reset_token`, `reset_token_expires`
+
+#### `agendamentos`
+- Informações completas do evento
+- `status`: pendente, aprovado, rejeitado, cancelado
+- `tipo_agendamento`: esportivo, nao_esportivo
+- `subtipo_evento`: treino, campeonato, palestra, workshop, formatura
+- `periodo`: primeiro (19:15-20:55), segundo (21:10-22:50)
+- Campos detalhados: materiais, participantes, árbitro, infraestrutura
+- Relacionamento com `usuarios` (solicitante) e `atleticas`
+
+#### `notificacoes`
+- Sistema completo de notificações
+- `tipo`: agendamento_aprovado, agendamento_rejeitado, agendamento_cancelado, presenca_confirmada, lembrete_evento, info, aviso
+- `lida`: Status de leitura (0 ou 1)
+- Relacionamento opcional com `agendamentos`
+
+#### `presencas`
+- Confirmação de participação em eventos
+- Chave única: (usuario_id, agendamento_id)
+- Timestamp de confirmação
+
+#### `atleticas`
+- Cadastro das atléticas da UNIFIO
+- Exemplos: FURIOSA, PREDADORA, SANGUINÁRIA, ALFA, MAGNA, etc.
+
+#### `cursos`
+- Cursos acadêmicos
+- Relacionamento com `atleticas` e `coordenador_id` (professor)
+
+#### `modalidades`
+- Esportes e competições
+- Exemplos: Futsal, Vôlei, Basquete, Handebol, League of Legends, CS:GO, etc.
+
+#### `inscricoes_modalidade`
+- Inscrições de alunos em modalidades esportivas
+- `status`: pendente, aprovado, recusado
+- Aprovação pelo admin da atlética
+
+#### `inscricoes_eventos`
+- Inscrições de alunos em eventos específicos
+- Gestão pelo admin da atlética
+
+---
+
+## 🛠️ Comandos Úteis do Docker
+
+### Gerenciamento de Containers
+
+```bash
+# Iniciar containers
+docker-compose up -d
+
+# Parar containers
+docker-compose down
+
+# Reiniciar containers
+docker-compose restart
+
+# Ver logs
+docker-compose logs -f sge-php
+
+# Ver status
+docker-compose ps
+```
+
+### Acesso aos Containers
+
+```bash
+# Entrar no container PHP
+docker exec -it sge-php bash
+
+# Entrar no container MySQL
+docker exec -it sge-db mysql -uroot -prootpass sge_db
+
+# Executar comandos PHP
+docker exec -it sge-php php -v
+
+# Executar Composer
+docker exec -it sge-php composer install
+```
+
+### Banco de Dados
+
+```bash
+# Backup do banco
+docker exec sge-db mysqldump -uroot -prootpass sge_db > backup.sql
+
+# Restaurar banco
+docker exec -i sge-db mysql -uroot -prootpass sge_db < backup.sql
+
+# Acessar MySQL CLI
+docker exec -it sge-db mysql -uroot -prootpass sge_db
+```
+
+### Limpeza
+
+```bash
+# Remover containers e volumes
+docker-compose down -v
+
+# Limpar cache do Docker
+docker system prune -a
+```
+
+---
+
+## 🔧 Configuração Avançada
+
+### Modificar Variáveis de Ambiente
+
+Edite o arquivo `.env`:
+
+```env
+DB_HOST=sge-db
+DB_NAME=sge_db
+DB_USER=root
+DB_PASS=rootpass
+```
+
+Após alterações, recrie os containers:
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+### Alterar Portas
+
+Edite `docker-compose.yml`:
+
+```yaml
+services:
+  sge-php:
+    ports:
+      - '8080:80'  # Altere 80 para outra porta
+
+  sge-db:
+    ports:
+      - '3308:3306'  # Altere 3307 para outra porta
+```
+
+### Configurar Timezone
+
+O timezone já está configurado para `America/Sao_Paulo` em:
+- `docker-compose.yml` (MySQL)
+- `public/index.php` (PHP)
+
+Para alterar, modifique ambos os arquivos.
+
+---
+
+## 📊 Recursos Adicionais
+
+### Relatórios Disponíveis
+
+O Super Admin pode gerar relatórios de:
+- **Agendamentos por período**: Filtrar por intervalo de datas
+- **Eventos por tipo**: Esportivos vs Não Esportivos
+- **Participação de atléticas**: Ranking de uso da quadra
+- **Estatísticas gerais**: Total de eventos, usuários ativos, etc.
+- **Versão para impressão**: Layout otimizado
+
+### phpMyAdmin
+
+Interface web para administração do MySQL:
+- **URL**: http://localhost:8080
+- **Servidor**: sge-db
+- **Usuário**: root
+- **Senha**: rootpass
+
+Funcionalidades:
+- Executar queries SQL
+- Importar/Exportar dados
+- Visualizar estrutura das tabelas
+- Editar registros manualmente
+
+### Logs e Debugging
+
+**Logs do Apache**:
+```bash
+docker exec -it sge-php tail -f /var/log/apache2/error.log
+```
+
+**Logs do PHP**:
+Configure `display_errors` no Dockerfile se necessário.
+
+**Logs do MySQL**:
+```bash
+docker logs sge-db
+```
+
+---
+
+## 🐛 Solução de Problemas
+
+### Porta 80 já está em uso
+
+**Windows**:
+```cmd
+netstat -ano | findstr :80
+taskkill /PID <PID> /F
+```
+
+**Linux/Mac**:
+```bash
+sudo lsof -i :80
+sudo kill -9 <PID>
+```
+
+Ou altere a porta no `docker-compose.yml`.
+
+### Containers não iniciam
+
+```bash
+# Ver logs de erro
+docker-compose logs
+
+# Remover e recriar
+docker-compose down -v
+docker-compose up -d --build
+```
+
+### Erro de conexão com banco
+
+1. Verifique se o container do banco está rodando:
+   ```bash
+   docker-compose ps
+   ```
+
+2. Teste a conexão:
+   ```bash
+   docker exec -it sge-db mysql -uroot -prootpass -e "SELECT 1"
+   ```
+
+3. Verifique as variáveis de ambiente no `.env`
+
+### Permissões de arquivo (Linux/Mac)
+
+```bash
+sudo chown -R $USER:$USER .
+chmod -R 755 .
+```
+
+### Composer não instalado
+
+```bash
+docker exec -it sge-php composer --version
+
+# Se não estiver instalado
+docker exec -it sge-php curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+```
+
+---
+
+## 📚 Boas Práticas de Desenvolvimento
+
+### Adicionar Nova Rota
+
+1. Defina a rota em `src/routes.php`:
+```php
+Router::get('/nova-rota', 'MeuController@minhaAction');
+```
+
+2. Crie o método no Controller:
+```php
+public function minhaAction() {
+    Auth::protect(); // Proteger se necessário
+    view('minha-view', ['data' => $dados]);
+}
+```
+
+3. Crie a view em `views/minha-view.view.php`
+
+### Adicionar Nova Tabela
+
+1. Crie a estrutura SQL em `assets/data/0-schema.sql`
+2. Crie um Repository em `src/Repository/MinhaRepository.php`
+3. Use no Controller:
+```php
+$repo = $this->repository('MinhaRepository');
+$dados = $repo->findAll();
+```
+
+### Sistema de Notificações
+
+```php
+use Application\Core\NotificationService;
+
+$notificationService = new NotificationService();
+
+// Notificação individual
+$notificationService->notifyAgendamentoAprovado($agendamentoId);
+
+// Notificação global (Super Admin)
+$notificationRepo = new NotificationRepository();
+$notificationRepo->createGlobalNotification(
+    'Título da Notificação',
+    'Mensagem completa',
+    'sistema'
+);
+```
+
+---
+
+## 📊 Estrutura de Dados Importantes
+
+### Tipos de Usuário (`tipo_usuario_detalhado`)
+- `Aluno`: Estudante da UNIFIO
+- `Professor`: Docente da UNIFIO
+- `Membro das Atléticas`: Participante ativo de atlética
+- `Comunidade Externa`: Visitante externo
+
+### Tipos de Agendamento
+- `esportivo`: Treinos, campeonatos, jogos
+  - Subtipos: treino, campeonato
+- `nao_esportivo`: Palestras, workshops, formaturas
+  - Subtipos: palestra, workshop, formatura
+
+### Status de Agendamento
+- `pendente`: Aguardando aprovação
+- `aprovado`: Confirmado pelo Super Admin
+- `rejeitado`: Negado com motivo
+- `cancelado`: Cancelado pelo usuário ou admin
+
+### Períodos
+- `primeiro`: 19:15 - 20:55
+- `segundo`: 21:10 - 22:50
+
+---
+
+## 🎓 Atléticas Cadastradas
+
+1. **A.A.A. FURIOSA** - Engenharia Civil
+2. **A.A.A. PREDADORA** - Direito
+3. **A.A.A. SANGUINÁRIA** - Medicina
+4. **A.A.A. INSANA** - Psicologia
+5. **A.A.A. MAGNA** - Administração
+6. **A.A.A. ALFA** - Eng. Software / Ciência da Computação
+7. **A.A.A. IMPÉRIO** - Publicidade e Propaganda
+8. **A.A.A. VENENOSA** - Farmácia
+9. **A.A.A. LETAL** - Ciências Biológicas
+10. **A.A.A. ATÔMICA** - (Sem curso vinculado)
+
+---
+
+## 🏆 Modalidades Esportivas
+
+### Esportes Tradicionais
+- Futsal
+- Voleibol
+- Basquetebol
+- Handebol
+- Natação
+- Atletismo
+- Vôlei de Praia
+- Queimada
+
+### Artes Marciais
+- Judô
+- Karatê
+
+### Esportes de Raquete
+- Tênis de Mesa
+- Tênis de Campo
+
+### E-Sports
+- League of Legends
+- CS:GO
+
+### Outros
+- Xadrez
+
+---
+
+## 🚀 Roadmap e Melhorias Futuras
+
+### Funcionalidades Planejadas
+- [ ] Upload real de arquivos (lista de participantes)
+- [ ] Integração com email para notificações
+- [ ] Sistema de pontuação de atléticas
+- [ ] Calendário público com filtros avançados
+- [ ] API REST completa para mobile
+- [ ] Dashboard com gráficos interativos
+- [ ] Sistema de chat entre membros
+- [ ] Galeria de fotos de eventos
+- [ ] QR Code para check-in de presença
+
+### Melhorias Técnicas
+- [ ] Testes automatizados (PHPUnit)
+- [ ] CI/CD com GitHub Actions
+- [ ] Cache com Redis
+- [ ] Logs estruturados (Monolog)
+- [ ] Documentação da API (Swagger)
+- [ ] Migração para PHP 8.3
+- [ ] Containerização com Kubernetes
+
+---
+
+## 👥 Contribuindo
+
+### Como Contribuir
+
+1. Faça um Fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+### Padrões de Código
+
+- **PSR-4**: Autoloading
+- **PSR-12**: Estilo de código
+- **Comentários**: Documentar classes e métodos complexos
+- **Commits**: Mensagens descritivas em português
+
+---
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para uso acadêmico na UNIFIO.
+
+---
+
+## 📞 Suporte
+
+Para dúvidas ou problemas:
+1. Verifique a seção de **Solução de Problemas**
+2. Consulte os logs dos containers
+3. Abra uma issue no repositório
+
+---
+
+## 🙏 Agradecimentos
+
+Desenvolvido para o **Centro Universitário UNIFIO** com o objetivo de modernizar e centralizar a gestão de eventos esportivos e acadêmicos.
+
+**Stack Principal**: PHP 8.2 | MySQL 9.4 | Docker | JavaScript | CSS3
+
+**Padrões**: MVC | Repository Pattern | Singleton | PSR-4
+
+---
+
+**Versão**: 1.0.0
+**Última Atualização**: Outubro 2025
+**Status**: ✅ Produção

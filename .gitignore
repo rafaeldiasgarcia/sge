@@ -4,6 +4,7 @@
 *.swp
 *.swo
 *~
+discord.xml
 
 # Dependências PHP (geradas pelo composer install)
 vendor/

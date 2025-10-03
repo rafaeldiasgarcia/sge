@@ -40,6 +40,7 @@
 <?php if (!isset($isAuthPage) || !$isAuthPage): ?>
 <script src="/js/calendar.js"></script>
 <script src="/js/header.js"></script>
+<script src="/js/event-popup.js"></script>
 <?php endif; ?>
 <?php
 use Application\Core\Auth;

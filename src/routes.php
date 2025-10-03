@@ -41,6 +41,7 @@ Router::get('/agendamento/editar', 'AgendamentoController@showEditForm');
 Router::post('/agendamento/editar', 'AgendamentoController@update');
 Router::post('/agendamento/cancelar', 'AgendamentoController@cancel');
 Router::get('/calendario-partial', 'AgendamentoController@getCalendarPartial');
+Router::get('/agendamento/detalhes', 'AgendamentoController@getEventDetails');
 
 // --- Rotas do Painel do Admin da Atlética ---
 Router::get('/admin/atletica/dashboard', 'AdminAtleticaController@dashboard');
