@@ -59,8 +59,14 @@ function hasInsufficientAdvance($ymd) {
 
         <div class="fw-semibold">
             <?php
-            $fmt = new \IntlDateFormatter('pt_BR', \IntlDateFormatter::LONG, \IntlDateFormatter::NONE, 'America/Sao_Paulo', \IntlDateFormatter::GREGORIAN, "LLLL 'de' y");
-            echo ucfirst($fmt->format($inicio));
+            $meses = [
+                1 => 'janeiro', 2 => 'fevereiro', 3 => 'março', 4 => 'abril',
+                5 => 'maio', 6 => 'junho', 7 => 'julho', 8 => 'agosto',
+                9 => 'setembro', 10 => 'outubro', 11 => 'novembro', 12 => 'dezembro'
+            ];
+            $mes = (int)$inicio->format('n');
+            $ano = $inicio->format('Y');
+            echo $meses[$mes] . ' de ' . $ano;
             ?>
         </div>
 
