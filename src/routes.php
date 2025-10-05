@@ -37,8 +37,8 @@ Router::post('/agenda/presenca', 'AgendaController@handlePresenca');
 Router::get('/agendar-evento', 'AgendamentoController@showForm');
 Router::post('/agendar-evento', 'AgendamentoController@create');
 Router::get('/meus-agendamentos', 'AgendamentoController@showMeusAgendamentos');
-Router::get('/agendamento/editar', 'AgendamentoController@showEditForm');
-Router::post('/agendamento/editar', 'AgendamentoController@update');
+Router::get('/agendamento/editar/:id', 'AgendamentoController@showEditForm');
+Router::post('/agendamento/editar/:id', 'AgendamentoController@update');
 Router::post('/agendamento/cancelar', 'AgendamentoController@cancel');
 Router::get('/calendario-partial', 'AgendamentoController@getCalendarPartial');
 Router::get('/agendamento/detalhes', 'AgendamentoController@getEventDetails');
@@ -60,6 +60,8 @@ Router::get('/superadmin/dashboard', 'SuperAdminController@dashboard');
 Router::get('/superadmin/agendamentos', 'SuperAdminController@gerenciarAgendamentos');
 Router::post('/superadmin/agendamentos/aprovar', 'SuperAdminController@aprovarAgendamento');
 Router::post('/superadmin/agendamentos/rejeitar', 'SuperAdminController@rejeitarAgendamento');
+Router::post('/superadmin/agendamentos/update-aprovado', 'SuperAdminController@updateAgendamentoAprovado');
+Router::post('/superadmin/agendamentos/cancelar-aprovado', 'SuperAdminController@cancelarAgendamentoAprovado');
 
 // Gerenciar Usuários
 Router::get('/superadmin/usuarios', 'SuperAdminController@gerenciarUsuarios');

@@ -42,18 +42,29 @@ class UsuarioRepository
 
     public function findUserByLoginCode(string $email, string $code)
     {
-        $sql = "SELECT id, nome, role, atletica_id, tipo_usuario_detalhado, curso_id 
+        // Primeiro vamos buscar os dados atuais para debug
+        $sql = "SELECT id, nome, role, atletica_id, tipo_usuario_detalhado, curso_id, 
+                       login_code, login_code_expires, 
+                       NOW() as current_time
                 FROM usuarios 
-                WHERE email = :email 
-                  AND login_code = :code 
-                  AND login_code_expires > NOW()";
+                WHERE email = :email";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
-        $stmt->bindValue(':code', $code);
         $stmt->execute();
+        $user = $stmt->fetch();
 
-        return $stmt->fetch();
+        // Se não encontrou o usuário, retorna null
+        if (!$user) {
+            return null;
+        }
+
+        // Verifica se o código corresponde e não expirou
+        if ($user['login_code'] === $code && strtotime($user['login_code_expires']) > strtotime($user['current_time'])) {
+            return $user;
+        }
+
+        return null;
     }
 
     public function clearLoginCode(int $id): bool
@@ -245,6 +256,16 @@ class UsuarioRepository
                 JOIN atleticas a ON u.atletica_id = a.id 
                 WHERE u.role = 'admin' 
                 ORDER BY u.nome";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function findSuperAdmins(): array
+    {
+        $sql = "SELECT id, nome, email 
+                FROM usuarios 
+                WHERE role = 'superadmin' 
+                ORDER BY nome";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }

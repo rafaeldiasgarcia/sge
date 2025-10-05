@@ -24,7 +24,7 @@ class AgendamentoController extends BaseController
     {
         $tipo_usuario = Auth::get('tipo_usuario_detalhado');
         $role = Auth::role();
-        $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin' && $tipo_usuario === 'Membro das Atléticas');
+        $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin');
         if (!$can_schedule) {
             http_response_code(403);
             die('Acesso negado. Você não tem permissão para gerenciar agendamentos.');
@@ -99,17 +99,21 @@ class AgendamentoController extends BaseController
             redirect('/agendar-evento');
         }
 
-        if ($_POST['tipo_agendamento'] === 'esportivo' && $subtipo === 'treino') {
-            $atleticaId = Auth::get('atletica_id');
-            $esporte = $_POST['esporte_tipo'];
-
-            if ($atleticaId && $agendamentoRepo->verificaTreinoSemanal($atleticaId, $esporte, $dataEvento)) {
-                $_SESSION['error_message'] = "Sua atlética já possui um treino de {$esporte} agendado nesta semana.";
+        // Verifica limite semanal para eventos esportivos
+        if ($_POST['tipo_agendamento'] === 'esportivo') {
+            $userId = Auth::id();
+            $esporteTipo = $_POST['esporte_tipo'] ?? '';
+            if (empty($esporteTipo)) {
+                $_SESSION['error_message'] = "O tipo de esporte é obrigatório para eventos esportivos.";
+                redirect('/agendar-evento');
+            }
+            if ($agendamentoRepo->hasUserSportEventInWeek($userId, $dataEvento, $esporteTipo)) {
+                $_SESSION['error_message'] = "Você já possui um evento de {$esporteTipo} agendado nesta semana. Limite de 1 evento por semana para cada tipo de esporte.";
                 redirect('/agendar-evento');
             }
         }
 
-        $data = [
+        $dados = [
             'usuario_id' => Auth::id(),
             'titulo' => trim($_POST['titulo']),
             'tipo_agendamento' => $_POST['tipo_agendamento'],
@@ -121,7 +125,7 @@ class AgendamentoController extends BaseController
         ];
 
         if ($_POST['tipo_agendamento'] === 'esportivo') {
-            $data = array_merge($data, [
+            $data = array_merge($dados, [
                 'esporte_tipo' => $_POST['esporte_tipo'],
                 'possui_materiais' => isset($_POST['possui_materiais']) ? (int)$_POST['possui_materiais'] : null,
                 'materiais_necessarios' => trim($_POST['materiais_necessarios'] ?? ''),
@@ -153,7 +157,7 @@ class AgendamentoController extends BaseController
                 }
             }
         } else {
-            $data = array_merge($data, [
+            $data = array_merge($dados, [
                 'estimativa_participantes' => (int)($_POST['estimativa_participantes'] ?? 0),
                 'evento_aberto_publico' => isset($_POST['evento_aberto_publico']) ? (int)$_POST['evento_aberto_publico'] : null,
                 'descricao_publico_alvo' => trim($_POST['descricao_publico_alvo'] ?? ''),
@@ -191,48 +195,160 @@ class AgendamentoController extends BaseController
         ]);
     }
 
-    public function showEditForm()
+    public function showEditForm($id)
     {
         Auth::protect();
         $this->_checkSchedulingPermission();
-        $id = (int)($_GET['id'] ?? 0);
-        if ($id <= 0) redirect('/meus-agendamentos');
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
-        $agendamento = $agendamentoRepo->findByIdAndUserId($id, Auth::id());
+        $modalidadeRepo = $this->repository('ModalidadeRepository');
 
-        if (!$agendamento) {
-            $_SESSION['error_message'] = "Agendamento não encontrado ou você não tem permissão para editá-lo.";
+        // Buscar o agendamento
+        $evento = $agendamentoRepo->findById($id);
+
+        // Verificar se o evento existe e pertence ao usuário
+        if (!$evento || $evento['usuario_id'] !== Auth::id()) {
+            $_SESSION['error_message'] = "Agendamento não encontrado ou sem permissão para editar.";
             redirect('/meus-agendamentos');
         }
 
-        view('pages/editar-agendamento', [
-            'title' => 'Editar Agendamento',
-            'agendamento' => $agendamento
+        // Verificar se o evento já passou ou foi finalizado
+        $dataEvento = new \DateTime($evento['data_agendamento']);
+        $hoje = new \DateTime();
+        if ($dataEvento < $hoje || $evento['status'] === 'finalizado') {
+            $_SESSION['error_message'] = "Não é possível editar eventos que já passaram ou foram finalizados.";
+            redirect('/meus-agendamentos');
+        }
+
+        // Lógica para carregar os dados do calendário
+        $mesParam = $dataEvento->format('Y-m');
+        $inicio = new \DateTime($mesParam . '-01');
+        $fim = (clone $inicio)->modify('last day of this month');
+        $rows = $agendamentoRepo->findOcupacaoPorMes($inicio->format('Y-m-d'), $fim->format('Y-m-d'));
+        $ocupado = [];
+        foreach ($rows as $r) {
+            if (isset($r['id']) && $r['id'] != $id) {
+                $periodoCalendario = ($r['periodo'] === 'primeiro') ? 'P1' : 'P2';
+                $ocupado[$r['data_agendamento']][$periodoCalendario] = true;
+            }
+        }
+
+        // Mensagem diferente dependendo se é aprovado ou pendente
+        if ($evento['status'] === 'aprovado') {
+            $_SESSION['warning_message'] = "Atenção: Este evento já foi aprovado. Ao editá-lo, ele voltará para análise e precisará ser aprovado novamente pelo Coordenador.";
+        } else {
+            $_SESSION['warning_message'] = "Atenção: Ao editar o evento, ele voltará para análise e precisará ser aprovado novamente pelo Coordenador.";
+        }
+
+        view('pages/editar-evento', [
+            'title' => 'Editar Evento',
+            'evento' => $evento,
+            'modalidades' => $modalidadeRepo->findAll(),
+            'inicio' => $inicio,
+            'diasNoMes' => (int)$inicio->format('t'),
+            'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
+            'ocupado' => $ocupado,
+            'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
+            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m')
         ]);
     }
 
-    public function update()
+    public function update($id)
     {
         Auth::protect();
         $this->_checkSchedulingPermission();
-        $id = (int)($_POST['id'] ?? 0);
-        $data = [
-            'titulo' => trim($_POST['titulo'] ?? ''),
-            'data_agendamento' => $_POST['data_agendamento'] ?? '',
-            'periodo' => $_POST['periodo'] ?? '',
-            'descricao' => trim($_POST['descricao'] ?? '')
-        ];
 
-        if ($id <= 0 || empty($data['titulo']) || empty($data['data_agendamento']) || empty($data['periodo'])) {
-            $_SESSION['error_message'] = "Dados inválidos.";
+        $agendamentoRepo = $this->repository('AgendamentoRepository');
+        $agendamentoAtual = $agendamentoRepo->findByIdAndUserId($id, Auth::id());
+
+        if (!$agendamentoAtual) {
+            $_SESSION['error_message'] = "Agendamento não encontrado.";
             redirect('/meus-agendamentos');
         }
 
-        $agendamentoRepo = $this->repository('AgendamentoRepository');
-        $agendamentoRepo->updateAgendamento($id, Auth::id(), $data);
-        $_SESSION['success_message'] = "Agendamento atualizado e reenviado para aprovação!";
-        redirect('/meus-agendamentos');
+        // Dados básicos
+        $data = [
+            'titulo' => trim($_POST['titulo'] ?? ''),
+            'tipo_agendamento' => $_POST['tipo_agendamento'] ?? '',
+            'data_agendamento' => $_POST['data_agendamento'] ?? '',
+            'periodo' => $_POST['periodo'] ?? '',
+            'observacoes' => trim($_POST['observacoes'] ?? '')
+        ];
+
+        if (empty($data['titulo']) || empty($data['tipo_agendamento']) ||
+            empty($data['data_agendamento']) || empty($data['periodo'])) {
+            $_SESSION['error_message'] = "Todos os campos obrigatórios precisam ser preenchidos.";
+            redirect("/agendamento/editar/$id");
+        }
+
+        // Dados específicos por tipo de evento
+        if ($data['tipo_agendamento'] === 'esportivo') {
+            $data = array_merge($data, [
+                'subtipo_evento' => $_POST['subtipo_evento'] ?? null,
+                'esporte_tipo' => $_POST['esporte_tipo'] ?? null,
+                'possui_materiais' => isset($_POST['possui_materiais']) ? (int)$_POST['possui_materiais'] : null,
+                'materiais_necessarios' => trim($_POST['materiais_necessarios'] ?? ''),
+                'responsabiliza_devolucao' => isset($_POST['responsabiliza_devolucao']) ? 1 : 0,
+                'lista_participantes' => trim($_POST['lista_participantes'] ?? ''),
+                'arbitro_partida' => trim($_POST['arbitro_partida'] ?? '')
+            ]);
+        } else {
+            $data = array_merge($data, [
+                'subtipo_evento_nao_esp' => $_POST['subtipo_evento_nao_esp'] ?? null,
+                'outro_tipo_evento' => $_POST['subtipo_evento_nao_esp'] === 'outro' ? trim($_POST['outro_tipo_evento'] ?? '') : null,
+                'estimativa_participantes' => (int)($_POST['estimativa_participantes'] ?? 0),
+                'evento_aberto_publico' => isset($_POST['evento_aberto_publico']) ? (int)$_POST['evento_aberto_publico'] : null,
+                'descricao_publico_alvo' => trim($_POST['descricao_publico_alvo'] ?? ''),
+                'infraestrutura_adicional' => trim($_POST['infraestrutura_adicional'] ?? '')
+            ]);
+        }
+
+        // Validação da data (mínimo 4 dias de antecedência) - MAS permite se for a mesma data
+        $hoje = new \DateTime();
+        $dataEvento = new \DateTime($data['data_agendamento']);
+        $dataOriginal = new \DateTime($agendamentoAtual['data_agendamento']);
+        $diferencaDias = $hoje->diff($dataEvento)->days;
+
+        $subtipo = $data['tipo_agendamento'] === 'esportivo' ?
+                  ($data['subtipo_evento'] ?? '') :
+                  ($data['subtipo_evento_nao_esp'] ?? '');
+
+        // Só valida os 4 dias se a data foi alterada
+        if ($data['data_agendamento'] !== $agendamentoAtual['data_agendamento']) {
+            if ($subtipo !== 'campeonato' && $diferencaDias < 4) {
+                $_SESSION['error_message'] = "A nova data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).";
+                redirect("/agendamento/editar/$id");
+            }
+        }
+
+        // Se for evento esportivo, verifica a limitação semanal
+        if ($data['tipo_agendamento'] === 'esportivo') {
+            $userId = Auth::id();
+            $novaData = $data['data_agendamento'];
+
+            // Só verifica se a data está sendo alterada
+            if ($novaData !== $agendamentoAtual['data_agendamento']) {
+                if ($agendamentoRepo->hasUserSportEventInWeek($userId, $novaData, $data['esporte_tipo'])) {
+                    $_SESSION['error_message'] = "Você já possui um evento de {$data['esporte_tipo']} agendado nesta semana. Escolha outra data.";
+                    redirect("/agendamento/editar/$id");
+                }
+            }
+        }
+
+        // Marcar que foi editado
+        $data['foi_editado'] = true;
+        $data['data_edicao'] = date('Y-m-d H:i:s');
+
+        if ($agendamentoRepo->updateAgendamento($id, Auth::id(), $data)) {
+            // Enviar notificação ao super admin sobre a edição
+            $this->notificationService->notifyAgendamentoEditado($id, $agendamentoAtual['status']);
+
+            $_SESSION['success_message'] = "Agendamento atualizado com sucesso! Aguarde a nova aprovação do Coordenador de Educação Física.";
+            redirect('/meus-agendamentos');
+        } else {
+            $_SESSION['error_message'] = "Erro ao atualizar o agendamento.";
+            redirect("/agendamento/editar/$id");
+        }
     }
 
     public function getCalendarPartial()
@@ -279,8 +395,8 @@ class AgendamentoController extends BaseController
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $agendamento = $agendamentoRepo->findByIdAndUserId($id, Auth::id());
 
-        if (!$agendamento || $agendamento['status'] !== 'aprovado') {
-            $_SESSION['error_message'] = "Apenas agendamentos aprovados podem ser cancelados.";
+        if (!$agendamento || !in_array($agendamento['status'], ['aprovado', 'pendente'])) {
+            $_SESSION['error_message'] = "Agendamento não pode ser cancelado.";
             redirect('/meus-agendamentos');
         }
 

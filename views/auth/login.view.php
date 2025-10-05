@@ -8,7 +8,7 @@
 
 <div class="auth-card">
     <h1 class="auth-title">Jogos Acadêmicos</h1>
-    <p class="auth-subtitle">Inscrição dos jogos acadêmicos UNIFIO<br>entre atléticas</p>
+    <p class="auth-subtitle">Gerenciamento da Quadra esportiva</p>
 
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success alert-auth">

@@ -83,23 +83,16 @@
                             </td>
                             <td><?php echo htmlspecialchars($evento['motivo_rejeicao'] ?? '-'); ?></td>
                             <td onclick="event.stopPropagation();">
-                                <?php if ($evento['status'] === 'pendente'): ?>
-                                    <a href="/agendamento/editar?id=<?php echo $evento['id']; ?>" class="btn btn-sm btn-info" title="Editar">
+                                <?php if (in_array($evento['status'], ['pendente', 'aprovado'])): ?>
+                                    <!-- Permitir editar tanto pendentes quanto aprovados -->
+                                    <a href="/agendamento/editar/<?php echo $evento['id']; ?>" class="btn btn-sm btn-info" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-warning"
                                             onclick="cancelarEvento(<?php echo $evento['id']; ?>, '<?php echo htmlspecialchars($evento['titulo'], ENT_QUOTES); ?>')"
                                             title="Cancelar">
-                                        <i class="bi bi-x-circle"></i>
+                                        <i class="bi bi-x-circle"></i> <?php echo $evento['status'] === 'aprovado' ? 'Cancelar' : ''; ?>
                                     </button>
-                                <?php elseif ($evento['status'] === 'aprovado'): ?>
-                                    <button type="button" class="btn btn-sm btn-warning"
-                                            onclick="cancelarEvento(<?php echo $evento['id']; ?>, '<?php echo htmlspecialchars($evento['titulo'], ENT_QUOTES); ?>')"
-                                            title="Cancelar evento aprovado">
-                                        <i class="bi bi-x-circle"></i> Cancelar
-                                    </button>
-                                <?php else: ?>
-                                    <span class="text-muted">-</span>
                                 <?php endif; ?>
                             </td>
                         </tr>

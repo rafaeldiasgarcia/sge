@@ -82,7 +82,7 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
 - **Limpeza Automática**: Notificações antigas removidas após 30 dias
 - **Script Diário**: `daily_notifications.php` para lembretes automáticos
 
-### 🎯 Popup de Detalhes do Evento (NOVO)
+### 🎯 Popup de Detalhes do Evento
 - **Visualização Completa de Eventos**: Modal dinâmico com todas as informações
 - **Clique em Qualquer Evento**: Abre popup instantâneo via AJAX
 - **Informações Detalhadas**:
@@ -111,7 +111,7 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
   - Controller: `AgendamentoController@getEventDetails`
   - Integrado com sistema de permissões
 
-### ✅ Sistema de Confirmação de Presença (NOVO)
+### ✅ Sistema de Confirmação de Presença
 - **Marcar Presença em Eventos**: Usuários podem confirmar participação em eventos aprovados
 - **Funcionalidades**:
   - Botão "Marcar Presença" em cada evento da agenda
@@ -136,6 +136,22 @@ Desenvolvido com **arquitetura MVC moderna** e completamente **containerizado co
   - Admins e Super Admins visualizam lista completa no popup
   - Contador público para todos os usuários
   - Relatórios de participação disponíveis
+
+### 📋 Sistema de Controle de Agendamentos
+- **Limite de Agendamentos por Esporte**: Cada usuário pode agendar apenas 1 evento por tipo de esporte por semana
+- **Validação Automática**: Sistema verifica se já existe agendamento do mesmo esporte na mesma semana
+- **Feedback Imediato**: Mensagem clara informando o limite quando atingido
+- **Controle por Tipo de Esporte**: Limite aplicado individualmente para cada modalidade (Futsal, Vôlei, Basquete, etc.)
+- **Aplicado a Eventos Esportivos**: Validação apenas para agendamentos do tipo "esportivo"
+
+### 👥 Meus Agendamentos
+- **Visualização Completa**: Lista todos os agendamentos do usuário
+- **Status em Tempo Real**: Acompanhe pendentes, aprovados, rejeitados e cancelados
+- **Edição Flexível**: Editar agendamentos pendentes ou aprovados (antes da data)
+- **Cancelamento de Eventos**: Cancelar eventos pendentes ou aprovados
+- **Super Admin - Visão Global**: Super Admin pode visualizar e editar TODOS os agendamentos do sistema
+- **Detalhes Completos**: Clique em qualquer evento para ver informações detalhadas
+- **Atualização Automática**: Eventos passados marcados como "finalizado" automaticamente
 
 ---
 

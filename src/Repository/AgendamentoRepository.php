@@ -33,7 +33,7 @@ class AgendamentoRepository
                 JOIN usuarios u ON a.usuario_id = u.id
                 LEFT JOIN presencas p ON a.id = p.agendamento_id AND p.usuario_id = :usuario_id
                 LEFT JOIN atleticas at ON a.atletica_id_confirmada = at.id
-                WHERE a.status = 'aprovado'
+                WHERE a.status IN ('aprovado', 'finalizado')
                 ORDER BY a.data_agendamento ASC, a.periodo ASC";
 
         $stmt = $this->pdo->prepare($sql);
@@ -60,12 +60,22 @@ class AgendamentoRepository
         return $stmt->execute();
     }
 
-    public function isSlotOccupied(string $data, string $periodo): bool
+    public function isSlotOccupied(string $data, string $periodo, ?int $excludeId = null): bool
     {
         $sql = "SELECT COUNT(id) FROM agendamentos WHERE data_agendamento = :data AND periodo = :periodo AND status = 'aprovado'";
+
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+        }
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':data', $data);
         $stmt->bindValue(':periodo', $periodo);
+
+        if ($excludeId !== null) {
+            $stmt->bindValue(':exclude_id', $excludeId, PDO::PARAM_INT);
+        }
+
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
@@ -177,13 +187,46 @@ class AgendamentoRepository
     public function updateAgendamento(int $id, int $userId, array $data): bool
     {
         $sql = "UPDATE agendamentos 
-                SET titulo = :titulo, data_agendamento = :data_agendamento, periodo = :periodo, descricao = :descricao, status = 'pendente' 
+                SET titulo = :titulo, 
+                    tipo_agendamento = :tipo_agendamento,
+                    subtipo_evento = :subtipo_evento,
+                    esporte_tipo = :esporte_tipo,
+                    data_agendamento = :data_agendamento, 
+                    periodo = :periodo,
+                    possui_materiais = :possui_materiais,
+                    materiais_necessarios = :materiais_necessarios,
+                    responsabiliza_devolucao = :responsabiliza_devolucao,
+                    lista_participantes = :lista_participantes,
+                    arbitro_partida = :arbitro_partida,
+                    estimativa_participantes = :estimativa_participantes,
+                    evento_aberto_publico = :evento_aberto_publico,
+                    descricao_publico_alvo = :descricao_publico_alvo,
+                    infraestrutura_adicional = :infraestrutura_adicional,
+                    observacoes = :observacoes,
+                    foi_editado = :foi_editado,
+                    data_edicao = :data_edicao,
+                    status = 'pendente'
                 WHERE id = :id AND usuario_id = :user_id";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':titulo', $data['titulo']);
+        $stmt->bindValue(':tipo_agendamento', $data['tipo_agendamento']);
+        $stmt->bindValue(':subtipo_evento', $data['subtipo_evento'] ?? null);
+        $stmt->bindValue(':esporte_tipo', $data['esporte_tipo'] ?? null);
         $stmt->bindValue(':data_agendamento', $data['data_agendamento']);
         $stmt->bindValue(':periodo', $data['periodo']);
-        $stmt->bindValue(':descricao', $data['descricao']);
+        $stmt->bindValue(':possui_materiais', $data['possui_materiais'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':materiais_necessarios', $data['materiais_necessarios'] ?? null);
+        $stmt->bindValue(':responsabiliza_devolucao', $data['responsabiliza_devolucao'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':lista_participantes', $data['lista_participantes'] ?? null);
+        $stmt->bindValue(':arbitro_partida', $data['arbitro_partida'] ?? null);
+        $stmt->bindValue(':estimativa_participantes', $data['estimativa_participantes'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':evento_aberto_publico', $data['evento_aberto_publico'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':descricao_publico_alvo', $data['descricao_publico_alvo'] ?? null);
+        $stmt->bindValue(':infraestrutura_adicional', $data['infraestrutura_adicional'] ?? null);
+        $stmt->bindValue(':observacoes', $data['observacoes'] ?? null);
+        $stmt->bindValue(':foi_editado', $data['foi_editado'] ?? false, PDO::PARAM_BOOL);
+        $stmt->bindValue(':data_edicao', $data['data_edicao'] ?? null);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         return $stmt->execute();
@@ -191,11 +234,12 @@ class AgendamentoRepository
 
     public function findPendingAgendamentos(): array
     {
-        $sql = "SELECT a.id, a.titulo, a.data_agendamento, a.periodo, u.nome as solicitante
+        $sql = "SELECT a.id, a.titulo, a.data_agendamento, a.periodo, u.nome as solicitante,
+                       a.foi_editado, a.data_edicao
                 FROM agendamentos a 
                 JOIN usuarios u ON a.usuario_id = u.id
                 WHERE a.status = 'pendente' 
-                ORDER BY a.data_solicitacao ASC";
+                ORDER BY a.data_agendamento ASC, a.periodo ASC";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
     }
@@ -298,7 +342,7 @@ class AgendamentoRepository
 
     public function findOcupacaoPorMes(string $inicioMes, string $fimMes): array
     {
-        $sql = "SELECT data_agendamento, periodo, status 
+        $sql = "SELECT id, data_agendamento, periodo, status 
                 FROM agendamentos 
                 WHERE data_agendamento BETWEEN :ini AND :fim
                 AND status IN ('aprovado', 'pendente')";
@@ -308,13 +352,25 @@ class AgendamentoRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findById(int $id)
+    public function findById(int $id): ?array
     {
-        $sql = "SELECT * FROM agendamentos WHERE id = :id";
+        $sql = "SELECT a.*, 
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15-20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10-22:50'
+                           ELSE a.periodo
+                       END as horario_periodo,
+                       u.nome as responsavel
+                FROM agendamentos a
+                JOIN usuarios u ON a.usuario_id = u.id
+                WHERE a.id = :id";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
     }
 
     public function updatePastEventsToFinalized(): bool
@@ -346,6 +402,7 @@ class AgendamentoRepository
                            u.nome as criador_nome, 
                            u.email as criador_email, 
                            u.telefone as criador_telefone,
+                           u.ra as criador_ra,
                            u.tipo_usuario_detalhado as criador_tipo,
                            at.nome as atletica_nome,
                            at_conf.nome as atletica_confirmada_nome,
@@ -366,5 +423,94 @@ class AgendamentoRepository
             error_log('Erro SQL em findByIdWithDetails: ' . $e->getMessage());
             throw new \Exception('Erro ao buscar detalhes do agendamento: ' . $e->getMessage());
         }
+    }
+
+    public function hasUserSportEventInWeek(int $userId, string $date, string $esporteTipo): bool
+    {
+        // Converte a data do novo agendamento para objeto DateTime
+        $dataNovoAgendamento = new \DateTime($date);
+
+        // Encontra o início (segunda) e fim (domingo) da semana do novo agendamento
+        $inicioSemana = (clone $dataNovoAgendamento)->modify('monday this week')->format('Y-m-d');
+        $fimSemana = (clone $dataNovoAgendamento)->modify('sunday this week')->format('Y-m-d');
+
+        $sql = "SELECT COUNT(*) FROM agendamentos 
+                WHERE usuario_id = :usuario_id 
+                AND tipo_agendamento = 'esportivo'
+                AND esporte_tipo = :esporte_tipo
+                AND DATE(data_agendamento) BETWEEN :inicio_semana AND :fim_semana
+                AND status IN ('aprovado', 'pendente')";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':esporte_tipo', $esporteTipo);
+        $stmt->bindValue(':inicio_semana', $inicioSemana);
+        $stmt->bindValue(':fim_semana', $fimSemana);
+        $stmt->execute();
+
+        return $stmt->fetchColumn() > 0;
+    }
+
+    public function findApprovedAgendamentos(): array
+    {
+        $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, 
+                       a.data_agendamento, a.periodo, u.nome as solicitante,
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                           ELSE a.periodo
+                       END as horario_periodo
+                FROM agendamentos a 
+                JOIN usuarios u ON a.usuario_id = u.id
+                WHERE a.status = 'aprovado' 
+                AND a.data_agendamento >= CURDATE()
+                ORDER BY a.data_agendamento ASC, a.periodo ASC";
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function cancelarAgendamentoAprovado(int $id, string $motivo): bool
+    {
+        $sql = "UPDATE agendamentos 
+                SET status = 'cancelado', 
+                    motivo_rejeicao = :motivo,
+                    data_cancelamento = NOW(),
+                    cancelado_por_admin = true
+                WHERE id = :id AND status = 'aprovado'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':motivo', $motivo);
+        return $stmt->execute();
+    }
+
+    public function updateAgendamentoAprovado(int $id, array $data): bool
+    {
+        $sql = "UPDATE agendamentos 
+                SET data_agendamento = :data_agendamento,
+                    periodo = :periodo,
+                    observacoes_admin = :observacoes_admin,
+                    data_ultima_alteracao = NOW(),
+                    alterado_por_admin = true
+                WHERE id = :id AND status = 'aprovado'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':data_agendamento', $data['data_agendamento']);
+        $stmt->bindValue(':periodo', $data['periodo']);
+        $stmt->bindValue(':observacoes_admin', $data['observacoes_admin']);
+        return $stmt->execute();
+    }
+
+    public function findByDate(string $date): array
+    {
+        $sql = "SELECT * FROM agendamentos 
+                WHERE data_agendamento = :date 
+                AND status = 'aprovado'
+                ORDER BY periodo ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':date', $date);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }

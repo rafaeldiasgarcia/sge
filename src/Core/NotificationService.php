@@ -187,6 +187,128 @@ class NotificationService
     }
 
     /**
+     * Notifica quando um agendamento é editado
+     */
+    public function notifyAgendamentoEditado(int $agendamentoId, string $statusAnterior): bool
+    {
+        $agendamento = $this->agendamentoRepo->findById($agendamentoId);
+        if (!$agendamento) return false;
+
+        // Notificar o Super Admin
+        $superAdmins = $this->usuarioRepo->findSuperAdmins();
+
+        $statusTexto = $statusAnterior === 'aprovado' ? 'aprovado' : 'pendente';
+        $titulo = "⚠️ Agendamento Editado";
+        $mensagem = "O agendamento '{$agendamento['titulo']}' (anteriormente {$statusTexto}) foi editado por {$agendamento['responsavel']} e retornou para análise.";
+
+        $success = true;
+        foreach ($superAdmins as $admin) {
+            $result = $this->notificationRepo->create(
+                $admin['id'],
+                $titulo,
+                $mensagem,
+                'agendamento_editado',
+                $agendamentoId
+            );
+            $success = $success && $result;
+        }
+
+        return $success;
+    }
+
+    /**
+     * Notifica quando um agendamento aprovado é cancelado pelo admin
+     */
+    public function notifyAgendamentoCanceladoAdmin(int $agendamentoId, string $motivo): bool
+    {
+        $agendamento = $this->agendamentoRepo->findById($agendamentoId);
+        if (!$agendamento) return false;
+
+        $titulo = "Evento Cancelado pela Administração ⚠️";
+        $mensagem = "O evento '{$agendamento['titulo']}' agendado para " .
+                   date('d/m/Y', strtotime($agendamento['data_agendamento'])) .
+                   " foi cancelado pela administração.\n\nMotivo: " . $motivo;
+
+        // Notificar o criador do evento
+        $this->notificationRepo->create(
+            $agendamento['usuario_id'],
+            $titulo,
+            $mensagem,
+            'agendamento_cancelado_admin',
+            $agendamentoId
+        );
+
+        // Notificar todos que marcaram presença
+        $presencas = $this->agendamentoRepo->getPresencasByAgendamento($agendamentoId);
+        if (!empty($presencas)) {
+            $userIds = array_column($presencas, 'usuario_id');
+            $userIds = array_filter($userIds, function($id) use ($agendamento) {
+                return $id != $agendamento['usuario_id']; // Não duplicar para o criador
+            });
+
+            if (!empty($userIds)) {
+                $this->notificationRepo->createForMultipleUsers(
+                    $userIds,
+                    $titulo,
+                    $mensagem,
+                    'agendamento_cancelado_admin',
+                    $agendamentoId
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Notifica quando um agendamento aprovado é alterado pelo admin
+     */
+    public function notifyAgendamentoAlterado(int $agendamentoId): bool
+    {
+        $agendamento = $this->agendamentoRepo->findById($agendamentoId);
+        if (!$agendamento) return false;
+
+        $titulo = "Evento Alterado pela Administração 📝";
+        $mensagem = "O evento '{$agendamento['titulo']}' foi alterado pela administração. " .
+                   "Nova data: " . date('d/m/Y', strtotime($agendamento['data_agendamento'])) .
+                   " às " . $this->formatPeriodo($agendamento['periodo']) . ".";
+
+        if (!empty($agendamento['observacoes_admin'])) {
+            $mensagem .= "\n\nObservações: " . $agendamento['observacoes_admin'];
+        }
+
+        // Notificar o criador do evento
+        $this->notificationRepo->create(
+            $agendamento['usuario_id'],
+            $titulo,
+            $mensagem,
+            'agendamento_alterado',
+            $agendamentoId
+        );
+
+        // Notificar todos que marcaram presença
+        $presencas = $this->agendamentoRepo->getPresencasByAgendamento($agendamentoId);
+        if (!empty($presencas)) {
+            $userIds = array_column($presencas, 'usuario_id');
+            $userIds = array_filter($userIds, function($id) use ($agendamento) {
+                return $id != $agendamento['usuario_id']; // Não duplicar para o criador
+            });
+
+            if (!empty($userIds)) {
+                $this->notificationRepo->createForMultipleUsers(
+                    $userIds,
+                    $titulo,
+                    $mensagem,
+                    'agendamento_alterado',
+                    $agendamentoId
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Formata o período para exibição
      */
     private function formatPeriodo(string $periodo): string

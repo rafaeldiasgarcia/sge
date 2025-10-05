@@ -2,11 +2,21 @@
 #
 # View com o formulário de verificação de dois fatores.
 #
+$email = $_SESSION['login_email'] ?? '';
+$maskedEmail = '';
+if ($email) {
+    $parts = explode('@', $email);
+    if (count($parts) == 2) {
+        $name = $parts[0];
+        $domain = $parts[1];
+        $maskedEmail = substr($name, 0, 1) . str_repeat('*', strlen($name)-1) . '@' . $domain;
+    }
+}
 ?>
 <div class="auth-card">
     <h1 class="auth-title">Verificação</h1>
     <h2 class="auth-title" style="margin-top: -10px; margin-bottom: 20px;">de Dois Fatores</h2>
-    <p class="auth-subtitle">Insira o código de verificação enviado<br>no email ****@unifio.edu.br</p>
+    <p class="auth-subtitle">Insira o código de verificação enviado<br>no email <?php echo htmlspecialchars($maskedEmail); ?></p>
 
     <?php if (isset($_SESSION['error_message'])): ?>
         <div class="alert alert-danger alert-auth">
@@ -14,28 +24,28 @@
         </div>
     <?php endif; ?>
 
-    <!-- Exibir códigos de verificação para desenvolvimento/teste -->
-    <?php if (isset($_SESSION['verification_codes']) || isset($_SESSION['verification_code'])): ?>
+    <?php if (isset($_SESSION['verification_code'])): ?>
         <div class="alert alert-info alert-auth">
-            <strong>Códigos de verificação disponíveis:</strong><br>
-            <?php
-            if (isset($_SESSION['verification_codes'])) {
-                foreach ($_SESSION['verification_codes'] as $code) {
-                    echo "<code style='background: #f8f9fa; padding: 2px 6px; margin: 2px; border-radius: 4px;'>" . htmlspecialchars($code) . "</code> ";
-                }
-            } elseif (isset($_SESSION['verification_code'])) {
-                echo "<code style='background: #f8f9fa; padding: 2px 6px; margin: 2px; border-radius: 4px;'>" . htmlspecialchars($_SESSION['verification_code']) . "</code>";
-            }
-            ?>
+            <strong>Código de verificação:</strong><br>
+            <code style='background: #f8f9fa; padding: 2px 6px; margin: 2px; border-radius: 4px;'><?php echo htmlspecialchars($_SESSION['verification_code']); ?></code>
         </div>
     <?php endif; ?>
 
-    <form action="/login/verify" method="post" class="auth-form">
+    <form action="/login/verify" method="post" class="auth-form" id="verifyForm">
         <div class="mb-4">
-            <input type="text" name="code" id="codigo" class="form-control verification-code-input" placeholder="000000" maxlength="6" pattern="[0-9]{6}" title="Digite o código de 6 dígitos" required>
+            <input type="text"
+                   name="code"
+                   id="codigo"
+                   class="form-control verification-code-input"
+                   placeholder="000000"
+                   maxlength="6"
+                   pattern="[0-9]{6}"
+                   inputmode="numeric"
+                   autocomplete="off"
+                   required>
         </div>
 
-        <button type="submit" class="btn btn-auth-primary">Entrar</button>
+        <button type="submit" class="btn btn-auth-primary">Verificar</button>
 
         <div class="auth-help-text">
             Precisa de ajuda?<br>
@@ -49,15 +59,22 @@
 </div>
 
 <script>
-    // Auto-format verification code input
+    // Formatar entrada para aceitar apenas números
     document.getElementById('codigo').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-        if (value.length > 6) value = value.slice(0, 6); // Limit to 6 digits
+        let value = e.target.value.replace(/\D/g, ''); // Remove não-dígitos
+        if (value.length > 6) value = value.slice(0, 6); // Limita a 6 dígitos
         e.target.value = value;
     });
 
-    // Auto-focus on page load
+    // Auto-focus ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('codigo').focus();
+    });
+
+    // Prevenir envio duplicado do formulário
+    document.getElementById('verifyForm').addEventListener('submit', function(e) {
+        let submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Verificando...';
     });
 </script>

@@ -30,9 +30,11 @@ class SuperAdminController extends BaseController
         Auth::protectSuperAdmin();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $pendentes = $agendamentoRepo->findPendingAgendamentos();
+        $aprovados = $agendamentoRepo->findApprovedAgendamentos(); // Novo método que vamos criar
         view('super_admin/gerenciar-agendamentos', [
             'title' => 'Gerenciar Agendamentos',
-            'pendentes' => $pendentes
+            'pendentes' => $pendentes,
+            'aprovados' => $aprovados
         ]);
     }
 
@@ -68,6 +70,76 @@ class SuperAdminController extends BaseController
         // Enviar notificação de rejeição
         $this->notificationService->notifyAgendamentoRejeitado($id, $motivo);
         $_SESSION['success_message'] = "Agendamento rejeitado com sucesso.";
+        redirect('/superadmin/agendamentos');
+    }
+
+    public function cancelarAgendamentoAprovado()
+    {
+        Auth::protectSuperAdmin();
+        $id = (int)($_POST['id'] ?? 0);
+        $motivo = trim($_POST['motivo_cancelamento'] ?? '');
+
+        if ($id <= 0 || empty($motivo)) {
+            $_SESSION['error_message'] = "O motivo do cancelamento é obrigatório.";
+            redirect('/superadmin/agendamentos');
+        }
+
+        $agendamentoRepo = $this->repository('AgendamentoRepository');
+        if ($agendamentoRepo->cancelarAgendamentoAprovado($id, $motivo)) {
+            $this->notificationService->notifyAgendamentoCanceladoAdmin($id, $motivo);
+            $_SESSION['success_message'] = "Agendamento cancelado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao cancelar o agendamento.";
+        }
+        redirect('/superadmin/agendamentos');
+    }
+
+    public function updateAgendamentoAprovado()
+    {
+        Auth::protectSuperAdmin();
+        $id = (int)($_POST['id'] ?? 0);
+        $data = [
+            'data_agendamento' => $_POST['data_agendamento'] ?? '',
+            'periodo' => $_POST['periodo'] ?? '',
+            'observacoes_admin' => trim($_POST['observacoes_admin'] ?? '')
+        ];
+
+        if ($id <= 0 || empty($data['data_agendamento']) || empty($data['periodo'])) {
+            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
+            redirect('/superadmin/agendamentos');
+        }
+
+        $agendamentoRepo = $this->repository('AgendamentoRepository');
+
+        // Verifica se o novo horário está disponível (excluindo o próprio evento)
+        if ($agendamentoRepo->isSlotOccupied($data['data_agendamento'], $data['periodo'], $id)) {
+            // Buscar detalhes do evento que está ocupando o horário
+            $eventosNaData = $agendamentoRepo->findByDate($data['data_agendamento']);
+            $eventoConflitante = null;
+
+            foreach ($eventosNaData as $evt) {
+                if ($evt['periodo'] === $data['periodo'] && $evt['id'] != $id) {
+                    $eventoConflitante = $evt;
+                    break;
+                }
+            }
+
+            if ($eventoConflitante) {
+                $periodoTexto = $data['periodo'] === 'primeiro' ? '19:15 - 20:55' : '21:10 - 22:50';
+                $dataFormatada = date('d/m/Y', strtotime($data['data_agendamento']));
+                $_SESSION['error_message'] = "❌ Horário já ocupado! O evento \"{$eventoConflitante['titulo']}\" já está agendado para {$dataFormatada} no período {$periodoTexto}.";
+            } else {
+                $_SESSION['error_message'] = "Este horário já está ocupado por outro evento.";
+            }
+            redirect('/superadmin/agendamentos');
+        }
+
+        if ($agendamentoRepo->updateAgendamentoAprovado($id, $data)) {
+            $this->notificationService->notifyAgendamentoAlterado($id);
+            $_SESSION['success_message'] = "Agendamento atualizado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao atualizar o agendamento.";
+        }
         redirect('/superadmin/agendamentos');
     }
 

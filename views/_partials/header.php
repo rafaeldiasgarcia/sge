@@ -52,30 +52,23 @@ use Application\Core\Auth;
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <?php if (Auth::check()): ?>
-                        <?php if (Auth::role() === 'usuario'): ?>
-                            <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-house"></i> <span>Dashboard</span></a></li>
+                            <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-house"></i> <span>Meu Painel</span></a></li>
                             <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> <span>Agenda</span></a></li>
-                        <?php elseif (Auth::role() === 'superadmin'): ?>
-                            <li class="nav-item"><a class="nav-link" href="/superadmin/dashboard"><i class="bi bi-house"></i> <span>Painel</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> <span>Agenda</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/superadmin/relatorios"><i class="bi bi-file-earmark-bar-graph"></i> <span>Relatórios</span></a></li>
-                        <?php elseif (Auth::role() === 'admin'): ?>
-                            <li class="nav-item"><a class="nav-link" href="/admin/atletica/dashboard"><i class="bi bi-house"></i> <span>Painel</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> <span>Agenda</span></a></li>
-                            <?php
-                            $tipo_usuario = Auth::get('tipo_usuario_detalhado');
-                            if ($tipo_usuario === 'Membro das Atléticas'): ?>
+
+                            <?php if (Auth::role() === 'superadmin'): ?>
+                                <li class="nav-item"><a class="nav-link" href="/superadmin/dashboard"><i class="bi bi-gear"></i> <span>Painel Admin</span></a></li>
                                 <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <li class="nav-item"><a class="nav-link" href="/agenda"><i class="bi bi-calendar-week"></i> <span>Agenda</span></a></li>
-                            <?php
-                            $tipo_usuario = Auth::get('tipo_usuario_detalhado');
-                            if ($tipo_usuario === 'Professor'): ?>
+                                <li class="nav-item"><a class="nav-link" href="/superadmin/relatorios"><i class="bi bi-file-earmark-bar-graph"></i> <span>Relatórios</span></a></li>
+                            <?php elseif (Auth::role() === 'admin'): ?>
+                                <li class="nav-item"><a class="nav-link" href="/admin/atletica/dashboard"><i class="bi bi-trophy"></i> <span>Painel Atlética</span></a></li>
                                 <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
+                            <?php else: ?>
+                                <?php
+                                $tipo_usuario = Auth::get('tipo_usuario_detalhado');
+                                if ($tipo_usuario === 'Professor'): ?>
+                                    <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
+                                <?php endif; ?>
                             <?php endif; ?>
-                        <?php endif; ?>
 
                         <li class="nav-item dropdown me-2 notifications">
                            <a class="nav-link" href="#" id="notification-bell">

@@ -8,6 +8,7 @@
 -- Versão do PHP: 8.2.27
 -- MODIFICADO: Adicionado campo 'telefone' na tabela usuarios
 -- MODIFICADO: Adicionada tabela 'notificacoes'
+-- MODIFICADO: Adicionadas colunas para controle de edições/cancelamentos por admin na tabela agendamentos
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -57,7 +58,14 @@ CREATE TABLE `agendamentos` (
   `evento_aberto_publico` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
   `descricao_publico_alvo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `foi_editado` tinyint(1) DEFAULT 0 COMMENT 'Indica se o agendamento foi editado após criação',
+  `data_edicao` datetime DEFAULT NULL COMMENT 'Data e hora da última edição',
+  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento',
+  `data_ultima_alteracao` datetime DEFAULT NULL COMMENT 'Data da última alteração feita pelo admin',
+  `alterado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi alterado por um admin',
+  `data_cancelamento` datetime DEFAULT NULL COMMENT 'Data do cancelamento pelo admin',
+  `cancelado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado por um admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -176,7 +184,7 @@ CREATE TABLE `notificacoes` (
   `usuario_id` int NOT NULL,
   `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','presenca_confirmada','lembrete_evento','info','aviso') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `agendamento_id` int DEFAULT NULL,
   `lida` tinyint(1) NOT NULL DEFAULT '0',
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP

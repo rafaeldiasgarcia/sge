@@ -148,6 +148,9 @@ class EventPopup {
         const periodoTexto = this.getPeriodoTexto(evento.periodo);
         const dataFormatada = this.formatarData(evento.data_agendamento);
 
+        // Detectar se está na página de gerenciamento do super admin
+        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+
         let conteudo = `
             <div class="event-popup-header">
                 <button class="event-popup-close" onclick="eventPopup.close()">
@@ -189,6 +192,81 @@ class EventPopup {
                     </div>
                 </div>
         `;
+
+        // DADOS DO SOLICITANTE - Apenas para Super Admin
+        if (isSuperAdminPage) {
+            conteudo += `
+                <!-- Dados do Solicitante -->
+                <div class="event-popup-section">
+                    <h3><i class="bi bi-person-fill"></i> Dados do Solicitante</h3>
+                    <div class="event-info-grid">
+            `;
+
+            // Mostrar nome se existir
+            if (evento.criador_nome) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>Nome</label>
+                                <div class="value"><i class="bi bi-person"></i> ${this.escapeHtml(evento.criador_nome)}</div>
+                            </div>
+                `;
+            }
+
+            // Mostrar email se existir
+            if (evento.criador_email) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>Email</label>
+                                <div class="value"><i class="bi bi-envelope"></i> ${this.escapeHtml(evento.criador_email)}</div>
+                            </div>
+                `;
+            }
+
+            // Mostrar telefone se existir
+            if (evento.criador_telefone) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>Telefone</label>
+                                <div class="value"><i class="bi bi-telephone"></i> ${this.escapeHtml(evento.criador_telefone)}</div>
+                            </div>
+                `;
+            }
+
+            // Mostrar RA se existir
+            if (evento.criador_ra) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>RA</label>
+                                <div class="value"><i class="bi bi-person-badge"></i> ${this.escapeHtml(evento.criador_ra)}</div>
+                            </div>
+                `;
+            }
+
+            // Mostrar tipo de usuário se existir
+            if (evento.criador_tipo) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>Tipo de Usuário</label>
+                                <div class="value"><i class="bi bi-shield-check"></i> ${this.escapeHtml(evento.criador_tipo)}</div>
+                            </div>
+                `;
+            }
+
+            // Mostrar atlética se existir
+            if (evento.atletica_nome) {
+                conteudo += `
+                            <div class="event-info-item">
+                                <label>Atlética</label>
+                                <div class="value"><i class="bi bi-people"></i> ${this.escapeHtml(evento.atletica_nome)}</div>
+                            </div>
+                `;
+            }
+
+            conteudo += `
+                    </div>
+                </div>
+            `;
+        }
 
         // Detalhes específicos para eventos esportivos
         if (evento.tipo_agendamento === 'esportivo') {
@@ -237,30 +315,24 @@ class EventPopup {
             `;
         }
 
-        // Presenças confirmadas - SOMENTE PARA ADMINS E SUPERADMINS
-        if (evento.presencas && evento.presencas.length > 0) {
-            // Verificar se o usuário é admin ou superadmin
-            const userRole = window.userRole || '';
-            const isAdmin = userRole === 'admin' || userRole === 'superadmin';
-
-            if (isAdmin) {
-                conteudo += `
-                    <div class="event-popup-section">
-                        <h3><i class="bi bi-people-fill"></i> Presenças Confirmadas (${evento.presencas.length})</h3>
-                        <div class="presencas-list">
-                            ${evento.presencas.map(p => `
-                                <div class="presenca-item">
-                                    <i class="bi bi-person-check-fill"></i>
-                                    <div class="presenca-info">
-                                        <div class="name">${this.escapeHtml(p.nome)}</div>
-                                        <div class="email">${this.escapeHtml(p.email)}</div>
-                                    </div>
+        // Presenças confirmadas com lista de nomes - SOMENTE PARA SUPER ADMIN
+        if (evento.presencas && evento.presencas.length > 0 && isSuperAdminPage) {
+            conteudo += `
+                <div class="event-popup-section">
+                    <h3><i class="bi bi-people-fill"></i> Presenças Confirmadas (${evento.presencas.length})</h3>
+                    <div class="presencas-list">
+                        ${evento.presencas.map(p => `
+                            <div class="presenca-item">
+                                <i class="bi bi-person-check-fill"></i>
+                                <div class="presenca-info">
+                                    <div class="name">${this.escapeHtml(p.nome)}</div>
+                                    <div class="email">${this.escapeHtml(p.email)}</div>
                                 </div>
-                            `).join('')}
-                        </div>
+                            </div>
+                        `).join('')}
                     </div>
-                `;
-            }
+                </div>
+            `;
         }
 
         conteudo += `
@@ -301,6 +373,16 @@ class EventPopup {
             `;
         }
 
+        // Mostrar total de presenças confirmadas
+        if (evento.total_presencas !== undefined) {
+            conteudo += `
+                <div class="event-info-item">
+                    <label>Presenças Confirmadas</label>
+                    <div class="value"><i class="bi bi-person-check-fill text-success"></i> ${evento.total_presencas} pessoa(s)</div>
+                </div>
+            `;
+        }
+
         if (evento.arbitro_partida) {
             conteudo += `
                 <div class="event-info-item">
@@ -312,8 +394,10 @@ class EventPopup {
 
         conteudo += `</div>`;
 
-        // Materiais
-        if (evento.possui_materiais !== null) {
+        // Materiais - apenas para super admin
+        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+
+        if (isSuperAdminPage && evento.possui_materiais !== null) {
             const possuiMateriais = parseInt(evento.possui_materiais) === 1;
             conteudo += `
                 <div class="event-info-full">
@@ -335,8 +419,8 @@ class EventPopup {
             }
         }
 
-        // Lista de participantes
-        if (evento.lista_participantes) {
+        // Lista de participantes - apenas para super admin
+        if (isSuperAdminPage && evento.lista_participantes) {
             conteudo += `
                 <div class="event-info-full">
                     <label>Lista de Participantes (RAs)</label>
@@ -369,7 +453,21 @@ class EventPopup {
                 <div class="event-info-grid">
         `;
 
-        if (evento.estimativa_participantes) {
+        // Detectar se está na página de gerenciamento do super admin
+        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+
+        // Mostrar total de presenças confirmadas ao invés de estimativa
+        if (evento.total_presencas !== undefined) {
+            conteudo += `
+                <div class="event-info-item">
+                    <label>Presenças Confirmadas</label>
+                    <div class="value"><i class="bi bi-person-check-fill text-success"></i> ${evento.total_presencas} pessoa(s)</div>
+                </div>
+            `;
+        }
+
+        // Mostrar estimativa apenas para super admin
+        if (isSuperAdminPage && evento.estimativa_participantes) {
             conteudo += `
                 <div class="event-info-item">
                     <label>Estimativa de Participantes</label>

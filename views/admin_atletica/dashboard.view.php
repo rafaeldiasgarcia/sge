@@ -70,14 +70,4 @@
             </div>
         </div>
     </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="card h-100 border-warning">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-journal-text text-warning"></i> Meus Agendamentos</h5>
-                <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
-                <a href="/meus-agendamentos" class="btn btn-warning">Ver Solicitações</a>
-            </div>
-        </div>
-    </div>
 </div>

@@ -30,6 +30,10 @@ class AgendaController extends BaseController
 
         try {
             $agendamentoRepo = $this->repository('AgendamentoRepository');
+
+            // Atualizar eventos aprovados que já passaram para 'finalizado'
+            $agendamentoRepo->updatePastEventsToFinalized();
+
             $eventos = $agendamentoRepo->findAgendaEvents(Auth::id());
 
             $data_atual = date('Y-m-d');
@@ -42,6 +46,22 @@ class AgendaController extends BaseController
 
             $eventos_passados_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'esportivo');
             $eventos_passados_nao_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'nao_esportivo');
+
+            // DEBUG: Ver quantos eventos passados temos
+            error_log("=== DEBUG AGENDA ===");
+            error_log("Data atual: " . $data_atual);
+            error_log("Total de eventos: " . count($eventos));
+            error_log("Eventos futuros: " . count($eventos_futuros));
+            error_log("Eventos passados: " . count($eventos_passados));
+            error_log("Eventos passados esportivos: " . count($eventos_passados_esportivos));
+            error_log("Eventos passados não esportivos: " . count($eventos_passados_nao_esportivos));
+
+            if (count($eventos_passados) > 0) {
+                error_log("Primeiros 3 eventos passados:");
+                foreach (array_slice($eventos_passados, 0, 3) as $ev) {
+                    error_log("  - ID: " . $ev['id'] . " | Data: " . $ev['data_agendamento'] . " | Título: " . $ev['titulo']);
+                }
+            }
 
             view('pages/agenda', [
                 'title' => 'Agenda da Quadra',

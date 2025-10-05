@@ -30,34 +30,49 @@ class AuthController extends BaseController
             $userRepository = $this->repository('UsuarioRepository');
             $user = $userRepository->findByEmail($email);
 
-            if ($user && password_verify($senha, $user['senha'])) {
-                if ($user['role'] === 'superadmin') {
-                    $this->createSession($user);
-                    redirect('/');
-                }
-
-                // Gerar código como string para evitar problemas de tipo
-                $code = (string) rand(100000, 999999);
-                $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-
-                // Verificar se a atualização foi bem-sucedida
-                $updateSuccess = $userRepository->updateLoginCode($user['id'], $code, $expires);
-
-                if (!$updateSuccess) {
-                    $_SESSION['error_message'] = "Erro ao gerar código de verificação. Tente novamente.";
-                    redirect('/login');
-                }
-
-                $_SESSION['login_email'] = $user['email'];
-                $_SESSION['login_code_simulado'] = $code;
-                $_SESSION['verification_code'] = $code; // Para exibir na tela de verificação
-
-                redirect('/login/verify');
-            } else {
+            if (!$user) {
                 $_SESSION['error_message'] = "E-mail ou senha inválidos.";
                 redirect('/login');
+                return;
             }
+
+            if (!password_verify($senha, $user['senha'])) {
+                $_SESSION['error_message'] = "E-mail ou senha inválidos.";
+                redirect('/login');
+                return;
+            }
+
+            // Se for superadmin, não precisa de verificação
+            if ($user['role'] === 'superadmin') {
+                $this->createSession($user);
+                redirect('/');
+                return;
+            }
+
+            // Gerar código de verificação
+            $code = (string) rand(100000, 999999);
+            $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+
+            // Limpa qualquer código anterior
+            $userRepository->clearLoginCode($user['id']);
+
+            // Salva o novo código
+            $updateSuccess = $userRepository->updateLoginCode($user['id'], $code, $expires);
+
+            if (!$updateSuccess) {
+                $_SESSION['error_message'] = "Erro ao gerar código de verificação. Tente novamente.";
+                redirect('/login');
+                return;
+            }
+
+            $_SESSION['login_email'] = $user['email'];
+            $_SESSION['login_code_simulado'] = $code;
+            $_SESSION['verification_code'] = $code;
+
+            redirect('/login/verify');
+
         } catch (\Exception $e) {
+            error_log("Erro no login: " . $e->getMessage());
             $_SESSION['error_message'] = "Ocorreu um erro no sistema. Tente novamente.";
             redirect('/login');
         }
@@ -75,25 +90,59 @@ class AuthController extends BaseController
     {
         $email = $_SESSION['login_email'] ?? null;
         $code = $_POST['code'] ?? '';
+        $simulatedCode = $_SESSION['verification_code'] ?? '';
+
+        error_log("=== Debug Verificação de Código ===");
+        error_log("Email na sessão: " . ($email ?? 'não definido'));
+        error_log("Código recebido: " . $code);
+        error_log("Código simulado na sessão: " . ($simulatedCode ?? 'não definido'));
 
         if (empty($email) || empty($code)) {
+            error_log("Email ou código vazios");
+            $_SESSION['error_message'] = "Dados de verificação inválidos. Por favor, faça login novamente.";
             redirect('/login');
+            return;
         }
 
         try {
             $userRepository = $this->repository('UsuarioRepository');
-            $user = $userRepository->findUserByLoginCode($email, $code);
+            $user = $userRepository->findByEmail($email);
 
-            if ($user) {
+            if (!$user) {
+                error_log("Usuário não encontrado para o email: $email");
+                $_SESSION['error_message'] = "Usuário não encontrado. Por favor, faça login novamente.";
+                redirect('/login');
+                return;
+            }
+
+            // Compara com o código simulado primeiro (para desenvolvimento)
+            if ($code === $simulatedCode) {
+                error_log("Código simulado válido");
                 $userRepository->clearLoginCode($user['id']);
                 unset($_SESSION['login_email'], $_SESSION['login_code_simulado'], $_SESSION['verification_code']);
                 $this->createSession($user);
                 redirect('/');
-            } else {
-                $_SESSION['error_message'] = "Código inválido ou expirado. Tente novamente.";
-                redirect('/login/verify');
+                return;
             }
+
+            // Se não for o código simulado, verifica no banco de dados
+            $dbUser = $userRepository->findUserByLoginCode($email, $code);
+            if ($dbUser) {
+                error_log("Código do banco de dados válido");
+                $userRepository->clearLoginCode($user['id']);
+                unset($_SESSION['login_email'], $_SESSION['login_code_simulado'], $_SESSION['verification_code']);
+                $this->createSession($dbUser);
+                redirect('/');
+                return;
+            }
+
+            error_log("Código inválido para o email: $email");
+            $_SESSION['error_message'] = "Código inválido. Tente novamente.";
+            redirect('/login/verify');
+
         } catch (\Exception $e) {
+            error_log("Erro na verificação do código: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             $_SESSION['error_message'] = "Ocorreu um erro no sistema. Tente novamente.";
             redirect('/login');
         }

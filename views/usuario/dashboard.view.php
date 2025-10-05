@@ -145,9 +145,8 @@
         <?php
         $tipo_usuario = $user['tipo_usuario'] ?? '';
         $role = $user['role'] ?? '';
-        $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin' && $tipo_usuario === 'Membro das Atléticas');
 
-        if ($can_schedule): ?>
+        if ($role === 'admin' || $role === 'superadmin'): ?>
             <div class="col-md-6 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
