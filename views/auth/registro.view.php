@@ -31,7 +31,7 @@
             <label for="tipo_usuario_detalhado" class="form-label">Vínculo com a Instituição</label>
             <select name="tipo_usuario_detalhado" id="tipo_usuario_detalhado" class="form-select" required>
                 <option value="" disabled selected>-- Selecione uma opção --</option>
-                <option value="Aluno">Aluno (em geral)</option>
+                <option value="Aluno">Aluno</option>
                 <option value="Membro das Atléticas">Membro das Atléticas</option>
                 <option value="Professor">Professor</option>
                 <option value="Comunidade Externa">Comunidade Externa</option>

@@ -88,6 +88,7 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+
     /**
      * Busca um usuário por um token de redefinição válido (não expirado).
      */

@@ -20,18 +20,17 @@
     <?php endif; ?>
 
     <form action="/redefinir-senha" method="post" class="auth-form">
-        <?php if (isset($_GET['token'])): ?>
-            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token']); ?>">
-        <?php endif; ?>
+        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token ?? $_GET['token'] ?? ''); ?>">
 
         <div class="mb-3">
             <label for="nova_senha" class="form-label">Nova Senha</label>
-            <input type="password" name="nova_senha" id="nova_senha" class="form-control" placeholder="••••••••" required>
+            <input type="password" name="nova_senha" id="nova_senha" class="form-control" placeholder="••••••••" required minlength="6">
+            <small class="form-text text-muted">Mínimo de 6 caracteres</small>
         </div>
 
         <div class="mb-3">
             <label for="confirmar_nova_senha" class="form-label">Confirmar Nova Senha</label>
-            <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="form-control" placeholder="••••••••" required>
+            <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="form-control" placeholder="••••••••" required minlength="6">
         </div>
 
         <button type="submit" class="btn btn-auth-primary">Redefinir Senha</button>
@@ -50,3 +49,22 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Validação em tempo real das senhas
+    document.addEventListener('DOMContentLoaded', function() {
+        const novaSenha = document.getElementById('nova_senha');
+        const confirmarNovaSenha = document.getElementById('confirmar_nova_senha');
+
+        function validatePasswords() {
+            if (confirmarNovaSenha.value && novaSenha.value !== confirmarNovaSenha.value) {
+                confirmarNovaSenha.setCustomValidity('As senhas não coincidem.');
+            } else {
+                confirmarNovaSenha.setCustomValidity('');
+            }
+        }
+
+        novaSenha.addEventListener('input', validatePasswords);
+        confirmarNovaSenha.addEventListener('input', validatePasswords);
+    });
+</script>

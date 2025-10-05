@@ -37,6 +37,10 @@ class Connection
 
             try {
                 self::$instance = new PDO($dsn, $username, $password, $options);
+
+                // Configurar timezone do MySQL para corresponder ao PHP
+                self::$instance->exec("SET time_zone = '-03:00'");
+
             } catch (PDOException $e) {
                 die('Erro de conexão com o banco de dados: ' . $e->getMessage());
             }

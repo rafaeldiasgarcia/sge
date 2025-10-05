@@ -325,8 +325,11 @@ class AuthController extends BaseController
     public function showResetPasswordForm()
     {
         $token = $_GET['token'] ?? '';
+
         if (empty($token)) {
-            die('Token de redefinição não fornecido.');
+            $_SESSION['error_message'] = "Token de redefinição não fornecido. Por favor, solicite um novo link de recuperação.";
+            redirect('/esqueci-senha');
+            return;
         }
 
         $userRepo = $this->repository('UsuarioRepository');
@@ -335,6 +338,7 @@ class AuthController extends BaseController
         if (!$user) {
             $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
             redirect('/esqueci-senha');
+            return;
         }
 
         view('auth/redefinir-senha', [
@@ -349,27 +353,42 @@ class AuthController extends BaseController
         $novaSenha = $_POST['nova_senha'] ?? '';
         $confirmarNovaSenha = $_POST['confirmar_nova_senha'] ?? '';
 
-        if (empty($token) || empty($novaSenha) || empty($confirmarNovaSenha)) {
-            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
-            redirect('/redefinir-senha?token=' . $token);
-        }
-        if (strlen($novaSenha) < 6) {
-            $_SESSION['error_message'] = "A nova senha deve ter no mínimo 6 caracteres.";
-            redirect('/redefinir-senha?token=' . $token);
-        }
-        if ($novaSenha !== $confirmarNovaSenha) {
-            $_SESSION['error_message'] = "As senhas não coincidem.";
-            redirect('/redefinir-senha?token=' . $token);
+        if (empty($token)) {
+            $_SESSION['error_message'] = "Token não fornecido. Por favor, solicite um novo link de recuperação.";
+            redirect('/esqueci-senha');
+            return;
         }
 
+        // Validar o token primeiro
         $userRepo = $this->repository('UsuarioRepository');
         $user = $userRepo->findUserByResetToken($token);
 
         if (!$user) {
             $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
             redirect('/esqueci-senha');
+            return;
         }
 
+        // Validações dos campos
+        if (empty($novaSenha) || empty($confirmarNovaSenha)) {
+            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
+            redirect('/redefinir-senha?token=' . urlencode($token));
+            return;
+        }
+
+        if (strlen($novaSenha) < 6) {
+            $_SESSION['error_message'] = "A nova senha deve ter no mínimo 6 caracteres.";
+            redirect('/redefinir-senha?token=' . urlencode($token));
+            return;
+        }
+
+        if ($novaSenha !== $confirmarNovaSenha) {
+            $_SESSION['error_message'] = "As senhas não coincidem.";
+            redirect('/redefinir-senha?token=' . urlencode($token));
+            return;
+        }
+
+        // Atualizar a senha
         $newHashedPassword = password_hash($novaSenha, PASSWORD_DEFAULT);
         $success = $userRepo->updatePasswordAndClearToken($user['id'], $newHashedPassword);
 
@@ -378,7 +397,7 @@ class AuthController extends BaseController
             redirect('/login');
         } else {
             $_SESSION['error_message'] = "Ocorreu um erro ao redefinir sua senha. Tente novamente.";
-            redirect('/redefinir-senha?token=' . $token);
+            redirect('/redefinir-senha?token=' . urlencode($token));
         }
     }
 }
