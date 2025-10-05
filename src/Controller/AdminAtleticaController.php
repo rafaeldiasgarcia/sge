@@ -32,6 +32,7 @@ class AdminAtleticaController extends BaseController
 
         view('admin_atletica/dashboard', [
             'title' => 'Painel da Atlética',
+            'user' => $this->getUserData(),
             'stats' => $stats
         ]);
     }
@@ -53,6 +54,7 @@ class AdminAtleticaController extends BaseController
 
         view('admin_atletica/gerenciar-membros', [
             'title' => 'Gerenciar Membros',
+            'user' => $this->getUserData(),
             'pendentes' => $pendentes
         ]);
     }
@@ -96,6 +98,7 @@ class AdminAtleticaController extends BaseController
         $adminRepo = $this->repository('AdminAtleticaRepository');
         view('admin_atletica/gerenciar-inscricoes', [
             'title' => 'Gerenciar Inscrições',
+            'user' => $this->getUserData(),
             'pendentes' => $adminRepo->findInscricoesPendentes($atleticaId),
             'aprovados' => $adminRepo->findInscricoesAprovadas($atleticaId)
         ]);
@@ -138,6 +141,7 @@ class AdminAtleticaController extends BaseController
 
         view('admin_atletica/gerenciar-eventos', [
             'title' => 'Gerenciar Participações em Eventos',
+            'user' => $this->getUserData(),
             'eventos' => $eventos
         ]);
     }
@@ -188,6 +192,7 @@ class AdminAtleticaController extends BaseController
 
         view('admin_atletica/gerenciar-membros-atletica', [
             'title' => 'Gerenciar Membros da Atlética',
+            'user' => $this->getUserData(),
             'membros' => $membros
         ]);
     }

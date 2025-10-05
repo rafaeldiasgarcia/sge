@@ -38,23 +38,23 @@
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
+                            <input type="email" id="email" class="form-control" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" disabled>
                         </div>
                         <div class="mb-3">
                             <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-                            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" value="<?php echo htmlspecialchars($user['data_nascimento'] ?? ''); ?>" required>
+                            <input type="date" id="data_nascimento" class="form-control" value="<?php echo htmlspecialchars($user['data_nascimento'] ?? ''); ?>" disabled>
                         </div>
                         <?php if (!empty($user['ra'])): ?>
                             <div class="mb-3">
                                 <label for="curso_id" class="form-label">Curso</label>
-                                <select name="curso_id" id="curso_id" class="form-select">
-                                    <option value="">-- Selecione seu curso --</option>
-                                    <?php foreach ($cursos as $curso): ?>
-                                        <option value="<?php echo $curso['id']; ?>" <?php echo ($user['curso_id'] == $curso['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($curso['nome']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <input type="text" id="curso_id" class="form-control" value="<?php
+                                    foreach ($cursos as $curso) {
+                                        if ($user['curso_id'] == $curso['id']) {
+                                            echo htmlspecialchars($curso['nome']);
+                                            break;
+                                        }
+                                    }
+                                ?>" disabled>
                             </div>
                         <?php endif; ?>
                         <button type="submit" class="btn btn-primary">Salvar Dados</button>

@@ -69,22 +69,20 @@
                                     </span>
                                 </div>
 
-                                <?php if (in_array($role, ['admin', 'superadmin'])): ?>
-                                    <div class="mt-2">
-                                        <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
-                                                data-agendamento-id="<?php echo $evento['id']; ?>"
-                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                            <?php if ($evento['presenca_id']): ?>
-                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                            <?php else: ?>
-                                                <i class="bi bi-check-circle"></i> Marcar Presença
-                                            <?php endif; ?>
-                                        </button>
-                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                            <span class="visually-hidden">Carregando...</span>
-                                        </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                            data-agendamento-id="<?php echo $evento['id']; ?>"
+                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                        <?php if ($evento['presenca_id']): ?>
+                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                        <?php else: ?>
+                                            <i class="bi bi-check-circle"></i> Marcar Presença
+                                        <?php endif; ?>
+                                    </button>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -130,22 +128,20 @@
                                     </span>
                                 </div>
 
-                                <?php if (in_array($role, ['admin', 'superadmin'])): ?>
-                                    <div class="mt-2">
-                                        <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
-                                                data-agendamento-id="<?php echo $evento['id']; ?>"
-                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                            <?php if ($evento['presenca_id']): ?>
-                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                            <?php else: ?>
-                                                <i class="bi bi-check-circle"></i> Marcar Presença
-                                            <?php endif; ?>
-                                        </button>
-                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                            <span class="visually-hidden">Carregando...</span>
-                                        </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                            data-agendamento-id="<?php echo $evento['id']; ?>"
+                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                        <?php if ($evento['presenca_id']): ?>
+                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                        <?php else: ?>
+                                            <i class="bi bi-check-circle"></i> Marcar Presença
+                                        <?php endif; ?>
+                                    </button>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -182,7 +178,9 @@
                     <div class="list-group">
                         <?php if (!empty($eventos_passados_esportivos)): ?>
                             <?php foreach ($eventos_passados_esportivos as $evento): ?>
-                                <div class="list-group-item flex-column align-items-start mb-2 bg-light">
+                                <div class="list-group-item flex-column align-items-start mb-2 bg-light event-clickable"
+                                     data-event-id="<?php echo $evento['id']; ?>"
+                                     style="cursor: pointer;">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1 text-muted"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                         <small class="text-muted"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
@@ -208,7 +206,9 @@
                     <div class="list-group">
                         <?php if (!empty($eventos_passados_nao_esportivos)): ?>
                             <?php foreach ($eventos_passados_nao_esportivos as $evento): ?>
-                                <div class="list-group-item flex-column align-items-start mb-2 bg-light">
+                                <div class="list-group-item flex-column align-items-start mb-2 bg-light event-clickable"
+                                     data-event-id="<?php echo $evento['id']; ?>"
+                                     style="cursor: pointer;">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1 text-muted"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                         <small class="text-muted"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>

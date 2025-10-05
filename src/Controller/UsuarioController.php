@@ -81,15 +81,13 @@ class UsuarioController extends BaseController
 
     private function handleUpdateProfileData()
     {
-        if (empty($_POST['nome']) || empty($_POST['email']) || empty($_POST['data_nascimento'])) {
-            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
+        if (empty($_POST['nome'])) {
+            $_SESSION['error_message'] = "O nome é obrigatório.";
             redirect('/perfil');
         }
 
         $data = [
             'nome' => trim($_POST['nome']),
-            'email' => trim($_POST['email']),
-            'data_nascimento' => trim($_POST['data_nascimento']),
             'curso_id' => $_POST['curso_id'] ?? null
         ];
 
@@ -104,11 +102,7 @@ class UsuarioController extends BaseController
                 $_SESSION['error_message'] = "Não foi possível atualizar o perfil.";
             }
         } catch (\Exception $e) {
-            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-                $_SESSION['error_message'] = "O e-mail informado já está em uso por outra conta.";
-            } else {
-                $_SESSION['error_message'] = "Ocorreu um erro ao atualizar o perfil.";
-            }
+            $_SESSION['error_message'] = "Ocorreu um erro ao atualizar o perfil.";
         }
 
         redirect('/perfil');
@@ -181,8 +175,8 @@ class UsuarioController extends BaseController
 
         view('usuario/inscricoes', [
             'title' => 'Minhas Inscrições',
-            'minhas_inscricoes' => $minhasInscricoes,
-            'modalidades_disponiveis' => $modalidadesDisponiveis
+            'user' => $this->getUserData(),
+            'inscricoes' => $minhasInscricoes
         ]);
     }
 

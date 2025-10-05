@@ -198,7 +198,10 @@ class AdminAtleticaRepository
     public function removerMembroAtletica(int $membroId): bool
     {
         $sql = "UPDATE usuarios 
-                SET atletica_id = NULL, atletica_join_status = 'none', role = 'usuario'
+                SET atletica_id = NULL, 
+                    atletica_join_status = 'none', 
+                    role = 'usuario',
+                    tipo_usuario_detalhado = 'Aluno'
                 WHERE id = :id AND role != 'superadmin'";
 
         $stmt = $this->pdo->prepare($sql);

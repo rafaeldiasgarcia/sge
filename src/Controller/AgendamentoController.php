@@ -51,6 +51,7 @@ class AgendamentoController extends BaseController
 
         view('pages/agendar-evento', [
             'title' => 'Agendar Evento na Quadra',
+            'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll(),
             'inicio' => $inicio,
             'diasNoMes' => (int)$inicio->format('t'),
@@ -191,6 +192,7 @@ class AgendamentoController extends BaseController
         $agendamentos = $agendamentoRepo->findByUserId(Auth::id());
         view('pages/meus-agendamentos', [
             'title' => 'Meus Agendamentos',
+            'user' => $this->getUserData(),
             'agendamentos' => $agendamentos
         ]);
     }
@@ -242,6 +244,7 @@ class AgendamentoController extends BaseController
 
         view('pages/editar-evento', [
             'title' => 'Editar Evento',
+            'user' => $this->getUserData(),
             'evento' => $evento,
             'modalidades' => $modalidadeRepo->findAll(),
             'inicio' => $inicio,

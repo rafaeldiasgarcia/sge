@@ -22,7 +22,10 @@ class SuperAdminController extends BaseController
     public function dashboard()
     {
         Auth::protectSuperAdmin();
-        view('super_admin/dashboard', ['title' => 'Painel Super Admin']);
+        view('super_admin/dashboard', [
+            'title' => 'Painel Super Admin',
+            'user' => $this->getUserData()
+        ]);
     }
 
     public function gerenciarAgendamentos()
@@ -30,9 +33,10 @@ class SuperAdminController extends BaseController
         Auth::protectSuperAdmin();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $pendentes = $agendamentoRepo->findPendingAgendamentos();
-        $aprovados = $agendamentoRepo->findApprovedAgendamentos(); // Novo método que vamos criar
+        $aprovados = $agendamentoRepo->findApprovedAgendamentos();
         view('super_admin/gerenciar-agendamentos', [
             'title' => 'Gerenciar Agendamentos',
+            'user' => $this->getUserData(),
             'pendentes' => $pendentes,
             'aprovados' => $aprovados
         ]);
@@ -150,6 +154,7 @@ class SuperAdminController extends BaseController
         $usuarios = $userRepo->findAllExcept(Auth::id());
         view('super_admin/gerenciar-usuarios', [
             'title' => 'Gerenciar Usuários',
+            'user' => $this->getUserData(),
             'usuarios' => $usuarios
         ]);
     }
@@ -169,7 +174,8 @@ class SuperAdminController extends BaseController
         }
         view('super_admin/editar-usuario', [
             'title' => 'Editar Usuário',
-            'user' => $user,
+            'user' => $this->getUserData(),
+            'usuario_editado' => $user,
             'cursos' => $cursoRepo->findAll(),
             'atleticas' => $atleticaRepo->findAll()
         ]);
@@ -196,10 +202,22 @@ class SuperAdminController extends BaseController
         $cursoRepo = $this->repository('CursoRepository');
         $atleticaIdDoCurso = $data['curso_id'] ? $cursoRepo->findAtleticaIdByCursoId($data['curso_id']) : null;
 
+        // Se o status da atlética for "none" ou "pendente", rebaixar de admin automaticamente
+        if ($data['atletica_join_status'] === 'none' || $data['atletica_join_status'] === 'pendente') {
+            // Se o usuário era admin da atlética, rebaixar para usuário comum
+            if ($data['role'] === 'admin') {
+                $data['role'] = 'usuario';
+            }
+            // Sempre resetar para Aluno quando não for membro
+            $data['tipo_usuario_detalhado'] = 'Aluno';
+            $data['atletica_id'] = null;
+        }
         // Lógica para definir atletica_id baseado no role
-        if ($data['role'] === 'admin') {
+        elseif ($data['role'] === 'admin') {
             if ($atleticaIdDoCurso) {
                 $data['atletica_id'] = $atleticaIdDoCurso;
+                // Admin sempre deve ser Membro das Atléticas
+                $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
             } else {
                 $_SESSION['error_message'] = "Não é possível promover a Admin. O curso selecionado não pertence a nenhuma atlética.";
                 redirect('/superadmin/usuario/editar?id=' . $userId);
@@ -208,10 +226,8 @@ class SuperAdminController extends BaseController
             // Para usuários normais, atletica_id é definido apenas se for membro aprovado
             if ($data['atletica_join_status'] === 'aprovado' && $atleticaIdDoCurso) {
                 $data['atletica_id'] = $atleticaIdDoCurso;
-                // Se tornou membro, automaticamente vira "Membro das Atléticas" se ainda não for
-                if ($data['tipo_usuario_detalhado'] === 'Aluno') {
-                    $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
-                }
+                // Se tornou membro aprovado, automaticamente vira "Membro das Atléticas"
+                $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
             } else {
                 $data['atletica_id'] = null;
             }
@@ -219,7 +235,7 @@ class SuperAdminController extends BaseController
 
         $userRepo->updateUserByAdmin($userId, $data);
         $_SESSION['success_message'] = "Usuário atualizado com sucesso!";
-        redirect('/superadmin/usuarios');
+        redirect('/superadmin/usuario/editar?id=' . $userId);
     }
 
     public function deleteUser()
@@ -255,6 +271,7 @@ class SuperAdminController extends BaseController
 
         view('super_admin/gerenciar-estrutura', [
             'title' => 'Gerenciar Estrutura Acadêmica',
+            'user' => $this->getUserData(),
             'cursos' => $cursoRepo->findAll(),
             'atleticas_disponiveis' => $atleticaRepo->findUnlinked(),
             'todas_atleticas' => $atleticaRepo->findAll()
@@ -282,6 +299,7 @@ class SuperAdminController extends BaseController
         $atleticas = $this->repository('AtleticaRepository')->findAll();
         view('super_admin/editar-curso', [
             'title' => 'Editar Curso',
+            'user' => $this->getUserData(),
             'curso' => $curso,
             'atleticas' => $atleticas
         ]);
@@ -331,6 +349,7 @@ class SuperAdminController extends BaseController
         if (!$atletica) redirect('/superadmin/estrutura');
         view('super_admin/editar-atletica', [
             'title' => 'Editar Atlética',
+            'user' => $this->getUserData(),
             'atletica' => $atletica
         ]);
     }
@@ -365,6 +384,7 @@ class SuperAdminController extends BaseController
         $modalidadeRepo = $this->repository('ModalidadeRepository');
         view('super_admin/gerenciar-modalidades', [
             'title' => 'Gerenciar Modalidades',
+            'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll()
         ]);
     }
@@ -388,6 +408,7 @@ class SuperAdminController extends BaseController
         if (!$modalidade) redirect('/superadmin/modalidades');
         view('super_admin/editar-modalidade', [
             'title' => 'Editar Modalidade',
+            'user' => $this->getUserData(),
             'modalidade' => $modalidade
         ]);
     }
@@ -421,6 +442,7 @@ class SuperAdminController extends BaseController
         $userRepo = $this->repository('UsuarioRepository');
         view('super_admin/gerenciar-admins', [
             'title' => 'Gerenciar Admins',
+            'user' => $this->getUserData(),
             'admins' => $userRepo->findAdmins(),
             'elegiveis' => $userRepo->findEligibleAdmins()
         ]);
@@ -473,6 +495,7 @@ class SuperAdminController extends BaseController
 
         view('super_admin/relatorios', [
             'title' => 'Relatórios',
+            'user' => $this->getUserData(),
             'eventos' => $agendamentoRepo->findAllForSelect(),
             'usuarios' => $userRepo->findAllExcept(Auth::id()),
             'dados_relatorio' => null
@@ -540,6 +563,7 @@ class SuperAdminController extends BaseController
         $userRepo = $this->repository('UsuarioRepository');
         view('super_admin/relatorios', [
             'title' => 'Resultado do Relatório',
+            'user' => $this->getUserData(),
             'eventos' => $agendamentoRepo->findAllForSelect(),
             'usuarios' => $userRepo->findAllExcept(Auth::id()),
             'dados_relatorio' => $dadosRelatorio
@@ -605,7 +629,8 @@ class SuperAdminController extends BaseController
     {
         Auth::protectSuperAdmin();
         view('super_admin/enviar-notificacao-global', [
-            'title' => 'Enviar Notificação Global'
+            'title' => 'Enviar Notificação Global',
+            'user' => $this->getUserData()
         ]);
     }
 

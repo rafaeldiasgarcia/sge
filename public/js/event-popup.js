@@ -148,8 +148,8 @@ class EventPopup {
         const periodoTexto = this.getPeriodoTexto(evento.periodo);
         const dataFormatada = this.formatarData(evento.data_agendamento);
 
-        // Detectar se está na página de gerenciamento do super admin
-        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+        // Verificar se o usuário é admin ou superadmin
+        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
 
         let conteudo = `
             <div class="event-popup-header">
@@ -193,8 +193,8 @@ class EventPopup {
                 </div>
         `;
 
-        // DADOS DO SOLICITANTE - Apenas para Super Admin
-        if (isSuperAdminPage) {
+        // DADOS DO SOLICITANTE - Apenas para Admin e SuperAdmin
+        if (isAdminUser) {
             conteudo += `
                 <!-- Dados do Solicitante -->
                 <div class="event-popup-section">
@@ -315,8 +315,8 @@ class EventPopup {
             `;
         }
 
-        // Presenças confirmadas com lista de nomes - SOMENTE PARA SUPER ADMIN
-        if (evento.presencas && evento.presencas.length > 0 && isSuperAdminPage) {
+        // Presenças confirmadas com lista de nomes - SOMENTE PARA ADMIN E SUPERADMIN
+        if (evento.presencas && evento.presencas.length > 0 && isAdminUser) {
             conteudo += `
                 <div class="event-popup-section">
                     <h3><i class="bi bi-people-fill"></i> Presenças Confirmadas (${evento.presencas.length})</h3>
@@ -394,10 +394,10 @@ class EventPopup {
 
         conteudo += `</div>`;
 
-        // Materiais - apenas para super admin
-        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+        // Materiais - apenas para admin e superadmin
+        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
 
-        if (isSuperAdminPage && evento.possui_materiais !== null) {
+        if (isAdminUser && evento.possui_materiais !== null) {
             const possuiMateriais = parseInt(evento.possui_materiais) === 1;
             conteudo += `
                 <div class="event-info-full">
@@ -419,8 +419,8 @@ class EventPopup {
             }
         }
 
-        // Lista de participantes - apenas para super admin
-        if (isSuperAdminPage && evento.lista_participantes) {
+        // Lista de participantes - apenas para admin e superadmin
+        if (isAdminUser && evento.lista_participantes) {
             conteudo += `
                 <div class="event-info-full">
                     <label>Lista de Participantes (RAs)</label>
@@ -453,8 +453,8 @@ class EventPopup {
                 <div class="event-info-grid">
         `;
 
-        // Detectar se está na página de gerenciamento do super admin
-        const isSuperAdminPage = window.location.pathname.includes('/superadmin/agendamentos');
+        // Verificar se o usuário é admin ou superadmin
+        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
 
         // Mostrar total de presenças confirmadas ao invés de estimativa
         if (evento.total_presencas !== undefined) {
@@ -466,8 +466,8 @@ class EventPopup {
             `;
         }
 
-        // Mostrar estimativa apenas para super admin
-        if (isSuperAdminPage && evento.estimativa_participantes) {
+        // Mostrar estimativa apenas para admin e superadmin
+        if (isAdminUser && evento.estimativa_participantes) {
             conteudo += `
                 <div class="event-info-item">
                     <label>Estimativa de Participantes</label>

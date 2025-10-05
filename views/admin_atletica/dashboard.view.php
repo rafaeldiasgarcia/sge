@@ -19,15 +19,6 @@
         </div>
     </div>
     <div class="col-md-4 mb-4">
-        <div class="card text-white bg-success h-100">
-            <div class="card-body">
-                <h3 class="card-title"><?php echo $stats['atletas_aprovados']; ?></h3>
-                <p class="card-text">Atletas Aprovados</p>
-                <a href="/admin/atletica/inscricoes" class="text-white stretched-link">Gerenciar Atletas</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
         <div class="card text-white bg-info h-100">
             <div class="card-body">
                 <h3 class="card-title"><?php echo $stats['membros_pendentes']; ?></h3>
@@ -40,11 +31,11 @@
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <div class="card h-100">
+        <div class="card h-100 border-primary">
             <div class="card-body">
-                <h5 class="card-title">Gerenciar Inscrições</h5>
+                <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Gerenciar Inscrições</h5>
                 <p class="card-text">Aprove ou recuse as candidaturas dos alunos para as modalidades da sua atlética.</p>
-                <a href="/admin/atletica/inscricoes" class="btn btn-primary">Ver Inscrições</a>
+                <a href="/admin/atletica/gerenciar-membros" class="btn btn-primary">Ver Inscrições</a>
             </div>
         </div>
     </div>

@@ -7,6 +7,8 @@
 #
 namespace Application\Controller;
 
+use Application\Core\Auth;
+
 abstract class BaseController
 {
     /**
@@ -22,5 +24,23 @@ abstract class BaseController
         }
 
         return new $className();
+    }
+
+    /**
+     * Retorna os dados do usuário logado para ser usado nas views
+     */
+    protected function getUserData()
+    {
+        if (!Auth::check()) {
+            return null;
+        }
+
+        return [
+            'nome' => Auth::name(),
+            'email' => Auth::get('email'),
+            'role' => Auth::role(),
+            'tipo_usuario' => Auth::get('tipo_usuario_detalhado'),
+            'atletica_id' => Auth::get('atletica_id')
+        ];
     }
 }

@@ -65,6 +65,7 @@ class AgendaController extends BaseController
 
             view('pages/agenda', [
                 'title' => 'Agenda da Quadra',
+                'user' => $this->getUserData(),
                 'eventos' => $eventos,
                 'eventos_futuros_esportivos' => $eventos_futuros_esportivos,
                 'eventos_futuros_nao_esportivos' => $eventos_futuros_nao_esportivos,
@@ -85,26 +86,6 @@ class AgendaController extends BaseController
     {
         Auth::protect();
 
-        // Verificar se o usuário tem permissão (APENAS admin ou superadmin)
-        $role = Auth::role();
-
-        $temPermissao = in_array($role, ['admin', 'superadmin']);
-
-        if (!$temPermissao) {
-            // Verificar se é uma requisição AJAX
-            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-
-            if ($isAjax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => 'Você não tem permissão para marcar presença']);
-                return;
-            }
-
-            $_SESSION['error_message'] = "Você não tem permissão para marcar presença.";
-            redirect('/agenda');
-            return;
-        }
 
         // Verificar se é uma requisição AJAX
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
