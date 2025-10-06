@@ -8,7 +8,7 @@ Este documento fornece uma análise detalhada dos diagramas UML (Unified Modelin
 O Diagrama de Casos de Uso descreve as funcionalidades do sistema do ponto de vista do usuário. Ele ilustra quem pode fazer o quê, definindo os atores e as ações que eles podem executar.
 
 <p align="center">
-  <img src="documentation/diagrama-de-caso-de-uso.jpg" alt="Diagrama de Casos de Uso do SGE" width="800"/>
+  <img src="/diagrama-de-caso-de-uso.jpg" alt="Diagrama de Casos de Uso do SGE" width="800"/>
 </p>
 
 ### Atores
@@ -42,7 +42,7 @@ O sistema possui três atores principais, cada um com um conjunto específico de
 O Diagrama de Classes oferece uma visão estática da arquitetura do sistema, detalhando as classes principais, seus atributos, métodos e os relacionamentos entre elas. É um mapa do código-fonte que ajuda a entender a organização lógica e a estrutura de dados.
 
 <p align="center">
-  <img src="documentation/diagrama-de-classes.jpg" alt="Diagrama de Classes do SGE" width="800"/>
+  <img src="/diagrama-de-classes.jpg" alt="Diagrama de Classes do SGE" width="800"/>
 </p>
 
 ### Componentes Estruturais
@@ -69,7 +69,7 @@ O Diagrama de Sequência descreve a interação dinâmica entre objetos ao longo
 O cenário ilustrado abaixo é a **aprovação de um agendamento por um Super Admin**.
 
 <p align="center">
-  <img src="documentation/diagrama-de-sequencia.jpg" alt="Diagrama de Sequência do SGE" width="800"/>
+  <img src="/diagrama-de-sequencia.jpg" alt="Diagrama de Sequência do SGE" width="800"/>
 </p>
 
 ### Fluxo de Interação
