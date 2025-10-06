@@ -8,7 +8,7 @@ Este documento fornece uma análise detalhada dos diagramas UML (Unified Modelin
 O Diagrama de Casos de Uso descreve as funcionalidades do sistema do ponto de vista do usuário. Ele ilustra quem pode fazer o quê, definindo os atores e as ações que eles podem executar.
 
 <p align="center">
-  <img src="sge/documentation/diagrama-de-caso-de-uso.jpg" alt="Diagrama de Casos de Uso do SGE" width="800"/>
+  <img src="/diagrama-de-caso-de-uso.jpg" alt="Diagrama de Casos de Uso do SGE" width="800"/>
 </p>
 
 ### Atores
