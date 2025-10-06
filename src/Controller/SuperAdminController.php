@@ -273,7 +273,7 @@ class SuperAdminController extends BaseController
             'title' => 'Gerenciar Estrutura Acadêmica',
             'user' => $this->getUserData(),
             'cursos' => $cursoRepo->findAll(),
-            'atleticas_disponiveis' => $atleticaRepo->findUnlinked(),
+            'atleticas_disponiveis' => $atleticaRepo->findAll(),
             'todas_atleticas' => $atleticaRepo->findAll()
         ]);
     }

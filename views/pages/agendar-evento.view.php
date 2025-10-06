@@ -125,20 +125,29 @@
                                     <label for="arbitro_partida" class="form-label">Árbitro da Partida</label>
                                     <input type="text" name="arbitro_partida" id="arbitro_partida" class="form-control" placeholder="Nome do árbitro (opcional)">
                                 </div>
-                                <div id="campos_sem_materiais" style="display: none;">
-                                    <div class="col-md-12 mb-3">
-                                        <label for="materiais_necessarios" class="form-label">Materiais Necessários *</label>
-                                        <textarea name="materiais_necessarios" id="materiais_necessarios" class="form-control" rows="3" placeholder="Descreva os materiais que serão necessários..."></textarea>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="responsabiliza_devolucao" id="responsabiliza_devolucao" value="1">
-                                            <label class="form-check-label" for="responsabiliza_devolucao">
-                                                <strong>Eu me responsabilizo pela devolução dos materiais *</strong>
-                                            </label>
-                                        </div>
+                            </div>
+
+                            <div class="row mb-4" id="campos_sem_materiais" style="display: none;">
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> <strong>Atenção:</strong> Como você não possui os materiais, descreva o que será necessário.
                                     </div>
                                 </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="materiais_necessarios" class="form-label">Materiais Necessários *</label>
+                                    <textarea name="materiais_necessarios" id="materiais_necessarios" class="form-control" rows="3" placeholder="Descreva os materiais que serão necessários..."></textarea>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="responsabiliza_devolucao" id="responsabiliza_devolucao" value="1">
+                                        <label class="form-check-label" for="responsabiliza_devolucao">
+                                            <strong>Eu me responsabilizo pela devolução dos materiais *</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
                                 <div class="col-md-12 mb-3">
                                     <label for="lista_participantes" class="form-label">Lista de Participantes (RAs) *</label>
                                     <textarea name="lista_participantes" id="lista_participantes" class="form-control" rows="4" placeholder="Digite os RAs dos participantes (um por linha)&#10;Ex:&#10;12345&#10;67890&#10;54321"></textarea>
@@ -182,15 +191,15 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="estimativa_participantes" class="form-label">Estimativa de Participantes *</label>
-                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes" class="form-control" min="1" max="500" placeholder="Ex: 100" required>
+                                    <label for="estimativa_participantes_nao_esp" class="form-label">Estimativa de Participantes *</label>
+                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes_nao_esp" class="form-control" min="1" max="500" placeholder="Ex: 100">
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Evento aberto ao público? *</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_sim" value="1" required>
+                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_sim" value="1">
                                             <label class="form-check-label" for="publico_sim">Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
@@ -241,7 +250,7 @@
                             <a href="/dashboard" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Voltar
                             </a>
-                            <button type="submit" class="btn btn-success" id="btnEnviarSolicitacao" disabled>
+                            <button type="submit" class="btn btn-success" id="btnEnviarSolicitacao">
                                 <i class="bi bi-send"></i> Enviar Solicitação
                             </button>
                         </div>

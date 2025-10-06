@@ -99,6 +99,7 @@ Router::post('/superadmin/admins/rebaixar', 'SuperAdminController@demoteAdmin');
 // Relatórios
 Router::get('/superadmin/relatorios', 'SuperAdminController@showRelatorios');
 Router::post('/superadmin/relatorios', 'SuperAdminController@gerarRelatorio');
+Router::post('/superadmin/relatorios/imprimir', 'SuperAdminController@imprimirRelatorio');
 
 
 // Notificação Global

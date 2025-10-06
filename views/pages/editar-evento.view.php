@@ -144,23 +144,32 @@
                                            value="<?php echo htmlspecialchars($evento['arbitro_partida'] ?? ''); ?>"
                                            placeholder="Nome do árbitro (opcional)">
                                 </div>
-                                <div id="campos_sem_materiais" style="display: <?php echo !$evento['possui_materiais'] ? 'block' : 'none'; ?>;">
-                                    <div class="col-md-12 mb-3">
-                                        <label for="materiais_necessarios" class="form-label">Materiais Necessários *</label>
-                                        <textarea name="materiais_necessarios" id="materiais_necessarios" class="form-control" rows="3"
-                                                  placeholder="Descreva os materiais que serão necessários..."><?php echo htmlspecialchars($evento['materiais_necessarios'] ?? ''); ?></textarea>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="responsabiliza_devolucao"
-                                                   id="responsabiliza_devolucao" value="1"
-                                                   <?php echo $evento['responsabiliza_devolucao'] ? 'checked' : ''; ?>>
-                                            <label class="form-check-label" for="responsabiliza_devolucao">
-                                                <strong>Eu me responsabilizo pela devolução dos materiais *</strong>
-                                            </label>
-                                        </div>
+                            </div>
+
+                            <div class="row mb-4" id="campos_sem_materiais" style="display: <?php echo !$evento['possui_materiais'] ? 'block' : 'none'; ?>;">
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> <strong>Atenção:</strong> Como você não possui os materiais, descreva o que será necessário.
                                     </div>
                                 </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="materiais_necessarios" class="form-label">Materiais Necessários *</label>
+                                    <textarea name="materiais_necessarios" id="materiais_necessarios" class="form-control" rows="3"
+                                              placeholder="Descreva os materiais que serão necessários..."><?php echo htmlspecialchars($evento['materiais_necessarios'] ?? ''); ?></textarea>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="responsabiliza_devolucao"
+                                               id="responsabiliza_devolucao" value="1"
+                                               <?php echo $evento['responsabiliza_devolucao'] ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" for="responsabiliza_devolucao">
+                                            <strong>Eu me responsabilizo pela devolução dos materiais *</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
                                 <div class="col-md-12 mb-3">
                                     <label for="lista_participantes" class="form-label">Lista de Participantes (RAs) *</label>
                                     <textarea name="lista_participantes" id="lista_participantes" class="form-control" rows="4"
