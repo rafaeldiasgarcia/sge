@@ -130,12 +130,17 @@
             </div>
         </div>
 
-        <?php if ($user['tipo_usuario'] === 'Professor'): ?>
+        <?php
+        $tipo_usuario = $user['tipo_usuario'] ?? '';
+        $role = $user['role'] ?? '';
+
+        // Mostrar "Solicitar Agendamento" para Professor, Admin e SuperAdmin
+        if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
             <div class="col-md-6 mb-4">
                 <div class="card h-100 shadow-sm border-warning">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><i class="bi bi-building text-warning"></i> Aluguel da Quadra</h5>
-                        <p class="card-text">Solicite o uso da quadra esportiva para suas atividades acadêmicas.</p>
+                        <h5 class="card-title"><i class="bi bi-calendar-plus text-warning"></i> Solicitar Agendamento</h5>
+                        <p class="card-text">Solicite o uso da quadra esportiva para suas atividades.</p>
                         <a href="/agendar-evento" class="btn btn-warning mt-auto">Solicitar Aluguel</a>
                     </div>
                 </div>
@@ -143,12 +148,10 @@
         <?php endif; ?>
 
         <?php
-        $tipo_usuario = $user['tipo_usuario'] ?? '';
-        $role = $user['role'] ?? '';
-
-        if ($role === 'admin' || $role === 'superadmin'): ?>
+        // Mostrar "Meus Agendamentos" para Professor, Admin e SuperAdmin
+        if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
             <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100 shadow-sm border-success">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>
                         <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
