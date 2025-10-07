@@ -128,16 +128,51 @@ class UsuarioRepository
 
     public function updateProfileData(int $id, array $data): bool
     {
-        $sql = "UPDATE usuarios 
-                SET nome = :nome, email = :email, data_nascimento = :data_nascimento, curso_id = :curso_id, telefone = :telefone
-                WHERE id = :id";
+        // Construir a query dinamicamente baseado nos campos fornecidos
+        $fields = [];
+        $params = [':id' => $id];
+        
+        if (isset($data['nome'])) {
+            $fields[] = "nome = :nome";
+            $params[':nome'] = $data['nome'];
+        }
+        
+        if (isset($data['email'])) {
+            $fields[] = "email = :email";
+            $params[':email'] = $data['email'];
+        }
+        
+        if (isset($data['data_nascimento'])) {
+            $fields[] = "data_nascimento = :data_nascimento";
+            $params[':data_nascimento'] = $data['data_nascimento'];
+        }
+        
+        if (isset($data['curso_id'])) {
+            $fields[] = "curso_id = :curso_id";
+            $params[':curso_id'] = $data['curso_id'] ?: null;
+        }
+        
+        if (isset($data['telefone'])) {
+            $fields[] = "telefone = :telefone";
+            $params[':telefone'] = $data['telefone'];
+        }
+        
+        // Se não há campos para atualizar, retorna verdadeiro
+        if (empty($fields)) {
+            return true;
+        }
+        
+        $sql = "UPDATE usuarios SET " . implode(', ', $fields) . " WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':nome', $data['nome']);
-        $stmt->bindValue(':email', $data['email']);
-        $stmt->bindValue(':data_nascimento', $data['data_nascimento']);
-        $stmt->bindValue(':curso_id', $data['curso_id'] ?: null, PDO::PARAM_INT);
-        $stmt->bindValue(':telefone', $data['telefone'] ?? null);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        
+        foreach ($params as $key => $value) {
+            if ($key === ':id' || $key === ':curso_id') {
+                $stmt->bindValue($key, $value, PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue($key, $value);
+            }
+        }
+        
         return $stmt->execute();
     }
 
