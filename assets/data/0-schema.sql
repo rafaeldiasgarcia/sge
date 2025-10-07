@@ -6,12 +6,13 @@
 -- Tempo de geração: 28/09/2025 às 03:46
 -- Versão do servidor: 9.4.0
 -- Versão do PHP: 8.2.27
--- MODIFICADO: Adicionado campo 'telefone' na tabela usuarios
--- MODIFICADO: Adicionada tabela 'notificacoes'
--- MODIFICADO: Adicionadas colunas para controle de edições/cancelamentos por admin na tabela agendamentos
+CREATE DATABASE IF NOT EXISTS `application`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE `application`;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
+SET collation_connection = 'utf8mb4_unicode_ci';
+
 SET time_zone = "+00:00";
 
 
@@ -66,7 +67,7 @@ CREATE TABLE `agendamentos` (
   `alterado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi alterado por um admin',
   `data_cancelamento` datetime DEFAULT NULL COMMENT 'Data do cancelamento pelo admin',
   `cancelado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado por um admin'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -77,7 +78,7 @@ CREATE TABLE `agendamentos` (
 CREATE TABLE `atleticas` (
   `id` int NOT NULL,
   `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -90,7 +91,7 @@ CREATE TABLE `cursos` (
   `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `atletica_id` int DEFAULT NULL,
   `coordenador_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -106,7 +107,7 @@ CREATE TABLE `inscricoes_eventos` (
   `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aprovado',
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,7 @@ CREATE TABLE `inscricoes_modalidade` (
   `atletica_id` int NOT NULL,
   `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -132,7 +133,7 @@ CREATE TABLE `inscricoes_modalidade` (
 CREATE TABLE `modalidades` (
   `id` int NOT NULL,
   `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -145,7 +146,7 @@ CREATE TABLE `presencas` (
   `usuario_id` int NOT NULL,
   `agendamento_id` int NOT NULL,
   `data_presenca` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -171,7 +172,7 @@ CREATE TABLE `usuarios` (
   `login_code_expires` datetime DEFAULT NULL,
   `reset_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `reset_token_expires` datetime DEFAULT NULL  
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -188,7 +189,7 @@ CREATE TABLE `notificacoes` (
   `agendamento_id` int DEFAULT NULL,
   `lida` tinyint(1) NOT NULL DEFAULT '0',
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Índices para tabelas despejadas

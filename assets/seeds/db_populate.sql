@@ -1,5 +1,9 @@
--- SGE-DB POPULATE SCRIPT (ESTRUTURA ANTIGA + USUÁRIOS DE TESTE NO INÍCIO)
 -- Desativa a verificação de chaves estrangeiras para permitir a inserção de dados.
+USE `application`;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET collation_connection = 'utf8mb4_unicode_ci';
+
 SET FOREIGN_KEY_CHECKS=0;
 -- Inicia uma transação.
 START TRANSACTION;
