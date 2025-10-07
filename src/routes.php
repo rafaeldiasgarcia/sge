@@ -27,6 +27,7 @@ Router::get('/dashboard', 'UsuarioController@dashboard');
 Router::get('/perfil', 'UsuarioController@perfil');
 Router::post('/perfil', 'UsuarioController@updatePerfil');
 Router::post('/perfil/solicitar-atletica', 'UsuarioController@solicitarEntradaAtletica');
+Router::post('/perfil/sair-atletica', 'UsuarioController@sairAtletica');
 Router::get('/inscricoes', 'UsuarioController@showInscricoes');
 Router::post('/inscricoes/inscrever', 'UsuarioController@inscreverEmModalidade');
 Router::post('/inscricoes/cancelar', 'UsuarioController@cancelarInscricao');

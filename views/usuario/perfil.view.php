@@ -100,6 +100,29 @@
                             <small class="text-muted">Status: Membro ativo</small>
                         </div>
 
+                        <?php if ($user['role'] === 'admin'): ?>
+                            <!-- Admin da atlética não pode sair -->
+                            <div class="alert alert-warning mt-3">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <strong>Administradores não podem deixar a atlética</strong><br>
+                                Como você é administrador da atlética, não pode sair dela.
+                                Para sair, primeiro você precisa passar a administração para outro membro ou
+                                ser removido por um super administrador.
+                            </div>
+                        <?php else: ?>
+                            <!-- Membro comum pode sair -->
+                            <div class="mt-3">
+                                <form action="/perfil/sair-atletica" method="post" onsubmit="return confirm('Tem certeza que deseja sair da atlética? Você voltará a ser um Aluno comum e perderá acesso às funcionalidades de membro.')">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-box-arrow-right"></i> Sair da Atlética
+                                    </button>
+                                </form>
+                                <small class="text-muted d-block mt-2">
+                                    Ao sair, seu status voltará para "Aluno" e você precisará solicitar entrada novamente se quiser voltar.
+                                </small>
+                            </div>
+                        <?php endif; ?>
+
                     <?php elseif ($user['atletica_join_status'] === 'pendente'): ?>
                         <!-- Solicitação pendente (para Membros das Atléticas que se cadastraram) -->
                         <div class="alert alert-warning">

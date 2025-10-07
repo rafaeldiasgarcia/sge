@@ -168,6 +168,21 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+    public function sairDaAtletica(int $userId): bool
+    {
+        $sql = "UPDATE usuarios 
+                SET atletica_join_status = :status, 
+                    atletica_id = :atletica_id,
+                    tipo_usuario_detalhado = :tipo_usuario
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':status', 'none', PDO::PARAM_STR);
+        $stmt->bindValue(':atletica_id', null, PDO::PARAM_NULL);
+        $stmt->bindValue(':tipo_usuario', 'Aluno', PDO::PARAM_STR);
+        $stmt->bindValue(':id', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
     public function findAtleticaIdByCursoId(int $cursoId): ?int
     {
         $sql = "SELECT atletica_id FROM cursos WHERE id = :id";

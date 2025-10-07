@@ -28,19 +28,25 @@ ALTER TABLE `notificacoes` AUTO_INCREMENT = 1;
 
 
 --
--- Inserindo dados na tabela `atleticas`
+-- Inserindo dados na tabela `atleticas` (nomes corretos conforme especificação)
 --
 INSERT INTO `atleticas` (`id`, `nome`) VALUES
-(1, 'A.A.A. FURIOSA'),
-(2, 'A.A.A. PREDADORA'),
-(3, 'A.A.A. SANGUINÁRIA'),
-(4, 'A.A.A. INSANA'),
-(5, 'A.A.A. MAGNA'),
-(6, 'A.A.A. ALFA'),
-(7, 'A.A.A. IMPÉRIO'),
-(8, 'A.A.A. VENENOSA'),
-(9, 'A.A.A. LETAL'),
-(10, 'A.A.A. ATÔMICA');
+(1, 'A.A.A. TOURADA'),           -- Medicina Veterinária
+(2, 'A.A.A. ÁGUIAS'),            -- Engenharia de Software
+(3, 'A.A.A. SOBERANOS'),         -- Biomedicina
+(4, 'A.A.A. DEVORADORES'),       -- Nutrição
+(5, 'A.A.A. CASTORES'),          -- Arquitetura
+(6, 'A.A.A. SERPENTES'),         -- Enfermagem
+(7, 'A.A.A. RAPOSADA'),          -- Direito
+(8, 'A.A.A. FORASTEIROS'),       -- Agronomia
+(9, 'A.A.A. GORILADA'),          -- Administração
+(10, 'A.A.A. RATOLOUCO'),        -- Psicologia
+(11, 'A.A.A. OLIMPO'),           -- Fisioterapia
+(12, 'A.A.A. JAVALOUCOS'),       -- Engenharia
+(13, 'A.A.A. LEÕES'),            -- Contábeis
+(14, 'A.A.A. EDUCALOUCOS'),      -- Educação Física
+(15, 'A.A.A. ZANGADOS'),         -- Biologia
+(16, 'A.A.A. OCTORMENTA');       -- Terapia Ocupacional
 
 --
 -- Inserindo dados na tabela `modalidades`
@@ -49,43 +55,63 @@ INSERT INTO `modalidades` (`id`, `nome`) VALUES
 (1, 'Futsal'),(2, 'Voleibol'),(3, 'Basquetebol'),(4, 'Handebol'),(5, 'Natação'),(6, 'Atletismo'),(7, 'Judô'),(8, 'Karatê'),(9, 'Tênis de Mesa'),(10, 'Tênis de Campo'),(11, 'Xadrez'),(12, 'League of Legends'),(13, 'CS:GO'),(14, 'Vôlei de Praia'),(15, 'Queimada');
 
 --
--- Inserindo dados na tabela `cursos`
+-- Inserindo dados na tabela `cursos` (associações corretas com as atléticas)
 --
 INSERT INTO `cursos` (`id`, `nome`, `atletica_id`, `coordenador_id`) VALUES
-(1, 'Engenharia Civil', 1, NULL),(2, 'Engenharia de Software', 6, NULL),(3, 'Direito', 2, NULL),(4, 'Medicina', 3, NULL),(5, 'Psicologia', 4, NULL),(6, 'Administração', 5, NULL),(7, 'Ciência da Computação', 6, NULL),(8, 'Publicidade e Propaganda', 7, NULL),(9, 'Farmácia', 8, NULL),(10, 'Ciências Biológicas', 9, NULL);
+(1, 'Medicina Veterinária', 1, NULL),      -- TOURADA
+(2, 'Engenharia de Software', 2, NULL),    -- ÁGUIAS
+(3, 'Biomedicina', 3, NULL),               -- SOBERANOS
+(4, 'Nutrição', 4, NULL),                  -- DEVORADORES
+(5, 'Arquitetura', 5, NULL),               -- CASTORES
+(6, 'Enfermagem', 6, NULL),                -- SERPENTES
+(7, 'Direito', 7, NULL),                   -- RAPOSADA
+(8, 'Agronomia', 8, NULL),                 -- FORASTEIROS
+(9, 'Administração', 9, NULL),             -- GORILADA
+(10, 'Psicologia', 10, NULL),              -- RATOLOUCO
+(11, 'Fisioterapia', 11, NULL),            -- OLIMPO
+(12, 'Engenharia Civil', 12, NULL),        -- JAVALOUCOS
+(13, 'Ciências Contábeis', 13, NULL),      -- LEÕES
+(14, 'Educação Física', 14, NULL),         -- EDUCALOUCOS
+(15, 'Biologia', 15, NULL),                -- ZANGADOS
+(16, 'Terapia Ocupacional', 16, NULL),     -- OCTORMENTA
+-- Cursos sem atlética ainda
+(17, 'Farmácia', NULL, NULL),
+(18, 'Ciência da Computação', NULL, NULL),
+(19, 'Publicidade e Propaganda', NULL, NULL),
+(20, 'Gastronomia', NULL, NULL);
 
 --
--- Inserindo dados na tabela `usuarios` (Estrutura Antiga: id, nome, email, senha, ra, ...)
+-- Inserindo dados na tabela `usuarios` (ajustado para cursos e atléticas corretas)
 --
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `ra`, `data_nascimento`, `telefone`, `curso_id`, `role`, `atletica_id`, `tipo_usuario_detalhado`, `is_coordenador`, `atletica_join_status`) VALUES
 (NULL, 'Super Admin', 'sadmin', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, NULL, NULL, NULL, 'superadmin', NULL, NULL, 0, 'none'),
 (NULL, 'Aluno Teste', 'aluno@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '123456', '2004-08-15', '(14) 99123-4567', 1, 'usuario', NULL, 'Aluno', 0, 'none'),
-(NULL, 'Membro Atletica Teste', 'membro@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '789012', '2003-05-20', '(14) 99765-4321', 2, 'usuario', 1, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Admin Atletica Teste', 'admin.atletica@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '345678', '2002-02-10', '(14) 98888-7777', 3, 'admin', 1, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Membro Atletica Teste', 'membro@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '789012', '2003-05-20', '(14) 99765-4321', 2, 'usuario', 2, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Admin Atletica Teste', 'admin.atletica@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '345678', '2002-02-10', '(14) 98888-7777', 7, 'admin', 7, 'Membro das Atleticas', 0, 'aprovado'),
 (NULL, 'Comunidade Externa Teste', 'comunidade@email.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1990-11-30', '(11) 97777-8888', NULL, 'usuario', NULL, 'Comunidade Externa', 0, 'none'),
 (NULL, 'Admin Esportes', 'admin@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1992-05-10', '11987654322', NULL, 'admin', NULL, NULL, 0, 'none'),
 (NULL, 'Prof. Carlos Andrade', 'carlos.andrade@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1975-03-15', '14991234567', 1, 'usuario', NULL, 'Professor', 1, 'none'),
-(NULL, 'Profa. Beatriz Lima', 'beatriz.lima@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1980-11-20', '14991234568', 7, 'usuario', NULL, 'Professor', 1, 'none'),
-(NULL, 'Prof. Ricardo Souza', 'ricardo.souza@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1968-07-08', '14991234569', 3, 'usuario', NULL, 'Professor', 1, 'none'),
-(NULL, 'Profa. Helena Costa', 'helena.costa@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1985-02-25', '14991234570', 4, 'usuario', NULL, 'Professor', 0, 'none'),
+(NULL, 'Profa. Beatriz Lima', 'beatriz.lima@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1980-11-20', '14991234568', 18, 'usuario', NULL, 'Professor', 1, 'none'),
+(NULL, 'Prof. Ricardo Souza', 'ricardo.souza@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1968-07-08', '14991234569', 7, 'usuario', NULL, 'Professor', 1, 'none'),
+(NULL, 'Profa. Helena Costa', 'helena.costa@prof.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1985-02-25', '14991234570', 3, 'usuario', NULL, 'Professor', 0, 'none'),
 (NULL, 'Lucas Mendes', 'lucas.mendes@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '111222', '2004-06-30', '14981112233', 1, 'usuario', 1, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Julia Alves', 'julia.alves@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '222333', '2003-09-12', '14981112234', 3, 'usuario', 2, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Pedro Martins', 'pedro.martins@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '333444', '2002-12-01', '14981112235', 7, 'usuario', 6, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Fernanda Oliveira', 'fernanda.oliveira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '444555', '2004-04-18', '14981112236', 4, 'usuario', 3, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Gabriel Pereira', 'gabriel.pereira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '555666', '2003-01-22', '14981112237', 6, 'usuario', 5, 'Membro das Atleticas', 0, 'aprovado'),
-(NULL, 'Mariana Ferreira', 'mariana.ferreira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '666777', '2005-08-05', '14981112238', 9, 'usuario', 8, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Julia Alves', 'julia.alves@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '222333', '2003-09-12', '14981112234', 7, 'usuario', 7, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Pedro Martins', 'pedro.martins@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '333444', '2002-12-01', '14981112235', 2, 'usuario', 2, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Fernanda Oliveira', 'fernanda.oliveira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '444555', '2004-04-18', '14981112236', 3, 'usuario', 3, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Gabriel Pereira', 'gabriel.pereira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '555666', '2003-01-22', '14981112237', 9, 'usuario', 9, 'Membro das Atleticas', 0, 'aprovado'),
+(NULL, 'Mariana Ferreira', 'mariana.ferreira@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '666777', '2005-08-05', '14981112238', 6, 'usuario', 6, 'Membro das Atleticas', 0, 'aprovado'),
 (NULL, 'Bruno Rodrigues', 'bruno.rodrigues@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '777888', '2004-02-14', '14982223344', 2, 'usuario', NULL, 'Aluno', 0, 'none'),
-(NULL, 'Larissa Gonçalves', 'larissa.goncalves@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '888999', '2003-07-29', '14982223345', 5, 'usuario', NULL, 'Aluno', 0, 'none'),
+(NULL, 'Larissa Gonçalves', 'larissa.goncalves@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '888999', '2003-07-29', '14982223345', 10, 'usuario', NULL, 'Aluno', 0, 'none'),
 (NULL, 'Rafael Almeida', 'rafael.almeida@aluno.sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '999000', '2002-11-03', '14982223346', 8, 'usuario', NULL, 'Aluno', 0, 'none'),
 (NULL, 'Sr. Jorge Santos', 'jorge.santos@email.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1988-10-10', '11976543210', NULL, 'usuario', NULL, 'Comunidade Externa', 0, 'none'),
 (NULL, 'Sra. Ana Paula', 'ana.paula@email.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1995-05-20', '11976543211', NULL, 'usuario', NULL, 'Comunidade Externa', 0, 'none');
 
 --
--- Atualizando `cursos` com os IDs dos coordenadores (IDs CORRIGIDOS baseados na ordem de inserção)
+-- Atualizando `cursos` com os IDs dos coordenadores
 --
-UPDATE `cursos` SET `coordenador_id` = 7 WHERE `id` = 1; -- Prof. Carlos Andrade (ID 7)
-UPDATE `cursos` SET `coordenador_id` = 8 WHERE `id` = 7; -- Profa. Beatriz Lima (ID 8)
-UPDATE `cursos` SET `coordenador_id` = 9 WHERE `id` = 3; -- Prof. Ricardo Souza (ID 9)
+UPDATE `cursos` SET `coordenador_id` = 7 WHERE `id` = 1;  -- Prof. Carlos Andrade (Medicina Veterinária)
+UPDATE `cursos` SET `coordenador_id` = 8 WHERE `id` = 18; -- Profa. Beatriz Lima (Ciência da Computação)
+UPDATE `cursos` SET `coordenador_id` = 9 WHERE `id` = 7;  -- Prof. Ricardo Souza (Direito)
 
 
 --
