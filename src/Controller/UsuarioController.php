@@ -228,4 +228,57 @@ class UsuarioController extends BaseController
 
         redirect('/perfil');
     }
+
+    public function sairAtletica()
+    {
+        Auth::protect();
+
+        try {
+            $userId = Auth::id();
+            $userRepository = $this->repository('UsuarioRepository');
+
+            // Buscar informações do usuário
+            $user = $userRepository->findById($userId);
+
+            if (!$user) {
+                $_SESSION['error_message'] = "Usuário não encontrado.";
+                redirect('/perfil');
+                return;
+            }
+
+            // Verificar se é admin da atlética
+            if ($user['role'] === 'admin') {
+                $_SESSION['error_message'] = "Administradores não podem sair da atlética. Entre em contato com um super administrador.";
+                redirect('/perfil');
+                return;
+            }
+
+            // Verificar se está aprovado na atlética
+            if ($user['atletica_join_status'] !== 'aprovado') {
+                $_SESSION['error_message'] = "Você não é membro ativo de uma atlética.";
+                redirect('/perfil');
+                return;
+            }
+
+            // Atualizar status para NULL e remover atletica_id
+            $success = $userRepository->sairDaAtletica($userId);
+
+            if ($success) {
+                // Atualizar sessão
+                if (isset($_SESSION['atletica_id'])) {
+                    unset($_SESSION['atletica_id']);
+                }
+                $_SESSION['tipo_usuario_detalhado'] = 'Aluno';
+                $_SESSION['success_message'] = "Você saiu da atlética com sucesso. Seu status agora é 'Aluno'.";
+            } else {
+                $_SESSION['error_message'] = "Erro ao sair da atlética. Tente novamente.";
+            }
+        } catch (\Exception $e) {
+            // Log do erro para debug
+            error_log("Erro em sairAtletica: " . $e->getMessage() . " | Linha: " . $e->getLine());
+            $_SESSION['error_message'] = "Ocorreu um erro ao processar sua solicitação: " . $e->getMessage();
+        }
+
+        redirect('/perfil');
+    }
 }
