@@ -22,6 +22,12 @@ Contém dados de exemplo para todas as tabelas:
 Get-Content assets/seeds/db_populate.sql | docker exec -i mysql mysql -uroot -prootpass application
 ```
 
+### Via CodeSpaces
+
+```bash
+docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
+```
+
 ### Via phpMyAdmin
 
 1. Acesse http://localhost:8080 (ou a porta 8080 no Codespaces)
