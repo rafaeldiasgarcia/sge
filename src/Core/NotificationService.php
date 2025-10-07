@@ -317,6 +317,96 @@ class NotificationService
     }
 
     /**
+     * Notifica quando um aluno é aceito na atlética
+     */
+    public function notifyMembroAceito(int $usuarioId, string $nomeAtletica): bool
+    {
+        $titulo = "Bem-vindo à Atlética! 🎉";
+        $mensagem = "Parabéns! Sua solicitação para se juntar à {$nomeAtletica} foi aprovada. " .
+                   "Agora você é um membro oficial e pode participar das atividades e eventos!";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'info',
+            null
+        );
+    }
+
+    /**
+     * Notifica quando um aluno é recusado na atlética
+     */
+    public function notifyMembroRecusado(int $usuarioId, string $nomeAtletica): bool
+    {
+        $titulo = "Solicitação Não Aprovada 😔";
+        $mensagem = "Sua solicitação para se juntar à {$nomeAtletica} não foi aprovada desta vez. " .
+                   "Você pode fazer uma nova solicitação no futuro.";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'aviso',
+            null
+        );
+    }
+
+    /**
+     * Notifica quando um membro é removido da atlética
+     */
+    public function notifyMembroRemovido(int $usuarioId, string $nomeAtletica): bool
+    {
+        $titulo = "Remoção da Atlética ⚠️";
+        $mensagem = "Você foi removido da {$nomeAtletica}. " .
+                   "Se você tiver dúvidas, entre em contato com a administração da atlética.";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'aviso',
+            null
+        );
+    }
+
+    /**
+     * Notifica quando um membro é promovido a administrador
+     */
+    public function notifyMembroPromovido(int $usuarioId, string $nomeAtletica): bool
+    {
+        $titulo = "Promoção a Administrador! 🚀";
+        $mensagem = "Parabéns! Você foi promovido a Administrador da {$nomeAtletica}. " .
+                   "Agora você tem permissões especiais para gerenciar membros, eventos e inscrições.";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'info',
+            null
+        );
+    }
+
+    /**
+     * Notifica quando um administrador é rebaixado a membro comum
+     */
+    public function notifyAdminRebaixado(int $usuarioId, string $nomeAtletica): bool
+    {
+        $titulo = "Alteração de Permissões 📋";
+        $mensagem = "Suas permissões de administrador da {$nomeAtletica} foram removidas. " .
+                   "Você continua sendo um membro da atlética.";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'aviso',
+            null
+        );
+    }
+
+    /**
      * Limpa notificações antigas
      */
     public function cleanOldNotifications(int $days = 30): bool

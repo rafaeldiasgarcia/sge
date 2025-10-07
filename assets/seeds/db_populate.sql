@@ -89,7 +89,7 @@ INSERT INTO `cursos` (`id`, `nome`, `atletica_id`, `coordenador_id`) VALUES
 --
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `ra`, `data_nascimento`, `telefone`, `curso_id`, `role`, `atletica_id`, `tipo_usuario_detalhado`, `is_coordenador`, `atletica_join_status`) VALUES
 (NULL, 'Super Admin', 'sadmin', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, NULL, NULL, NULL, 'superadmin', NULL, NULL, 0, 'none'),
-(NULL, 'Aluno Teste', 'aluno@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '123456', '2004-08-15', '(14) 99123-4567', 1, 'usuario', NULL, 'Aluno', 0, 'none'),
+(NULL, 'Aluno Teste', 'aluno@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '123456', '2004-08-15', '(14) 99123-4567', 7, 'usuario', 7, 'Aluno', 0, 'none'),
 (NULL, 'Membro Atletica Teste', 'membro@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '789012', '2003-05-20', '(14) 99765-4321', 2, 'usuario', 2, 'Membro das Atleticas', 0, 'aprovado'),
 (NULL, 'Admin Atletica Teste', 'admin.atletica@sge.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', '345678', '2002-02-10', '(14) 98888-7777', 7, 'admin', 7, 'Membro das Atleticas', 0, 'aprovado'),
 (NULL, 'Comunidade Externa Teste', 'comunidade@email.com', '$2y$10$IOB3SLdVtyDNNYxzatsPPuzI1OvyamWeACeryu6KuKpolRSKbqj5O', NULL, '1990-11-30', '(11) 97777-8888', NULL, 'usuario', NULL, 'Comunidade Externa', 0, 'none'),
@@ -586,7 +586,14 @@ INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendam
 (12, 'Informação', 'Nova política de uso da quadra implementada. Confira as atualizações.', 'info', NULL, 0, '2025-10-01 14:30:00'),
 (13, 'Aviso de Manutenção', 'A sala de e-sports ficará fechada para manutenção dia 23/10.', 'aviso', NULL, 0, '2025-10-02 11:45:00'),
 (14, 'Lembrete de Documentação', 'Não se esqueça de atualizar seu atestado médico para participar dos treinos.', 'info', NULL, 0, '2025-10-01 10:15:00'),
-(15, 'Aviso de Evento', 'As inscrições para o Intercursos 2025 serão abertas em breve.', 'info', NULL, 0, '2025-10-03 08:00:00');
+(15, 'Aviso de Evento', 'As inscrições para o Intercursos 2025 serão abertas em breve.', 'info', NULL, 0, '2025-10-03 08:00:00'),
+
+-- Notificações de Ações em Membros (Exemplos históricos)
+(11, 'Bem-vindo à Atlética! 🎉', 'Parabéns! Sua solicitação para se juntar à A.A.A. TOURADA foi aprovada. Agora você é um membro oficial e pode participar das atividades e eventos!', 'info', NULL, 1, '2025-07-20 14:30:00'),
+(12, 'Bem-vindo à Atlética! 🎉', 'Parabéns! Sua solicitação para se juntar à A.A.A. RAPOSADA foi aprovada. Agora você é um membro oficial e pode participar das atividades e eventos!', 'info', NULL, 1, '2025-07-22 16:45:00'),
+(13, 'Bem-vindo à Atlética! 🎉', 'Parabéns! Sua solicitação para se juntar à A.A.A. ÁGUIAS foi aprovada. Agora você é um membro oficial e pode participar das atividades e eventos!', 'info', NULL, 1, '2025-07-25 10:20:00'),
+(4, 'Promoção a Administrador! 🚀', 'Parabéns! Você foi promovido a Administrador da A.A.A. RAPOSADA. Agora você tem permissões especiais para gerenciar membros, eventos e inscrições.', 'info', NULL, 1, '2025-08-05 11:00:00'),
+(17, 'Solicitação Não Aprovada 😔', 'Sua solicitação para se juntar à A.A.A. TOURADA não foi aprovada desta vez. Você pode fazer uma nova solicitação no futuro.', 'aviso', NULL, 1, '2025-09-10 15:30:00');
 
 -- Comitando as alterações
 COMMIT;

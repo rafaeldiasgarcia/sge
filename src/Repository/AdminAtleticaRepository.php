@@ -209,4 +209,26 @@ class AdminAtleticaRepository
 
         return $stmt->execute() && $stmt->rowCount() > 0;
     }
+
+    public function getAtleticaById(int $atleticaId): ?array
+    {
+        $sql = "SELECT id, nome FROM atleticas WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $atleticaId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
+
+    public function getUsuarioById(int $usuarioId): ?array
+    {
+        $sql = "SELECT id, nome, email, atletica_id FROM usuarios WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
 }
