@@ -25,7 +25,6 @@ class AdminAtleticaController extends BaseController
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
         $stats = [
-            'eventos_confirmados' => 0, // Esta contagem é mais complexa, deixaremos para depois
             'atletas_aprovados' => $adminRepo->countAtletasAprovados($atleticaId),
             'membros_pendentes' => $adminRepo->countMembrosPendentes($atleticaId)
         ];
@@ -81,7 +80,7 @@ class AdminAtleticaController extends BaseController
             $adminRepo->recusarMembro($alunoId);
             $_SESSION['success_message'] = "Solicitação recusada.";
         }
-        redirect('/admin/atletica/membros');
+        redirect('/admin/atletica/inscricoes');
     }
 
     public function gerenciarInscricoes()
@@ -97,10 +96,10 @@ class AdminAtleticaController extends BaseController
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
         view('admin_atletica/gerenciar-inscricoes', [
-            'title' => 'Gerenciar Inscrições',
+            'title' => 'Gerenciar Inscrições e Membros',
             'user' => $this->getUserData(),
-            'pendentes' => $adminRepo->findInscricoesPendentes($atleticaId),
-            'aprovados' => $adminRepo->findInscricoesAprovadas($atleticaId)
+            'solicitacoes_pendentes' => $adminRepo->findMembrosPendentes($atleticaId),
+            'membros' => $adminRepo->findMembrosAtletica($atleticaId)
         ]);
     }
 
@@ -245,6 +244,6 @@ class AdminAtleticaController extends BaseController
                 break;
         }
 
-        redirect('/admin/atletica/gerenciar-membros');
+        redirect('/admin/atletica/inscricoes');
     }
 }
