@@ -10,26 +10,6 @@
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <div class="card h-100 border-warning">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-calendar-plus text-warning"></i> Solicitar Agendamento</h5>
-                <p class="card-text">Solicite o uso da quadra esportiva para atividades da atlética.</p>
-                <a href="/agendar-evento" class="btn btn-warning">Solicitar Aluguel</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="card h-100 border-success">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>
-                <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
-                <a href="/meus-agendamentos" class="btn btn-success">Ver Solicitações</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-4">
         <div class="card h-100 border-primary">
             <div class="card-body">
                 <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Gerenciar Inscrições e Membros</h5>
