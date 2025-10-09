@@ -1,3 +1,71 @@
+/* DASHBOARD SHORTCUTS - GRID DE ATALHOS */
+.dashboard-shortcuts {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+.shortcut-row {
+    display: flex;
+    gap: 24px;
+}
+.shortcut-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    transition: box-shadow 0.3s;
+}
+.shortcut-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+}
+.shortcut-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.shortcut-card .card-text {
+    font-size: 1rem;
+    margin-bottom: 18px;
+    color: #444;
+}
+.shortcut-card .btn {
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-block;
+    min-width: unset;
+    width: auto;
+    padding-left: 32px;
+    padding-right: 32px;
+}
+@media (max-width: 900px) {
+    .shortcut-row {
+        gap: 16px;
+    }
+    .shortcut-card {
+        padding: 24px 12px;
+    }
+}
+@media (max-width: 768px) {
+    .dashboard-shortcuts {
+        gap: 16px;
+    }
+    .shortcut-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .shortcut-card {
+        padding: 18px 8px;
+    }
+}
 .title-dashboard h1 {
     font-family: "Montserrat", sans-serif;
     font-weight: 900;

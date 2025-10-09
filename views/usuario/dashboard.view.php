@@ -91,76 +91,60 @@
 
 
 <section>
-    <div class="row agenda-events">
-        <div class="col-md-6 mb-4 card-events">
-            <div class="card h-100 border-0 card-events-in">
-                <div class="card-body d-flex flex-column card-container">
+    <?php
+    $tipo_usuario = $user['tipo_usuario'] ?? '';
+    $role = $user['role'] ?? '';
+    ?>
+    <div class="dashboard-shortcuts">
+        <div class="shortcut-row">
+            <div class="shortcut-card">
+                <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-calendar-check-fill text-primary"></i> AGENDA DOS EVENTOS</h5>
                     <p class="card-text">Confira os próximos eventos e marque sua presença.</p>
                     <a href="/agenda" class="btn btn-primary mt-auto">Ver Agenda</a>
                 </div>
             </div>
-        </div>
-
-        <?php
-        $tipo_usuario = $user['tipo_usuario'] ?? '';
-        $role = $user['role'] ?? '';
-
-        // Mostrar "Solicitar Agendamento" para Professor, Admin e SuperAdmin
-        if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-warning">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><i class="bi bi-calendar-plus text-warning"></i> Solicitar Agendamento</h5>
-                        <p class="card-text">Solicite o uso da quadra esportiva para suas atividades.</p>
-                        <a href="/agendar-evento" class="btn btn-warning mt-auto">Solicitar Aluguel</a>
-                    </div>
+            <?php if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
+            <div class="shortcut-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-calendar-plus text-warning"></i> Solicitar Agendamento</h5>
+                    <p class="card-text">Solicite o uso da quadra esportiva para suas atividades.</p>
+                    <a href="/agendar-evento" class="btn btn-warning mt-auto">Solicitar Aluguel</a>
                 </div>
             </div>
-        <?php endif; ?>
-
-        <?php
-        // Mostrar "Meus Agendamentos" para Professor, Admin e SuperAdmin
-        if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-success">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>
-                        <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
-                        <a href="/meus-agendamentos" class="btn btn-success mt-auto">Ver Solicitações</a>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($role === 'admin'): ?>
-            <?php
-            // Debug: verificar se o usuário tem atletica_id
-            $atleticaId = $_SESSION['atletica_id'] ?? null;
-            ?>
-
-            <?php if ($atleticaId): ?>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm border-info">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><i class="bi bi-people-fill text-info"></i> Painel da Atlética</h5>
-                            <p class="card-text">Gerencie os membros, inscrições e participações da sua atlética.</p>
-                            <a href="/admin/atletica/dashboard" class="btn btn-info mt-auto text-white">Acessar Painel</a>
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm border-warning">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><i class="bi bi-exclamation-triangle-fill text-warning"></i> Configuração Pendente</h5>
-                            <p class="card-text">Sua conta de administrador ainda não foi associada a uma atlética. Entre em contato com o super administrador.</p>
-                            <small class="text-muted mt-auto">Aguardando configuração do sistema</small>
-                        </div>
-                    </div>
-                </div>
             <?php endif; ?>
-        <?php endif; ?>
+        </div>
+        <div class="shortcut-row">
+            <?php if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
+            <div class="shortcut-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>
+                    <p class="card-text">Acompanhe o status das suas solicitações de uso da quadra.</p>
+                    <a href="/meus-agendamentos" class="btn btn-success mt-auto">Ver Solicitações</a>
+                </div>
+            </div>
+            <?php endif; ?>
+            <?php if ($role === 'admin'): ?>
+                <?php $atleticaId = $_SESSION['atletica_id'] ?? null; ?>
+                <?php if ($atleticaId): ?>
+                <div class="shortcut-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-people-fill text-info"></i> Painel da Atlética</h5>
+                        <p class="card-text">Gerencie os membros, inscrições e participações da sua atlética.</p>
+                        <a href="/admin/atletica/dashboard" class="btn btn-info mt-auto text-white">Acessar Painel</a>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="shortcut-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-exclamation-triangle-fill text-warning"></i> Configuração Pendente</h5>
+                        <p class="card-text">Sua conta de administrador ainda não foi associada a uma atlética. Entre em contato com o super administrador.</p>
+                        <small class="text-muted mt-auto">Aguardando configuração do sistema</small>
+                    </div>
+                </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="row mt-4">
@@ -249,7 +233,6 @@
     </div>
 </div>
 </section>
-
 
 </body>
 </html>
