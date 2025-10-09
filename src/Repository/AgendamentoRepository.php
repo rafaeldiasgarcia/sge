@@ -292,7 +292,7 @@ class AgendamentoRepository
     {
         // Buscar próximo evento esportivo
         $sqlEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                                 u.nome as responsavel, a.quantidade_pessoas,
+                                 a.status, u.nome as responsavel, a.quantidade_pessoas,
                                  CASE 
                                      WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
                                      WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
@@ -315,7 +315,7 @@ class AgendamentoRepository
 
         // Buscar próximo evento não esportivo
         $sqlNaoEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                                    u.nome as responsavel, a.quantidade_pessoas,
+                                    a.status, u.nome as responsavel, a.quantidade_pessoas,
                                     CASE 
                                         WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
                                         WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
@@ -338,6 +338,39 @@ class AgendamentoRepository
 
         // Combinar os resultados mantendo a separação por tipo
         return array_merge($eventosEsportivos, $eventosNaoEsportivos);
+    }
+
+    public function findTodosEventosComPresencaFuturos(int $userId): array
+    {
+        // Buscar TODOS os eventos futuros com presença marcada (do mais próximo ao mais distante)
+        $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
+                       a.status, u.nome as responsavel, a.quantidade_pessoas,
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                           ELSE a.periodo
+                       END as horario_periodo
+                FROM agendamentos a
+                JOIN usuarios u ON a.usuario_id = u.id
+                JOIN presencas p ON a.id = p.agendamento_id
+                WHERE p.usuario_id = :usuario_id 
+                AND a.status = 'aprovado'
+                AND a.data_agendamento >= CURDATE()
+                ORDER BY a.data_agendamento ASC, 
+                         CASE 
+                            WHEN a.periodo = 'primeiro' THEN 1
+                            WHEN a.periodo = 'segundo' THEN 2
+                            WHEN a.periodo = 'manha' THEN 3
+                            WHEN a.periodo = 'tarde' THEN 4
+                            WHEN a.periodo = 'noite' THEN 5
+                            ELSE 6
+                         END ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
     }
 
     public function findOcupacaoPorMes(string $inicioMes, string $fimMes): array

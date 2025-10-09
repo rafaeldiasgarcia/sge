@@ -39,6 +39,7 @@ class UsuarioController extends BaseController
             $userRepository = $this->repository('UsuarioRepository');
             $cursoRepository = $this->repository('CursoRepository');
             $atleticaRepository = $this->repository('AtleticaRepository');
+            $agendamentoRepository = $this->repository('AgendamentoRepository');
 
             $user = $userRepository->findById($userId);
             $cursos = $cursoRepository->findAll();
@@ -53,11 +54,15 @@ class UsuarioController extends BaseController
                 $atleticaInfo = $atleticaRepository->findAtleticaByCursoId($user['curso_id']);
             }
 
+            // Buscar TODOS os eventos futuros com presença confirmada do usuário
+            $meusEventos = $agendamentoRepository->findTodosEventosComPresencaFuturos($userId);
+
             view('usuario/perfil', [
                 'title' => 'Editar Perfil',
                 'user' => $user,
                 'cursos' => $cursos,
-                'atletica_info' => $atleticaInfo
+                'atletica_info' => $atleticaInfo,
+                'meus_eventos' => $meusEventos
             ]);
         } catch (\Exception $e) {
             $_SESSION['error_message'] = "Ocorreu um erro ao carregar seu perfil.";

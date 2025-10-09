@@ -116,9 +116,20 @@ class EventPopup {
     }
 
     close() {
-        this.overlay.classList.remove('active');
-        document.body.style.overflow = '';
-        this.currentEventId = null;
+        if (this.overlay) {
+            // Remover o overlay do DOM completamente
+            this.overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            this.currentEventId = null;
+            
+            // Limpar o conteúdo do container
+            if (this.container) {
+                this.container.innerHTML = '';
+            }
+            
+            // Recriar a estrutura do popup
+            this.createPopupStructure();
+        }
     }
 
     showLoading() {
@@ -154,7 +165,7 @@ class EventPopup {
         let conteudo = `
             <div class="event-popup-header">
                 <button class="event-popup-close" onclick="eventPopup.close()">
-                    <i class="bi bi-x"></i>
+                    <i class="bi bi-x-lg"></i>
                 </button>
                 <span class="event-type-badge">
                     <i class="bi bi-${evento.tipo_agendamento === 'esportivo' ? 'trophy' : 'calendar-event'}"></i>

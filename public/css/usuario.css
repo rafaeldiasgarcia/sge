@@ -1,0 +1,1545 @@
+.title-dashboard h1 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 1.2;  /* Ajuste a altura da linha para o H1 */
+     background: var(--gradient-color-text);
+    /* 2. Recorta o fundo para ter exatamente o formato do texto */
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* 3. Deixa a cor do texto transparente para que o fundo (o gradiente) apareça */
+    color: transparent;
+    text-align: center;
+}
+
+.title-dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Permite que o conteúdo (a imagem 3D) vaze para fora sem ser cortado */
+.carousel {
+    margin-bottom: 60px; /* Dá espaço abaixo para a sombra da imagem que vaza */
+}
+.carousel-inner {
+    overflow: visible !important; /* A regra mais importante! */
+}
+
+
+/* BASE DO NOSSO CARD CUSTOMIZADO */
+.custom-card {
+    height: 350px; /* Altura fixa para todos os cards */
+    width: 90%;   /* Ocupa 90% da largura do carrossel */
+    margin: 0 auto; /* Centraliza o card no slide */
+    border-radius: 10px;
+    box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    -moz-box-shadow: 1px 10px 39px -8px rgba(0,0,0,0.75);
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    position: relative; /* ESSENCIAL: para o posicionamento da imagem */
+    box-sizing: border-box;
+}
+
+/* Cores e estilos específicos dos cards */
+.orange-card {
+    background-color: var(--orange-color);
+    color: white;
+}
+.white-card {
+    background-color: #fff;
+    color: #333;
+}
+.blue-card {
+    background: var(--blue-color);
+    color: white;
+}
+
+.text-content {
+    font-weight: 900;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    flex-basis: 60%;
+    font-size: 3rem;
+    
+}
+
+/* Estilo do conteúdo de texto */
+.text-content p{
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1; /* Garante que o texto fique atrás da imagem 3D */
+    flex-basis: 60%; /* Ocupa 60% do espaço, deixando 40% para a imagem */
+    font-size: 1.5rem;
+}
+
+.text-content h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    flex-basis: 60%;
+    font-size: 3rem;
+}
+
+.highlight-text {
+    font-size: 4rem;
+    color: var(--blue-color);
+    margin-left: 30px;
+}
+
+/* --- A MÁGICA DO EFEITO 3D ACONTECE AQUI --- */
+
+.character-image-container {
+    position: absolute; /* Libera o elemento do fluxo normal */
+    z-index: 2; /* Coloca a imagem NA FRENTE do texto */
+}
+
+/* Estilo para a imagem que fica DENTRO do card (card laranja) */
+.static-character {
+    bottom: 0;
+    right: 40px;
+    width: 320px;
+}
+.static-character img {
+    width: 100%;
+    filter: drop-shadow(5px 15px 20px rgba(0, 0, 0, 0.6));
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Estilo para a imagem que VAZA do card (card branco) */
+.popup-character {
+    width: 390px; /* Tamanho da imagem */
+    top: -80px;   /* Move 60px PARA CIMA (fora do card) */
+    right: -40px; /* Move 40px PARA A DIREITA (fora do card) */
+}
+.popup-character img {
+    width: 100%;
+    /* Sombra que segue o contorno da imagem transparente */
+    filter: drop-shadow(5px 10px 15px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease-in-out;
+}
+
+.popup-character img:hover {
+    transform: scale(1.025); /* Move a imagem 10px para cima ao passar o mouse */
+}
+
+/* Estilos do texto do card branco (para ficar igual à imagem) */
+.card-text-body { font-size: 1.5rem; line-height: 1.3; }
+.text-orange { color: var(--orange-color); }
+.text-blue { color: var(--blue-color); }
+.gradient-text-orange { background: linear-gradient(90deg, #F28100, #c86c00); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.gradient-text-blue { background: linear-gradient(90deg, #0900FF, #004386); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ===================================== */
+/* SEÇÃO DE EVENTOS - DASHBOARD USUÁRIO */
+/* ===================================== */
+
+.welcome-title {
+    background: var(--gradient-color-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+.user-badge {
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.event-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.event-section-title i {
+    font-size: 1.5rem;
+}
+
+/* Cards de eventos clicáveis com hover effect */
+.event-clickable {
+    transition: all 0.3s ease;
+    border-width: 2px !important;
+}
+
+.event-clickable:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Cards esportivos - tema verde/laranja */
+.event-clickable.border-success {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%);
+}
+
+.event-clickable.border-success:hover {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-color: var(--orange-color) !important;
+}
+
+/* Cards não esportivos - tema azul */
+.event-clickable.border-primary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+}
+
+.event-clickable.border-primary:hover {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-color: var(--blue-color) !important;
+}
+
+/* ===================================== */
+/* SEÇÕES DE CATEGORIAS - PÁGINA INICIAL */
+/* ===================================== */
+
+.category-section {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.category-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-section:hover::before {
+    width: 10px;
+}
+
+/* Seção de Eventos Esportivos - Laranja */
+.category-section.sports {
+    border-left: 5px solid var(--orange-color);
+}
+
+.category-section.sports::before {
+    background: var(--orange-color);
+}
+
+.category-section.sports .category-icon {
+    background: linear-gradient(135deg, var(--orange-color), #ff9800);
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(242, 129, 0, 0.3);
+}
+
+/* Seção de Eventos Não Esportivos - Azul */
+.category-section.non-sports {
+    border-left: 5px solid var(--blue-color);
+}
+
+.category-section.non-sports::before {
+    background: var(--blue-color);
+}
+
+.category-section.non-sports .category-icon {
+    background: linear-gradient(135deg, var(--blue-color), #2196f3);
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(9, 0, 255, 0.3);
+}
+
+/* Seção de Regulamentos - Roxo */
+.category-section.regulations {
+    border-left: 5px solid #9c27b0;
+}
+
+.category-section.regulations::before {
+    background: #9c27b0;
+}
+
+.category-section.regulations .category-icon {
+    background: linear-gradient(135deg, #9c27b0, #ba68c8);
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+}
+
+.category-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.category-description {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* ===================================== */
+/* CARDS DE ATALHOS DO DASHBOARD */
+/* ===================================== */
+
+.dashboard-shortcut-card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.dashboard-shortcut-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.dashboard-shortcut-card:hover::before {
+    left: 100%;
+}
+
+.dashboard-shortcut-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-shortcut-card .card-title i {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.dashboard-shortcut-card .btn {
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.dashboard-shortcut-card:hover .btn {
+    transform: scale(1.05);
+}
+
+/* ===================================== */
+/* CALENDÁRIO MINI NO CAROUSEL */
+/* ===================================== */
+
+.mini-calendar-container {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    width: 300px;
+    max-height: 320px;
+    transition: all 0.4s ease;
+    z-index: 3;
+    color: #000;
+}
+
+.mini-calendar-container:hover {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mini-calendar-container:active {
+    transform: translateY(-50%) scale(1.02);
+}
+
+.mini-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.mini-calendar-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--blue-color);
+    text-transform: capitalize;
+}
+
+.mini-calendar-nav-btn {
+    background: #f0f0f0;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.mini-calendar-nav-btn:hover {
+    background: var(--blue-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.mini-calendar-weekdays {
+    text-align: center;
+    font-weight: 600;
+    color: #666;
+    font-size: 0.65rem;
+    margin-bottom: 8px;
+}
+
+.mini-calendar-days {
+    cursor: pointer;
+}
+
+.mini-calendar-cell {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 3px;
+    min-height: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.mini-calendar-cell.empty-cell {
+    background: transparent;
+    border: none;
+}
+
+.mini-calendar-day-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 2px;
+}
+
+.mini-calendar-day-badge {
+    text-align: center;
+}
+
+.mini-calendar-day-badge .badge {
+    padding: 2px 6px;
+    font-size: 0.5rem;
+    border-radius: 8px;
+}
+
+.mini-calendar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e9ecef;
+    font-size: 0.7rem;
+    color: #000;
+}
+
+.mini-calendar-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mini-calendar-badge {
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+/* Indicador de clique para o mini calendar */
+.mini-calendar-container::after {
+    content: '👆 Clique para ver a agenda completa';
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.mini-calendar-container:hover::after {
+    opacity: 1;
+}
+
+/* ===================================== */
+/* MELHORIAS VISUAIS EXTRAS */
+/* ===================================== */
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Transição suave para todos os botões */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Cards com sombra suave */
+.card {
+    transition: all 0.3s ease;
+}
+
+/* Efeito de brilho nos badges */
+.badge {
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Melhoria visual dos inputs em foco */
+.form-control:focus {
+    transform: scale(1.01);
+}
+
+/* Transição suave para imagens */
+img {
+    transition: transform 0.3s ease;
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE MOBILE */
+/* ===================================== */
+
+@media (max-width: 768px) {
+    /* Título do dashboard */
+    .title-dashboard h1 {
+        font-size: 2rem;
+        line-height: 1.3;
+    }
+
+    /* Cards do carousel */
+    .custom-card {
+        height: 300px;
+        width: 95%;
+        padding: 20px 25px;
+    }
+
+    .text-content {
+        font-size: 2rem;
+        flex-basis: 100%;
+    }
+
+    .text-content h2 {
+        font-size: 2rem;
+    }
+
+    .text-content p {
+        font-size: 1.2rem;
+    }
+
+    .highlight-text {
+        font-size: 2.5rem;
+        margin-left: 0;
+    }
+
+    /* Imagens 3D - ajuste para mobile */
+    .static-character {
+        width: 200px;
+        right: 10px;
+        bottom: -10px;
+    }
+
+    .popup-character {
+        width: 220px;
+        top: -40px;
+        right: -20px;
+    }
+
+    /* Seções de categoria */
+    .category-section {
+        padding: 25px;
+    }
+
+    .category-icon {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 2rem !important;
+    }
+
+    .category-title {
+        font-size: 1.4rem;
+    }
+
+    .category-description {
+        font-size: 1rem;
+    }
+
+    /* Cards de eventos */
+    .event-section-title {
+        font-size: 1.1rem;
+    }
+
+    .event-section-title i {
+        font-size: 1.3rem;
+    }
+
+    /* Cards de atalhos */
+    .dashboard-shortcut-card {
+        margin-bottom: 20px;
+    }
+
+    /* Calendário mini no carousel - mobile */
+    .mini-calendar-container {
+        width: 260px;
+        padding: 10px;
+        right: 10px;
+        max-height: 280px;
+    }
+
+    .mini-calendar-title {
+        font-size: 0.8rem;
+    }
+
+    .mini-calendar-nav-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+    }
+
+    .mini-calendar-cell {
+        min-height: 28px;
+        padding: 2px;
+    }
+
+    .mini-calendar-day-number {
+        font-size: 0.7rem;
+    }
+
+    .mini-calendar-weekdays {
+        font-size: 0.6rem;
+    }
+
+    .mini-calendar-legend {
+        font-size: 0.65rem;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .title-dashboard h1 {
+        font-size: 1.5rem;
+    }
+
+    .custom-card {
+        height: 250px;
+        padding: 15px 20px;
+    }
+
+    .text-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .text-content p {
+        font-size: 1rem;
+    }
+
+    .highlight-text {
+        font-size: 2rem;
+    }
+
+    .static-character {
+        width: 150px;
+    }
+
+    .popup-character {
+        width: 170px;
+        top: -30px;
+    }
+
+    .card-text-body {
+        font-size: 1.2rem !important;
+    }
+
+    /* Calendário mini no carousel - mobile pequeno */
+    .mini-calendar-container {
+        width: 230px;
+        padding: 8px;
+        right: 5px;
+        max-height: 260px;
+    }
+
+    .mini-calendar-container:hover {
+        transform: translateY(-50%) scale(1.02);
+    }
+
+    .mini-calendar-title {
+        font-size: 0.75rem;
+    }
+
+    .mini-calendar-nav-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+    }
+
+    .mini-calendar-cell {
+        min-height: 26px;
+        padding: 2px;
+    }
+
+    .mini-calendar-day-number {
+        font-size: 0.65rem;
+    }
+
+    .mini-calendar-weekdays {
+        font-size: 0.55rem;
+        margin-bottom: 6px;
+    }
+
+    .mini-calendar-legend {
+        font-size: 0.6rem;
+        gap: 3px;
+        margin-top: 8px;
+        padding-top: 6px;
+    }
+
+    .mini-calendar-badge {
+        padding: 2px 4px;
+    }
+}
+
+/* ===================================== */
+/* PÁGINA DE PERFIL DO USUÁRIO */
+/* ===================================== */
+
+.profile-container {
+    padding: 30px 0;
+}
+
+.profile-container h2 {
+    font-weight: 800;
+    background: var(--gradient-color-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+}
+
+/* Cards de perfil */
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card .card-header {
+    background: linear-gradient(135deg, var(--blue-color), var(--orange-color));
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    padding: 15px 20px;
+}
+
+.profile-card .card-body {
+    padding: 25px;
+}
+
+/* Labels dos formulários */
+.profile-card .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Inputs */
+.profile-card .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.profile-card .form-control:focus {
+    border-color: var(--blue-color);
+    box-shadow: 0 0 0 0.2rem rgba(9, 0, 255, 0.1);
+}
+
+.profile-card .form-control:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* Botões do perfil */
+.profile-card .btn-primary {
+    background: linear-gradient(135deg, var(--blue-color), #2196f3);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.profile-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(9, 0, 255, 0.3);
+}
+
+.profile-card .btn-warning {
+    background: linear-gradient(135deg, var(--orange-color), #ff9800);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 25px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.profile-card .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(242, 129, 0, 0.3);
+    color: white;
+}
+
+.profile-card .btn-danger {
+    border-radius: 8px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.profile-card .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Alertas do perfil */
+.profile-card .alert {
+    border-radius: 10px;
+    border: none;
+    padding: 15px 20px;
+}
+
+.profile-card .alert i {
+    font-size: 1.2rem;
+    margin-right: 8px;
+}
+
+.profile-card .alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.profile-card .alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+}
+
+.profile-card .alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+}
+
+.profile-card .alert-secondary {
+    background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+    color: #383d41;
+}
+
+/* Badge de status */
+.profile-card .badge {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 20px;
+}
+
+/* ===================================== */
+/* ALERTAS E MENSAGENS */
+/* ===================================== */
+
+.custom-alert {
+    border-radius: 12px;
+    border: none;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-alert i {
+    font-size: 1.5rem;
+}
+
+.custom-alert.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.custom-alert.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+/* ===================================== */
+/* ANIMAÇÕES */
+/* ===================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE MOBILE - PERFIL */
+/* ===================================== */
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px 0;
+    }
+
+    .profile-card .card-header {
+        font-size: 1rem;
+        padding: 12px 15px;
+    }
+
+    .profile-card .card-body {
+        padding: 20px;
+    }
+
+    .profile-card .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .profile-card {
+        margin-bottom: 20px;
+    }
+
+    .profile-card .form-control {
+        font-size: 0.95rem;
+    }
+}
+
+/* ===================================== */
+/* NOVA PÁGINA DE PERFIL COM ABAS */
+/* ===================================== */
+
+/* Header do perfil com avatar e botões */
+.profile-header-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #f97316;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
+    font-size: 16px;
+}
+
+.profile-info h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.profile-info p {
+    margin: 4px 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.profile-header-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-edit-profile {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-edit-profile:hover {
+    background: #1e40af;
+    color: white;
+}
+
+.btn-change-password {
+    background: #f97316;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-change-password:hover {
+    background: #ea580c;
+    color: white;
+}
+
+/* Sistema de Tabs */
+.profile-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 2px solid #e2e8f0;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    padding: 0 20px;
+}
+
+.profile-tab {
+    background: none;
+    border: none;
+    padding: 16px 32px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.profile-tab:hover {
+    color: #2563eb;
+}
+
+.profile-tab.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.profile-tab-content {
+    display: none;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.profile-tab-content.active {
+    display: block;
+}
+
+/* Aba Informações - Duas colunas */
+.info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.info-card {
+    background: #f8fafc;
+    padding: 24px;
+    border-radius: 8px;
+}
+
+.info-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #475569;
+}
+
+.info-value {
+    color: #64748b;
+    text-align: right;
+}
+
+/* Aba Meus Eventos */
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.events-list h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+.event-card {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.event-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.event-info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 0 0 6px 0;
+}
+
+.event-info p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.event-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.event-status.confirmado {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.event-status.pendente {
+    background: #fef3c7;
+    color: #854d0e;
+}
+
+.event-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-details {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+
+.btn-details:hover {
+    background: #1e40af;
+    color: white;
+}
+
+.btn-cancel {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #dc2626;
+}
+
+/* Aba Histórico */
+.history-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.history-section h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+.history-year {
+    background: #f8fafc;
+    padding: 24px;
+    border-radius: 8px;
+    border-left: 4px solid #2563eb;
+}
+
+.history-year-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.history-year h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.history-year-subtitle {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.history-event {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.history-event:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.history-event-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 4px;
+}
+
+.history-event-details {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.history-achievement {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef3c7;
+    color: #854d0e;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.history-achievement.gold {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #854d0e;
+}
+
+.history-achievement.silver {
+    background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+    color: #4b5563;
+}
+
+.history-achievement.bronze {
+    background: linear-gradient(135deg, #cd7f32, #e6a15c);
+    color: #78350f;
+}
+
+/* Responsividade para o novo perfil */
+@media (max-width: 992px) {
+    .info-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .profile-header-buttons {
+        width: 100%;
+    }
+    
+    .btn-edit-profile,
+    .btn-change-password {
+        width: 100%;
+    }
+    
+    .profile-tabs {
+        overflow-x: auto;
+        padding: 0 10px;
+    }
+    
+    .profile-tab {
+        padding: 12px 16px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+    
+    .profile-tab-content {
+        padding: 20px;
+    }
+    
+    .event-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .event-actions {
+        width: 100%;
+    }
+    
+    .btn-details,
+    .btn-cancel {
+        flex: 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+    
+    .profile-avatar-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .profile-info h2 {
+        font-size: 22px;
+    }
+    
+    .profile-info p {
+        font-size: 13px;
+    }
+}
+
+/* ===================================== */
+/* MELHORIAS NO POPUP DE EVENTOS */
+/* ===================================== */
+
+/* Garantir que o botão X do popup fique visível e funcional */
+.event-popup-close {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    color: white !important;
+    font-size: 26px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    z-index: 10000 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+}
+
+.event-popup-close:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+    transform: rotate(90deg) scale(1.1) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.event-popup-close:active {
+    transform: rotate(90deg) scale(0.95) !important;
+}
+
+/* Garantir que o overlay do popup funcione corretamente */
+.event-popup-overlay {
+    z-index: 9999 !important;
+}
+
+.event-popup-container {
+    position: relative !important;
+    z-index: 10000 !important;
+}

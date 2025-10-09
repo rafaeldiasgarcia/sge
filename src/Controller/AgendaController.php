@@ -141,7 +141,13 @@ class AgendaController extends BaseController
 
         // Redirect apenas para requisições não-AJAX
         if (!$isAjax) {
-            redirect('/agenda');
+            // Verificar se há um redirect_to especificado, senão usar referer ou agenda
+            $redirectTo = $_POST['redirect_to'] ?? null;
+            if (!$redirectTo) {
+                $referer = $_SERVER['HTTP_REFERER'] ?? '/agenda';
+                $redirectTo = (strpos($referer, '/perfil') !== false) ? '/perfil' : '/agenda';
+            }
+            redirect($redirectTo);
         }
     }
 }
