@@ -28,12 +28,11 @@
             </div>
         </div>
 
-        <!-- CARROSSEL COM 3 SLIDES -->
+        <!-- CARROSSEL COM 2 SLIDES -->
         <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
     </div>
 
     <div class="carousel-inner">
@@ -75,14 +74,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- SLIDE 3: Exemplo de outro slide -->
-        <div class="carousel-item">
-             <div class="custom-card blue-card">
-                <h2>TERCEIRO CARD</h2>
-                <p>Mais informações aqui.</p>
-            </div>
-        </div>
     </div>
 
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
@@ -99,31 +90,12 @@
 </section>
 
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2>Bem-vindo, <?php
-                $nomeCompleto = htmlspecialchars($user['nome']);
-                $primeiroNome = explode(' ', $nomeCompleto)[0];
-                echo $primeiroNome;
-            ?>!</h2>
-            <p class="text-muted">Este é o seu painel de controle.</p>
-        </div>
-        <div>
-        <span class="badge bg-primary fs-6">
-            Perfil: <?php
-                // Mostrar o tipo específico de usuário ao invés do role genérico
-                $tipoExibir = $user['tipo_usuario'] ?? 'Usuário';
-                echo htmlspecialchars($tipoExibir);
-            ?>
-        </span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><i class="bi bi-calendar-check-fill text-primary"></i> Agenda da Quadra</h5>
+<section>
+    <div class="row agenda-events">
+        <div class="col-md-6 mb-4 card-events">
+            <div class="card h-100 border-0 card-events-in">
+                <div class="card-body d-flex flex-column card-container">
+                    <h5 class="card-title"><i class="bi bi-calendar-check-fill text-primary"></i> AGENDA DOS EVENTOS</h5>
                     <p class="card-text">Confira os próximos eventos e marque sua presença.</p>
                     <a href="/agenda" class="btn btn-primary mt-auto">Ver Agenda</a>
                 </div>
@@ -193,8 +165,8 @@
 
     <div class="row mt-4">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
+            <div class="card border-0 mb-4 card-events-presence">
+                <div class="card-header text-white">
                     <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Próximos Eventos (Presença Marcada)</h5>
                 </div>
                 <div class="card-body">
@@ -202,7 +174,6 @@
                         <div class="text-center text-muted py-4">
                             <i class="bi bi-calendar-x fs-1 text-muted"></i>
                             <p class="mt-2">Você ainda não marcou presença em nenhum evento futuro.</p>
-                            <a href="/agenda" class="btn btn-outline-primary">Ver Agenda de Eventos</a>
                         </div>
                     <?php else: ?>
                         <div class="row">
@@ -277,5 +248,8 @@
         </div>
     </div>
 </div>
+</section>
+
+
 </body>
 </html>

@@ -2,14 +2,22 @@
     font-family: "Montserrat", sans-serif;
     font-weight: 900;
     font-size: 3rem;
-    line-height: 1.2;  /* Ajuste a altura da linha para o H1 */
-     background: var(--gradient-color-text);
-    /* 2. Recorta o fundo para ter exatamente o formato do texto */
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    background: linear-gradient(270deg, #3a00ff, #a000ff, #ff6a00, #3a00ff);
+    background-size: 600% 600%;
     -webkit-background-clip: text;
     background-clip: text;
-    /* 3. Deixa a cor do texto transparente para que o fundo (o gradiente) apareça */
     color: transparent;
-    text-align: center;
+    animation: gradientMove 6s ease infinite;
+}
+
+/* Animação do gradiente se movendo */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .title-dashboard {

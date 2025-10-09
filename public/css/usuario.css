@@ -2,15 +2,24 @@
     font-family: "Montserrat", sans-serif;
     font-weight: 900;
     font-size: 3rem;
-    line-height: 1.2;  /* Ajuste a altura da linha para o H1 */
-     background: var(--gradient-color-text);
-    /* 2. Recorta o fundo para ter exatamente o formato do texto */
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    /* Gradiente animado */
+    background: linear-gradient(270deg, #3a00ff, #a000ff, #ff6a00, #3a00ff);
+    background-size: 400% 400%;
     -webkit-background-clip: text;
     background-clip: text;
-    /* 3. Deixa a cor do texto transparente para que o fundo (o gradiente) apareça */
     color: transparent;
-    text-align: center;
+    animation: gradientMove 10s ease infinite;
 }
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 
 .title-dashboard {
     display: flex;
@@ -46,6 +55,20 @@
 }
 
 /* Cores e estilos específicos dos cards */
+
+/* Pretas no carrossel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);
+}
+
+/* Brancas apenas quando estiver sobre fundo laranja */
+.orange-card .carousel-control-prev-icon,
+.orange-card .carousel-control-next-icon {
+  filter: invert(0%);
+}
+
+
 .orange-card {
     background-color: var(--orange-color);
     color: white;
@@ -140,6 +163,41 @@
 /* ===================================== */
 /* SEÇÃO DE EVENTOS - DASHBOARD USUÁRIO */
 /* ===================================== */
+
+.agenda-events{
+    align-items: center;
+    justify-content: center;
+}
+
+.card-events-presence{
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+    -webkit-box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+    -moz-box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+}
+
+.card-header{
+    background: var(--orange-color);
+}
+
+.card-events{
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+    -webkit-box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+    -moz-box-shadow: 1px 28px 66px -20px rgba(0,0,0,0.68);
+}
+
+.card-events-in{
+    border-radius: 10px;
+}
+
+.card-container{
+    align-items: center;
+    justify-content: center;
+}
+
 
 .welcome-title {
     background: var(--gradient-color-text);
