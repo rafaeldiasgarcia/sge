@@ -6,20 +6,36 @@
 -- Tempo de geração: 28/09/2025 às 03:46
 -- Versão do servidor: 9.4.0
 -- Versão do PHP: 8.2.27
-CREATE DATABASE IF NOT EXISTS `application`
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-USE `application`;
 
-SET collation_connection = 'utf8mb4_unicode_ci';
-
-SET time_zone = "+00:00";
-
+-- ===================================================================
+-- CONFIGURAÇÕES DE CHARSET E COLLATION
+-- UTF8MB4 suporta todos os caracteres Unicode, incluindo:
+-- - Acentos (á, é, í, ó, ú, ã, õ, ç, etc.)
+-- - Emojis (😀, 🎉, ⚽, etc.)
+-- - Caracteres especiais de diversos idiomas
+-- ===================================================================
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET CHARACTER_SET_CLIENT = utf8mb4 */;
+
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+SET time_zone = "+00:00";
+
+-- Cria o banco de dados com UTF8MB4
+CREATE DATABASE IF NOT EXISTS `application`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE `application`;
+
+-- Garante que a conexão atual também use UTF8MB4
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 --
 -- Banco de dados: `application`
@@ -34,35 +50,35 @@ SET time_zone = "+00:00";
 CREATE TABLE `agendamentos` (
   `id` int NOT NULL,
   `usuario_id` int NOT NULL,
-  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo_agendamento` enum('esportivo','nao_esportivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `esporte_tipo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_agendamento` enum('esportivo','nao_esportivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `esporte_tipo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data_agendamento` date NOT NULL,
-  `periodo` enum('primeiro','segundo') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'primeiro: 19:15-20:55, segundo: 21:10-22:50',
-  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `status` enum('aprovado','pendente','rejeitado','cancelado','finalizado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
-  `motivo_rejeicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `periodo` enum('primeiro','segundo') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'primeiro: 19:15-20:55, segundo: 21:10-22:50',
+  `descricao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('aprovado','pendente','rejeitado','cancelado','finalizado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendente',
+  `motivo_rejeicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `atletica_confirmada` tinyint(1) NOT NULL DEFAULT '0',
   `atletica_id_confirmada` int DEFAULT NULL,
   `quantidade_atletica` int DEFAULT '0',
   `quantidade_pessoas` int DEFAULT '0',
-  `subtipo_evento` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'treino/campeonato para esportivos, palestra/workshop/formatura para nao_esportivos',
-  `responsavel_evento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `subtipo_evento` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'treino/campeonato para esportivos, palestra/workshop/formatura para nao_esportivos',
+  `responsavel_evento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `possui_materiais` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
-  `materiais_necessarios` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `materiais_necessarios` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `responsabiliza_devolucao` tinyint(1) DEFAULT NULL,
-  `lista_participantes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `arquivo_participantes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `arbitro_partida` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `lista_participantes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `arquivo_participantes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `arbitro_partida` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `estimativa_participantes` int DEFAULT NULL,
   `evento_aberto_publico` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
-  `descricao_publico_alvo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `descricao_publico_alvo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `foi_editado` tinyint(1) DEFAULT 0 COMMENT 'Indica se o agendamento foi editado após criação',
   `data_edicao` datetime DEFAULT NULL COMMENT 'Data e hora da última edição',
-  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento',
+  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento',
   `data_ultima_alteracao` datetime DEFAULT NULL COMMENT 'Data da última alteração feita pelo admin',
   `alterado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi alterado por um admin',
   `data_cancelamento` datetime DEFAULT NULL COMMENT 'Data do cancelamento pelo admin',
@@ -77,7 +93,7 @@ CREATE TABLE `agendamentos` (
 
 CREATE TABLE `atleticas` (
   `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -88,7 +104,7 @@ CREATE TABLE `atleticas` (
 
 CREATE TABLE `cursos` (
   `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `atletica_id` int DEFAULT NULL,
   `coordenador_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -104,9 +120,9 @@ CREATE TABLE `inscricoes_eventos` (
   `aluno_id` int NOT NULL,
   `evento_id` int NOT NULL,
   `atletica_id` int NOT NULL,
-  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aprovado',
+  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'aprovado',
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -120,7 +136,7 @@ CREATE TABLE `inscricoes_modalidade` (
   `aluno_id` int NOT NULL,
   `modalidade_id` int NOT NULL,
   `atletica_id` int NOT NULL,
-  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pendente',
+  `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendente',
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -132,7 +148,7 @@ CREATE TABLE `inscricoes_modalidade` (
 
 CREATE TABLE `modalidades` (
   `id` int NOT NULL,
-  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -156,21 +172,21 @@ CREATE TABLE `presencas` (
 
 CREATE TABLE `usuarios` (
   `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `ra` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ra` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
-  `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `curso_id` int DEFAULT NULL,
-  `role` enum('usuario','admin','superadmin') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'usuario',
+  `role` enum('usuario','admin','superadmin') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'usuario',
   `atletica_id` int DEFAULT NULL,
-  `tipo_usuario_detalhado` enum('Membro das Atleticas','Professor','Aluno','Comunidade Externa') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipo_usuario_detalhado` enum('Membro das Atleticas','Professor','Aluno','Comunidade Externa') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_coordenador` tinyint(1) NOT NULL DEFAULT '0',
-  `atletica_join_status` enum('none','pendente','aprovado') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'none',
-  `login_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `atletica_join_status` enum('none','pendente','aprovado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
+  `login_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `login_code_expires` datetime DEFAULT NULL,
-  `reset_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `reset_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `reset_token_expires` datetime DEFAULT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -183,9 +199,9 @@ CREATE TABLE `usuarios` (
 CREATE TABLE `notificacoes` (
   `id` int NOT NULL,
   `usuario_id` int NOT NULL,
-  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `agendamento_id` int DEFAULT NULL,
   `lida` tinyint(1) NOT NULL DEFAULT '0',
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP

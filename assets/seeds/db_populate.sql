@@ -1,9 +1,19 @@
--- Desativa a verificação de chaves estrangeiras para permitir a inserção de dados.
-USE `application`;
-SET NAMES utf8mb4;
-SET CHARACTER SET utf8mb4;
-SET collation_connection = 'utf8mb4_unicode_ci';
+-- ===================================================================
+-- SCRIPT DE POPULAÇÃO DE DADOS
+-- Este script insere dados iniciais no banco de dados
+-- ===================================================================
 
+USE `application`;
+
+-- Configura o charset para UTF8MB4 na conexão atual
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+SET CHARACTER SET utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
+-- Desativa a verificação de chaves estrangeiras para permitir a inserção de dados
 SET FOREIGN_KEY_CHECKS=0;
 -- Inicia uma transação.
 START TRANSACTION;
@@ -597,4 +607,16 @@ INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendam
 
 -- Comitando as alterações
 COMMIT;
+
+-- Reativa a verificação de chaves estrangeiras
 SET FOREIGN_KEY_CHECKS=1;
+
+-- ===================================================================
+-- FIM DO SCRIPT DE POPULAÇÃO
+-- 
+-- ✅ Dados inseridos com sucesso!
+-- ✅ UTF8MB4 está configurado e suporta:
+--    - Todos os caracteres com acentos (José, Ação, Comunicação)
+--    - Emojis (🎯, 🏆, ⚽, 🎉, 😀)
+--    - Caracteres especiais de múltiplos idiomas
+-- ===================================================================

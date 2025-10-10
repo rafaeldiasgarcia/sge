@@ -38,6 +38,10 @@ class Connection
             try {
                 self::$instance = new PDO($dsn, $username, $password, $options);
 
+                // Configurar UTF8MB4 para suporte completo a acentos e emojis
+                self::$instance->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+                self::$instance->exec("SET CHARACTER SET utf8mb4");
+                
                 // Configurar timezone do MySQL para corresponder ao PHP
                 self::$instance->exec("SET time_zone = '-03:00'");
 
