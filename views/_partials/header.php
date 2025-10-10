@@ -37,7 +37,7 @@ use Application\Core\Auth;
 <?php else: ?>
 <body class="d-flex flex-column min-vh-100">
 
-<nav class="navbar navbar-expand-lg p-1">
+<nav class="navbar navbar-expand-lg navbar-light bg-white p-1">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="header-left">
             <a class="navbar-brand" href="/">
@@ -45,10 +45,12 @@ use Application\Core\Auth;
             </a>
         </div>
         <div class="header-center">
-            <!-- Logo movido para a esquerda -->
         </div>
         <div class="header-right d-flex align-items-center">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <?php if (Auth::check()): ?>
@@ -78,9 +80,8 @@ use Application\Core\Auth;
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end notification-dropdown" id="notification-dropdown">
-                                <h6 class="dropdown-header d-flex justify-content-between align-items-center">
+                                <h6 class="dropdown-header d-grid justify-content-between align-items-center">
                                     <span>Notificações</span>
-                                    <button class="btn btn-sm btn-outline-secondary" id="mark-all-read">Marcar todas como lidas</button>
                                 </h6>
                                 <div id="notification-list" style="max-height: 400px; overflow-y: auto;">
                                     <div class="notification-empty">Carregando...</div>

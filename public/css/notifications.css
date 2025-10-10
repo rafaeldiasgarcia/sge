@@ -134,9 +134,106 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
+    /* Quando usado dentro do painel colapsado, faça o dropdown ocupar 100% do painel */
     .notification-dropdown {
-        width: 100vw !important;
+        width: 100% !important;
         left: 0 !important;
-        border-radius: 0 !important;
+        border-radius: 0.5rem !important;
+        box-shadow: none !important;
+        max-height: calc(100vh - 140px) !important;
+    }
+
+    /* Se o dropdown estiver dentro do painel colapsado, force position: static para evitar deslocamento lateral */
+    .header-right .navbar-collapse .notification-dropdown {
+        position: static !important;
+        transform: none !important;
+        margin: 0 !important;
+        left: auto !important;
+        right: auto !important;
+    }
+
+    /* Badge ajustado quando o dropdown aparece dentro do painel fixo */
+    .header-right .notification-badge {
+        top: 8px !important;
+        left: 8px !important;
+        right: auto !important;
+    }
+
+    /* Quando dentro do painel colapsado, posicione o badge de forma relativa ao item */
+    .header-right .navbar-collapse .nav-item.notifications .notification-badge {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        margin-right: .5rem !important;
+        transform: none !important;
+        float: none !important;
+    }
+
+    /* Regras adicionais para garantir que o painel de notificações caiba e não vaze
+       quando aberto dentro do painel colapsado */
+    .header-right .navbar-collapse .notification-dropdown {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        left: auto !important;
+        right: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border-radius: .5rem !important;
+        z-index: 1999 !important;
+        overflow: auto !important;
+        max-height: calc(100vh - 140px) !important;
+    }
+
+    /* Cabeçalho do dropdown fixo no topo do painel interno para não esconder conteúdo */
+    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: #fff !important;
+        z-index: 2000 !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    /* (Botão 'Marcar todas como lidas' removido do template; regras relacionadas removidas) */
+    /* Header: permitir wrap para que o botão possa aparecer inteiro em linha separada se necessário */
+    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: .5rem !important;
+        padding: .5rem .75rem !important;
+        box-sizing: border-box !important;
+        flex-wrap: wrap !important; /* permite que elementos quebrem para a próxima linha */
+    }
+
+    /* Título: pode encolher para abrir espaço, min-width:0 evita overflow por flex */
+    .header-right .navbar-collapse .notification-dropdown .dropdown-header > span {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        margin-right: .5rem !important;
+        white-space: normal !important;
+    }
+
+    /* Regras para responsividade do header do dropdown sem o botão extra */
+
+    /* Itens ocupando toda a largura e sem bordas que causem deslocamento */
+    .header-right .navbar-collapse .notification-dropdown .notification-item {
+        padding: 12px 14px !important;
+        border-bottom: 1px solid #e9ecef !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    .header-right .navbar-collapse .notification-dropdown .notification-item.unread {
+        border-left: none !important;
+        background-color: #fff3cd !important;
+    }
+
+    /* Garantir contraste do texto dentro do painel */
+    .header-right .navbar-collapse .notification-dropdown,
+    .header-right .navbar-collapse .notification-dropdown .notification-item,
+    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
+        color: #333 !important;
     }
 }
