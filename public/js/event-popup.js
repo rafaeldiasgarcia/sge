@@ -159,8 +159,9 @@ class EventPopup {
         const periodoTexto = this.getPeriodoTexto(evento.periodo);
         const dataFormatada = this.formatarData(evento.data_agendamento);
 
-        // Verificar se o usuário é admin ou superadmin
+        // Verificar o tipo de usuário
         const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
+        const isSuperAdmin = window.userRole === 'superadmin';
 
         let conteudo = `
             <div class="event-popup-header">
@@ -187,6 +188,11 @@ class EventPopup {
                             <label>Horário</label>
                             <div class="value"><i class="bi bi-clock"></i> ${periodoTexto}</div>
                         </div>
+        `;
+
+        // Status - apenas para super admin
+        if (isSuperAdmin) {
+            conteudo += `
                         <div class="event-info-item">
                             <label>Status</label>
                             <div class="value">
@@ -196,6 +202,10 @@ class EventPopup {
                                 </span>
                             </div>
                         </div>
+            `;
+        }
+
+        conteudo += `
                         <div class="event-info-item">
                             <label>Responsável do Evento</label>
                             <div class="value">${this.escapeHtml(evento.responsavel_evento || '-')}</div>
@@ -233,8 +243,8 @@ class EventPopup {
                 `;
             }
 
-            // Mostrar telefone se existir
-            if (evento.criador_telefone) {
+            // Mostrar telefone - APENAS PARA SUPER ADMIN
+            if (evento.criador_telefone && isSuperAdmin) {
                 conteudo += `
                             <div class="event-info-item">
                                 <label>Telefone</label>
@@ -253,8 +263,8 @@ class EventPopup {
                 `;
             }
 
-            // Mostrar tipo de usuário se existir
-            if (evento.criador_tipo) {
+            // Mostrar tipo de usuário - APENAS PARA SUPER ADMIN
+            if (evento.criador_tipo && isSuperAdmin) {
                 conteudo += `
                             <div class="event-info-item">
                                 <label>Tipo de Usuário</label>
@@ -332,15 +342,35 @@ class EventPopup {
                 <div class="event-popup-section">
                     <h3><i class="bi bi-people-fill"></i> Presenças Confirmadas (${evento.presencas.length})</h3>
                     <div class="presencas-list">
-                        ${evento.presencas.map(p => `
-                            <div class="presenca-item">
-                                <i class="bi bi-person-check-fill"></i>
-                                <div class="presenca-info">
-                                    <div class="name">${this.escapeHtml(p.nome)}</div>
-                                    <div class="email">${this.escapeHtml(p.email)}</div>
-                                </div>
-                            </div>
-                        `).join('')}
+            `;
+
+            // Super admin vê nome, email e RA
+            // Admin vê apenas nome e RA
+            evento.presencas.forEach(p => {
+                conteudo += `
+                    <div class="presenca-item">
+                        <i class="bi bi-person-check-fill"></i>
+                        <div class="presenca-info">
+                            <div class="name">${this.escapeHtml(p.nome)}</div>
+                `;
+                
+                // Email - apenas para super admin
+                if (isSuperAdmin && p.email) {
+                    conteudo += `<div class="email">${this.escapeHtml(p.email)}</div>`;
+                }
+                
+                // RA - para todos os admins
+                if (p.ra) {
+                    conteudo += `<div class="ra">RA: ${this.escapeHtml(p.ra)}</div>`;
+                }
+                
+                conteudo += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            conteudo += `
                     </div>
                 </div>
             `;

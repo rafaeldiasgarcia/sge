@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
         possuiMateriais.forEach(function(radio) {
             radio.addEventListener('change', toggleCamposMateriais);
         });
+        // Executar na carga inicial
+        toggleCamposMateriais();
     }
 
     // Função para mostrar/esconder campos do tipo "outro"
@@ -83,12 +85,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('esporte_tipo').required = true;
                     document.getElementById('lista_participantes').required = true;
                 }
-                if (estimativaEsp) estimativaEsp.required = true;
+                if (estimativaEsp) {
+                    estimativaEsp.required = true;
+                    estimativaEsp.disabled = false;
+                }
                 if (subtipo2) {
                     subtipo2.required = false;
                     if (outroTipoInput) outroTipoInput.required = false;
                 }
-                if (estimativaNaoEsp) estimativaNaoEsp.required = false;
+                if (estimativaNaoEsp) {
+                    estimativaNaoEsp.required = false;
+                    estimativaNaoEsp.disabled = true;
+                }
             } else if (this.value === 'nao_esportivo') {
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'block';
@@ -97,13 +105,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Verificar se precisa ativar o campo "outro"
                     toggleOutroTipo();
                 }
-                if (estimativaNaoEsp) estimativaNaoEsp.required = true;
+                if (estimativaNaoEsp) {
+                    estimativaNaoEsp.required = true;
+                    estimativaNaoEsp.disabled = false;
+                }
                 if (subtipo1) {
                     subtipo1.required = false;
                     document.getElementById('esporte_tipo').required = false;
                     document.getElementById('lista_participantes').required = false;
                 }
-                if (estimativaEsp) estimativaEsp.required = false;
+                if (estimativaEsp) {
+                    estimativaEsp.required = false;
+                    estimativaEsp.disabled = true;
+                }
             } else {
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'none';
@@ -112,6 +126,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Trigger inicial para mostrar os campos corretos
         tipoAgendamento.dispatchEvent(new Event('change'));
+        
+        // Inicialização na carga da página para desabilitar campos não usados
+        const estimativaEsp = document.getElementById('estimativa_participantes_esp');
+        const estimativaNaoEsp = document.getElementById('estimativa_participantes_nao_esp');
+        
+        if (tipoAgendamento.value === 'esportivo') {
+            if (estimativaEsp) {
+                estimativaEsp.required = true;
+                estimativaEsp.disabled = false;
+            }
+            if (estimativaNaoEsp) {
+                estimativaNaoEsp.required = false;
+                estimativaNaoEsp.disabled = true;
+            }
+        } else if (tipoAgendamento.value === 'nao_esportivo') {
+            if (estimativaEsp) {
+                estimativaEsp.required = false;
+                estimativaEsp.disabled = true;
+            }
+            if (estimativaNaoEsp) {
+                estimativaNaoEsp.required = true;
+                estimativaNaoEsp.disabled = false;
+            }
+        }
     }
 
     // Event listener para o formulário
@@ -181,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Se chegou aqui, todas validações passaram - permitir envio
-            console.log('Formulário válido, enviando...');
             return true;
         });
     }

@@ -136,7 +136,7 @@
                                     <label for="estimativa_participantes_esp" class="form-label">Público Estimado *</label>
                                     <input type="number" name="estimativa_participantes" id="estimativa_participantes_esp"
                                            class="form-control" min="1" max="500" placeholder="Ex: 50"
-                                           value="<?php echo htmlspecialchars($evento['estimativa_participantes']); ?>" required>
+                                           value="<?php echo htmlspecialchars($evento['estimativa_participantes'] ?? ''); ?>">
                                 </div>
                                 <div class="col-md-6 mb-3" id="campo_arbitro">
                                     <label for="arbitro_partida" class="form-label">Árbitro da Partida</label>
@@ -189,7 +189,7 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label for="subtipo_evento_nao_esp" class="form-label">Tipo de Evento *</label>
-                                    <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select" required>
+                                    <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select">
                                         <option value="">-- Selecione --</option>
                                         <?php
                                         $tipos_evento = [
@@ -219,10 +219,10 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="estimativa_participantes" class="form-label">Estimativa de Participantes *</label>
-                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes"
+                                    <label for="estimativa_participantes_nao_esp" class="form-label">Estimativa de Participantes *</label>
+                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes_nao_esp"
                                            class="form-control" min="1" max="500" placeholder="Ex: 100"
-                                           value="<?php echo htmlspecialchars($evento['estimativa_participantes']); ?>" required>
+                                           value="<?php echo htmlspecialchars($evento['estimativa_participantes'] ?? ''); ?>">
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -231,7 +231,7 @@
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="evento_aberto_publico"
                                                    id="publico_sim" value="1"
-                                                   <?php echo $evento['evento_aberto_publico'] ? 'checked' : ''; ?> required>
+                                                   <?php echo $evento['evento_aberto_publico'] ? 'checked' : ''; ?>>
                                             <label class="form-check-label" for="publico_sim">Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">

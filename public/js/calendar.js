@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const labelSel = document.getElementById('selecionado');
         const salvar = document.getElementById('btnEnviarSolicitacao');
         const formFields = document.getElementById('form-fields-wrapper');
+        
+        // Se já há valores (página de edição), habilitar o botão
+        if (salvar && dataInput && perInput && dataInput.value && perInput.value) {
+            salvar.disabled = false;
+        }
 
         // Lógica para os botões de período (slots)
         document.querySelectorAll('.slot').forEach(btn => {

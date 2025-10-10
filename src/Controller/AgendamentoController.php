@@ -345,6 +345,16 @@ class AgendamentoController extends BaseController
         if ($agendamentoRepo->updateAgendamento($id, Auth::id(), $data)) {
             // Enviar notificação ao super admin sobre a edição
             $this->notificationService->notifyAgendamentoEditado($id, $agendamentoAtual['status']);
+            
+            // Enviar notificação ao usuário confirmando a edição
+            $notificationRepo = $this->repository('NotificationRepository');
+            $notificationRepo->create(
+                Auth::id(),
+                'Evento Editado com Sucesso',
+                "Seu evento '{$data['titulo']}' foi editado e enviado para análise do Coordenador de Educação Física. Você será notificado sobre a aprovação.",
+                'info',
+                $id
+            );
 
             $_SESSION['success_message'] = "Agendamento atualizado com sucesso! Aguarde a nova aprovação do Coordenador de Educação Física.";
             redirect('/meus-agendamentos');

@@ -418,7 +418,7 @@ class AgendamentoRepository
 
     public function getPresencasByAgendamento(int $agendamentoId): array
     {
-        $sql = "SELECT p.usuario_id, u.nome, u.email 
+        $sql = "SELECT p.usuario_id, u.nome, u.email, u.ra 
                 FROM presencas p 
                 JOIN usuarios u ON p.usuario_id = u.id 
                 WHERE p.agendamento_id = :agendamento_id";

@@ -11,7 +11,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9998;
+    z-index: 10000;
 }
 
 .event-popup-overlay.active {
@@ -231,7 +231,8 @@
     margin-bottom: 2px;
 }
 
-.presenca-info .email {
+.presenca-info .email,
+.presenca-info .ra {
     font-size: 13px;
     color: #666;
 }
