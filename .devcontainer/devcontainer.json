@@ -3,7 +3,7 @@
     "dockerComposeFile": "../docker-compose.yml",
     "service": "apache",
     "workspaceFolder": "/var/www/html",
-    "postCreateCommand": "sudo -u www-data composer install --no-interaction",
+    "postCreateCommand": "composer install --no-interaction",
     "forwardPorts": [80, 8080, 3306],
     "portsAttributes": {
         "80": {
@@ -18,6 +18,5 @@
             "label": "MySQL",
             "onAutoForward": "silent"
         }
-    },
-    "remoteUser": "root"
+    }
 }
