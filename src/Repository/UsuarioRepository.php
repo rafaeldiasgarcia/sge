@@ -21,7 +21,8 @@ class UsuarioRepository
 
     public function findByEmail(string $email)
     {
-        $sql = "SELECT id, nome, email, senha, role, atletica_id, tipo_usuario_detalhado, curso_id 
+        $sql = "SELECT id, nome, email, senha, role, atletica_id, tipo_usuario_detalhado, curso_id,
+                       login_code, login_code_expires
                 FROM usuarios 
                 WHERE email = :email";
         $stmt = $this->pdo->prepare($sql);
@@ -37,15 +38,22 @@ class UsuarioRepository
         $stmt->bindValue(':code', $code, PDO::PARAM_STR);
         $stmt->bindValue(':expires', $expires, PDO::PARAM_STR);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        
+        if ($result) {
+            error_log("updateLoginCode: Código '{$code}' salvo com sucesso para user_id: {$id}, expira em: {$expires}");
+        } else {
+            error_log("updateLoginCode: Falha ao salvar código para user_id: {$id}");
+        }
+        
+        return $result;
     }
 
     public function findUserByLoginCode(string $email, string $code)
     {
-        // Primeiro vamos buscar os dados atuais para debug
-        $sql = "SELECT id, nome, role, atletica_id, tipo_usuario_detalhado, curso_id, 
-                       login_code, login_code_expires, 
-                       NOW() as current_time
+        // Buscar usuário e verificar código e expiração
+        $sql = "SELECT id, nome, email, role, atletica_id, tipo_usuario_detalhado, curso_id, 
+                       login_code, login_code_expires
                 FROM usuarios 
                 WHERE email = :email";
 
@@ -56,14 +64,39 @@ class UsuarioRepository
 
         // Se não encontrou o usuário, retorna null
         if (!$user) {
+            error_log("findUserByLoginCode: Usuário não encontrado para email: {$email}");
             return null;
         }
 
-        // Verifica se o código corresponde e não expirou
-        if ($user['login_code'] === $code && strtotime($user['login_code_expires']) > strtotime($user['current_time'])) {
+        // Debug
+        error_log("findUserByLoginCode: Código no banco: '" . ($user['login_code'] ?? 'NULL') . "' (tipo: " . gettype($user['login_code']) . ")");
+        error_log("findUserByLoginCode: Código recebido: '{$code}' (tipo: " . gettype($code) . ")");
+        error_log("findUserByLoginCode: Expira em: " . ($user['login_code_expires'] ?? 'NULL'));
+        error_log("findUserByLoginCode: Hora atual: " . date('Y-m-d H:i:s'));
+
+        // Normaliza os códigos para comparação (remove espaços e garante que são strings)
+        $dbCode = trim((string)($user['login_code'] ?? ''));
+        $inputCode = trim((string)$code);
+
+        // Verifica se o código existe e não está vazio
+        if (empty($dbCode)) {
+            error_log("findUserByLoginCode: Código no banco está vazio");
+            return null;
+        }
+
+        // Verifica se o código expirou
+        if (strtotime($user['login_code_expires']) <= time()) {
+            error_log("findUserByLoginCode: Código expirado");
+            return null;
+        }
+
+        // Verifica se o código corresponde
+        if ($dbCode === $inputCode) {
+            error_log("findUserByLoginCode: Código válido!");
             return $user;
         }
 
+        error_log("findUserByLoginCode: Código não corresponde. DB: '{$dbCode}' vs Input: '{$inputCode}'");
         return null;
     }
 
