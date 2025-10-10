@@ -10,6 +10,7 @@ services:
       - .:/var/www/html
     depends_on:
       - db
+    command: bash -c "composer install --no-interaction && apache2-foreground"
     
   db:
     image: mysql

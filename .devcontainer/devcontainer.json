@@ -1,26 +1,10 @@
 {
-	"name": "PHP in Docker",
-	"build": {
-         "dockerfile": "Dockerfile"
-     },
-	 "features": {
- 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
- 			"version": "latest",
- 			"enableNonRootDocker": "true",
- 			"moby": "true"
- 		}
- 	},
-	"forwardPorts": [
-		3306,
-		80,
-		8080
-	],
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"zobo.php-intellisense"
-			]
-		}
-	},
-	"postCreateCommand": "composer update && docker compose up -d"
+    "name": "SGE",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "apache",
+    "workspaceFolder": "/var/www/html",
+    "postCreateCommand": "composer install --no-interaction",
+    "postStartCommand": "composer install --no-interaction",
+    "forwardPorts": [80, 8080, 3306],
+    "remoteUser": "www-data"
 }

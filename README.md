@@ -391,27 +391,9 @@ Isso iniciará 3 containers:
 - **mysql**: MySQL (porta 3306)
 - **phpmyadmin**: Interface de administração (porta 8080)
 
-**3. Instale as dependências do Composer**
-   - Execute:
-     ```bash
-     docker exec -it php composer install
-     ```
-   - Se aparecer o erro `composer: executable file not found in $PATH`, instale o Composer manualmente dentro do container:
-     1. Entre no container como root:
-        ```bash
-        docker exec -it --user root php bash
-        ```
-     2. Instale o Composer:
-        ```bash
-        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-        exit
-        ```
-     3. Execute novamente:
-        ```bash
-        docker exec -it php composer install
-        ```
+> **Nota**: As dependências do Composer (incluindo PHPMailer) serão instaladas automaticamente ao subir os containers.
 
-**4. Popular o Banco de Dados**
+**3. Popular o Banco de Dados**
 
 O banco é criado automaticamente **vazio** (somente estrutura).
 Para adicionar dados de exemplo:
@@ -427,7 +409,7 @@ Para adicionar dados de exemplo:
 docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
 ```
 
-**5. Acesse a Aplicação**
+**4. Acesse a Aplicação**
 
 Abra o navegador em: **http://localhost**
 

@@ -24,13 +24,6 @@ if ($email) {
         </div>
     <?php endif; ?>
 
-    <?php if (isset($_SESSION['verification_code'])): ?>
-        <div class="alert alert-info alert-auth">
-            <strong>Código de verificação:</strong><br>
-            <code style='background: #f8f9fa; padding: 2px 6px; margin: 2px; border-radius: 4px;'><?php echo htmlspecialchars($_SESSION['verification_code']); ?></code>
-        </div>
-    <?php endif; ?>
-
     <form action="/login/verify" method="post" class="auth-form" id="verifyForm">
         <div class="mb-4">
             <input type="text"

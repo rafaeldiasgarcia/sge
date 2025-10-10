@@ -32,8 +32,8 @@ class EmailService
             $this->mailer->SMTPAuth   = true;
             
             // ⚠️ IMPORTANTE: Configure estas variáveis com suas credenciais
-            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'seuemail@gmail.com';
-            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'suasenha';
+            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'rafdgar@gmail.com';
+            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'tkbd pkkh yyqj fipq';
             
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mailer->Port       = 587;

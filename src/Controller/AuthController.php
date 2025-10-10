@@ -69,19 +69,15 @@ class AuthController extends BaseController
             $emailService = new \Application\Core\EmailService();
             $emailSent = $emailService->sendVerificationCode($user['email'], $user['nome'], $code);
 
-            $_SESSION['login_email'] = $user['email'];
-
-            // Se o e-mail não foi enviado, exibe o código na tela como fallback
             if (!$emailSent) {
-                $_SESSION['verification_code'] = $code;
-                error_log("Falha ao enviar email para {$user['email']}. Exibindo código na tela.");
-            } else {
-                // Email enviado com sucesso - TEMPORARIAMENTE exibe código na tela para debug
-                $_SESSION['verification_code'] = $code;
-                error_log("Email enviado com sucesso para {$user['email']}. Código: {$code}");
+                error_log("Falha ao enviar email para {$user['email']}.");
+                $_SESSION['error_message'] = "Erro ao enviar código de verificação. Tente novamente.";
+                redirect('/login');
+                return;
             }
-            // Para desenvolvimento/testes, descomente a linha abaixo para sempre mostrar o código:
-            // $_SESSION['verification_code'] = $code;
+
+            error_log("Email enviado com sucesso para {$user['email']}. Código: {$code}");
+            $_SESSION['login_email'] = $user['email'];
 
             redirect('/login/verify');
 
@@ -103,13 +99,11 @@ class AuthController extends BaseController
     public function verifyCode()
     {
         $email = $_SESSION['login_email'] ?? null;
-        $code = $_POST['code'] ?? '';
-        $simulatedCode = $_SESSION['verification_code'] ?? '';
+        $code = trim($_POST['code'] ?? '');
 
         error_log("=== Debug Verificação de Código ===");
         error_log("Email na sessão: " . ($email ?? 'não definido'));
         error_log("Código recebido: " . $code);
-        error_log("Código simulado na sessão: " . ($simulatedCode ?? 'não definido'));
 
         if (empty($email) || empty($code)) {
             error_log("Email ou código vazios");
@@ -129,39 +123,27 @@ class AuthController extends BaseController
                 return;
             }
 
-            // Compara com o código simulado primeiro (para desenvolvimento)
-            if ($code === $simulatedCode) {
-                error_log("Código simulado válido");
-                $userRepository->clearLoginCode($user['id']);
-                unset($_SESSION['login_email'], $_SESSION['login_code_simulado'], $_SESSION['verification_code']);
-                $this->createSession($user);
-                redirect('/');
-                return;
-            }
-
-            // Se não for o código simulado, verifica no banco de dados
+            // Debug: Ver o que tem no banco ANTES de verificar
+            error_log("=== ANTES DA VERIFICAÇÃO ===");
+            error_log("Código digitado: '{$code}' (length: " . strlen($code) . ")");
+            $debugUser = $userRepository->findByEmail($email);
+            error_log("Código no banco: '" . ($debugUser['login_code'] ?? 'NULL') . "' (length: " . strlen($debugUser['login_code'] ?? '') . ")");
+            error_log("Expira em: " . ($debugUser['login_code_expires'] ?? 'NULL'));
+            error_log("Hora atual: " . date('Y-m-d H:i:s'));
+            
+            // Verifica no banco de dados
             $dbUser = $userRepository->findUserByLoginCode($email, $code);
             if ($dbUser) {
-                error_log("Código do banco de dados válido");
+                error_log("✓ Código do banco de dados válido!");
                 $userRepository->clearLoginCode($user['id']);
-                unset($_SESSION['login_email'], $_SESSION['login_code_simulado'], $_SESSION['verification_code']);
+                unset($_SESSION['login_email'], $_SESSION['verification_code_debug']);
                 $this->createSession($dbUser);
                 redirect('/');
                 return;
             }
 
-            // Debug: vamos ver o que tem no banco
-            $debugUser = $userRepository->findByEmail($email);
-            error_log("DEBUG - Usuário no banco: " . json_encode([
-                'id' => $debugUser['id'] ?? 'não encontrado',
-                'login_code' => $debugUser['login_code'] ?? 'não definido',
-                'login_code_expires' => $debugUser['login_code_expires'] ?? 'não definido',
-                'código_recebido' => $code,
-                'código_sessão' => $simulatedCode
-            ]));
-
-            error_log("Código inválido para o email: $email");
-            $_SESSION['error_message'] = "Código inválido. Tente novamente.";
+            error_log("✗ Código inválido ou expirado para o email: $email");
+            $_SESSION['error_message'] = "Código inválido ou expirado. Tente novamente.";
             redirect('/login/verify');
 
         } catch (\Exception $e) {
