@@ -3,6 +3,7 @@
 # Serviço de Envio de E-mails.
 # Centraliza a lógica de envio de e-mails para autenticação e notificações.
 # Utiliza PHPMailer para enviar e-mails via SMTP.
+# Troque o email e senha nas linhas 36 e 37
 #
 namespace Application\Core;
 
@@ -32,8 +33,8 @@ class EmailService
             $this->mailer->SMTPAuth   = true;
             
             // ⚠️ IMPORTANTE: Configure estas variáveis com suas credenciais
-            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'rafdgar@gmail.com';
-            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'tkbd pkkh yyqj fipq';
+            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'email@email.com';
+            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'senha de app';
             
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mailer->Port       = 587;
