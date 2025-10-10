@@ -6,5 +6,8 @@
         "files": [
             "src/Core/helpers.php"
         ]
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.11"
     }
 }

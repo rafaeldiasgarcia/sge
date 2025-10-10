@@ -65,9 +65,23 @@ class AuthController extends BaseController
                 return;
             }
 
+            // Enviar código por e-mail usando PHPMailer
+            $emailService = new \Application\Core\EmailService();
+            $emailSent = $emailService->sendVerificationCode($user['email'], $user['nome'], $code);
+
             $_SESSION['login_email'] = $user['email'];
-            $_SESSION['login_code_simulado'] = $code;
-            $_SESSION['verification_code'] = $code;
+
+            // Se o e-mail não foi enviado, exibe o código na tela como fallback
+            if (!$emailSent) {
+                $_SESSION['verification_code'] = $code;
+                error_log("Falha ao enviar email para {$user['email']}. Exibindo código na tela.");
+            } else {
+                // Email enviado com sucesso - TEMPORARIAMENTE exibe código na tela para debug
+                $_SESSION['verification_code'] = $code;
+                error_log("Email enviado com sucesso para {$user['email']}. Código: {$code}");
+            }
+            // Para desenvolvimento/testes, descomente a linha abaixo para sempre mostrar o código:
+            // $_SESSION['verification_code'] = $code;
 
             redirect('/login/verify');
 
@@ -135,6 +149,16 @@ class AuthController extends BaseController
                 redirect('/');
                 return;
             }
+
+            // Debug: vamos ver o que tem no banco
+            $debugUser = $userRepository->findByEmail($email);
+            error_log("DEBUG - Usuário no banco: " . json_encode([
+                'id' => $debugUser['id'] ?? 'não encontrado',
+                'login_code' => $debugUser['login_code'] ?? 'não definido',
+                'login_code_expires' => $debugUser['login_code_expires'] ?? 'não definido',
+                'código_recebido' => $code,
+                'código_sessão' => $simulatedCode
+            ]));
 
             error_log("Código inválido para o email: $email");
             $_SESSION['error_message'] = "Código inválido. Tente novamente.";
@@ -307,12 +331,17 @@ class AuthController extends BaseController
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
             $userRepo->updateResetToken($user['id'], $token, $expires);
 
-            // SIMULAÇÃO DE ENVIO DE E-MAIL
-            // Em um ambiente real, você usaria uma biblioteca como PHPMailer aqui.
-            $recoveryLink = "/redefinir-senha?token=" . $token;
+            // Enviar link de recuperação por e-mail usando PHPMailer
+            $emailService = new \Application\Core\EmailService();
+            $emailSent = $emailService->sendPasswordRecoveryLink($user['email'], $user['nome'], $token);
+
+            if (!$emailSent) {
+                // Se o e-mail não foi enviado, exibe o link na tela como fallback
+                $recoveryLink = "/redefinir-senha?token=" . $token;
+                $_SESSION['recovery_link'] = $recoveryLink;
+                error_log("Falha ao enviar email de recuperação para {$user['email']}. Exibindo link na tela.");
+            }
             
-            // Armazenar o link na sessão para exibir na tela
-            $_SESSION['recovery_link'] = $recoveryLink;
             $_SESSION['success_message'] = "Se um usuário com este e-mail existir, um link de recuperação foi enviado.";
         } else {
             // Mensagem genérica para não confirmar se um e-mail existe ou não.
