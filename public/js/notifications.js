@@ -22,7 +22,8 @@ class SimpleNotifications {
         this.bell = document.getElementById('notification-bell');
         this.dropdown = document.getElementById('notification-dropdown');
         this.list = document.getElementById('notification-list');
-        this.markAllBtn = document.getElementById('mark-all-read');
+    // botão removido do template — mantemos compatibilidade caso exista
+    this.markAllBtn = document.getElementById('mark-all-read');
         this.notificationContainer = document.querySelector('.notifications'); // li.nav-item.notifications
 
         if (!this.badge || !this.bell) {
@@ -68,12 +69,8 @@ class SimpleNotifications {
             this.toggleDropdown();
         });
 
-        // Marcar todas como lidas
-        if (this.markAllBtn) {
-            this.markAllBtn.addEventListener('click', () => {
-                this.markAllAsRead();
-            });
-        }
+        // O botão "Marcar todas como lidas" foi removido do template.
+        // Em vez disso, marcamos todas como lidas quando o usuário abre/clica no sino (comportamento estilo Instagram).
 
         // Fechar ao clicar fora
         document.addEventListener('click', (e) => {
@@ -160,6 +157,12 @@ class SimpleNotifications {
             this.closeDropdown();
         } else {
             this.openDropdown();
+            // Ao abrir o dropdown via clique no sino, marque todas as notificações como lidas
+            // (Não marca se o dropdown for aberto por hover em desktops se já estiver aberto)
+            // Protegemos para evitar chamadas duplicadas ao clicar repetidamente
+            if (this.badge && this.badge.classList.contains('active')) {
+                this.markAllAsRead();
+            }
         }
     }
 
