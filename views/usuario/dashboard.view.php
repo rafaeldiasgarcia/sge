@@ -24,12 +24,11 @@
         <div class="title-dashboard">
             <div>
                 <h1>SEJA BEM-VINDO</h1>
-                <h1>A NOSSA SALA DE EVENTOS!!!</h1>
             </div>
         </div>
 
         <!-- CARROSSEL COM 2 SLIDES -->
-        <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -163,7 +162,7 @@
                         <div class="row">
                             <!-- Eventos Esportivos -->
                             <div class="col-md-6">
-                                <h6><i class="bi bi-trophy text-success"></i> Eventos Esportivos</h6>
+                                <h6><i class="bi bi-trophy text-success"></i> Próximo evento esportivo</h6>
                                 <?php
                                 $eventosEsportivos = array_filter($eventos_presenca, function($evento) {
                                     return $evento['tipo_agendamento'] === 'esportivo';
@@ -194,7 +193,7 @@
 
                             <!-- Eventos Não Esportivos -->
                             <div class="col-md-6">
-                                <h6><i class="bi bi-calendar-event text-primary"></i> Eventos Não Esportivos</h6>
+                                <h6><i class="bi bi-calendar-event text-primary"></i> Proximo evento não esportivo</h6>
                                 <?php
                                 $eventosNaoEsportivos = array_filter($eventos_presenca, function($evento) {
                                     return $evento['tipo_agendamento'] !== 'esportivo';

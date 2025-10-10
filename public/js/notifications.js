@@ -27,11 +27,8 @@ class SimpleNotifications {
         this.notificationContainer = document.querySelector('.notifications'); // li.nav-item.notifications
 
         if (!this.badge || !this.bell) {
-            console.log('Elementos de notificação não encontrados');
             return;
         }
-
-        console.log('Sistema de notificações iniciado');
 
         // Garantir que o badge inicie COMPLETAMENTE escondido
         this.badge.classList.remove('show', 'active');
@@ -82,15 +79,12 @@ class SimpleNotifications {
 
     async loadNotifications() {
         try {
-            console.log('Buscando notificações...');
-
             const response = await fetch('/notifications');
             if (!response.ok) {
                 throw new Error(`Erro HTTP: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('Dados recebidos:', data);
 
             if (data.success) {
                 this.updateBadge(data.unreadCount);
@@ -102,20 +96,16 @@ class SimpleNotifications {
     }
 
     updateBadge(count) {
-        console.log('Atualizando badge, count:', count);
-
         if (!this.badge) return;
 
         if (count > 0) {
             // Mostrar badge com número usando a nova classe 'active'
             this.badge.textContent = count > 99 ? '99+' : count.toString();
             this.badge.classList.add('active');
-            console.log('Badge mostrado com', count, 'notificações');
         } else {
             // Esconder badge completamente
             this.badge.classList.remove('active');
             this.badge.textContent = '';
-            console.log('Badge escondido');
         }
     }
 
@@ -157,26 +147,25 @@ class SimpleNotifications {
             this.closeDropdown();
         } else {
             this.openDropdown();
-            // Ao abrir o dropdown via clique no sino, marque todas as notificações como lidas
-            // (Não marca se o dropdown for aberto por hover em desktops se já estiver aberto)
-            // Protegemos para evitar chamadas duplicadas ao clicar repetidamente
-            if (this.badge && this.badge.classList.contains('active')) {
-                this.markAllAsRead();
-            }
         }
     }
 
     openDropdown() {
-        if (this.dropdown) {
+        if (this.dropdown && !this.isOpen) {
             this.dropdown.style.display = 'block';
             this.isOpen = true;
         }
     }
 
     closeDropdown() {
-        if (this.dropdown) {
+        if (this.dropdown && this.isOpen) {
             this.dropdown.style.display = 'none';
             this.isOpen = false;
+            
+            // Marcar todas como lidas quando o dropdown fechar
+            if (this.badge && this.badge.classList.contains('active')) {
+                this.markAllAsRead();
+            }
         }
     }
 
@@ -233,12 +222,10 @@ class SimpleNotifications {
 
 // Inicializar quando página carregar
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado, iniciando notificações...');
     new SimpleNotifications();
 });
 
 // Também tentar inicializar se DOM já estiver carregado
 if (document.readyState !== 'loading') {
-    console.log('DOM já carregado, iniciando notificações...');
     new SimpleNotifications();
 }

@@ -15,7 +15,13 @@ body.d-flex {
     --background-color: #ffffff;
     --text-color: #333333;
     --gradient-color-login: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
-    --gradient-color-text: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(242, 129, 0, 1) 100%); 
+    --gradient-color-text: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(242, 129, 0, 1) 100%);
+    
+    /* Sombras padronizadas */
+    --shadow-carousel: 1px 10px 39px -8px rgba(0,0,0,0.75); /* Sombra forte do carrossel */
+    --shadow-card: 0 4px 12px rgba(0,0,0,0.4); /* Sombra média para cards */
+    --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.45); /* Sombra no hover */
+    --shadow-light: 0 2px 6px rgba(0,0,0,0.08); /* Sombra leve */
 }
 
 /* UNIFIO Footer Styles */
