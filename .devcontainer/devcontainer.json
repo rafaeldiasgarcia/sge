@@ -3,8 +3,20 @@
     "dockerComposeFile": "../docker-compose.yml",
     "service": "apache",
     "workspaceFolder": "/var/www/html",
-    "postCreateCommand": "composer install --no-interaction",
-    "postStartCommand": "composer install --no-interaction",
+    "postCreateCommand": "composer install --no-interaction --no-dev",
     "forwardPorts": [80, 8080, 3306],
-    "remoteUser": "www-data"
+    "portsAttributes": {
+        "80": {
+            "label": "Application",
+            "onAutoForward": "notify"
+        },
+        "8080": {
+            "label": "phpMyAdmin",
+            "onAutoForward": "silent"
+        },
+        "3306": {
+            "label": "MySQL",
+            "onAutoForward": "silent"
+        }
+    }
 }
