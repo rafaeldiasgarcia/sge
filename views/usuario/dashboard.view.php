@@ -24,6 +24,7 @@
         <div class="title-dashboard">
             <div>
                 <h1>SEJA BEM-VINDO</h1>
+                <h1>À NOSSA SALA DE EVENTOS!!!</h1>
             </div>
         </div>
 

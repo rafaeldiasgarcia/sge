@@ -1,0 +1,52 @@
+.icon-calender{
+    color: var(--orange-color) !important;
+}
+
+.title-nao-esportivos{
+    background: var(--orange-color);
+    color: #ffff;
+}
+
+.title-nao-esportivos:hover{
+    background: var(--orange-color);
+    color: #ffff;
+}
+
+.title-eventos-nao-es{
+    color: black;
+}
+
+.text-presence{
+    color: var(--blue-color);
+}
+
+.description-eventos-nao-es{
+    color: black;
+}
+
+.description-eventos-nao-es:hover{
+    color: black;
+}
+
+.bg-info{
+    background-color: var(--blue-color) !important;
+}
+
+.data-card{
+    color: var(--orange-color);
+}
+
+.presense-mark{
+    background: var(--orange-color) !important;
+    color: #ffff !important;
+}
+
+.borda-card{
+    border-color: var(--orange-color) !important;
+}
+
+.borda-card:hover{
+    background: var(--orange-color-opacity) !important;
+
+}
+
