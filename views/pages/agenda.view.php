@@ -6,19 +6,6 @@
 # oculta para visualizar eventos passados.
 #
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE UNIFIO</title>
-    <link rel="stylesheet" href="/css/usuario.css">
-    <link rel="stylesheet" href="/css/default.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-    <link rel="stylesheet" href="/css/agenda.css">
-</head>
-<body>
-
 <h1 class="title-dashboard">Agenda da Quadra</h1>
 <p class="title-dashboard">Confira os próximos eventos aprovados e marque sua presença.</p>
 
@@ -264,6 +251,7 @@ function toggleEventos(tipo) {
         document.getElementById('btnEventosEsportivos').classList.add('active');
     } else if (tipo === 'nao_esportivos') {
         document.getElementById('eventosNaoEsportivos').style.display = 'block';
+        document.getElementById('btnEventosNaoEsportivos').classList.add('active');
     }
 
     // Removi o scroll automático - agora a página fica no lugar
@@ -372,4 +360,3 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
-</html>

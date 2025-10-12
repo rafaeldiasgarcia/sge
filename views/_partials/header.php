@@ -23,6 +23,11 @@ use Application\Core\Auth;
     <?php if (isset($isAuthPage) && $isAuthPage): ?>
     <link rel="stylesheet" href="/css/auth.css">
     <?php endif; ?>
+    <?php if (isset($additional_styles) && is_array($additional_styles)): ?>
+        <?php foreach ($additional_styles as $style): ?>
+    <link rel="stylesheet" href="<?php echo $style; ?>">
+        <?php endforeach; ?>
+    <?php endif; ?>
     <?php if (Auth::check()): ?>
     <script>
         // Variável global com o role do usuário para uso em JavaScript
