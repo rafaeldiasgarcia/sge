@@ -22,9 +22,9 @@ class AgendamentoController extends BaseController
 
     private function _checkSchedulingPermission()
     {
-        $tipo_usuario = Auth::get('tipo_usuario_detalhado');
         $role = Auth::role();
-        $can_schedule = ($tipo_usuario === 'Professor') || ($role === 'superadmin') || ($role === 'admin');
+        $is_coordenador = Auth::get('is_coordenador');
+        $can_schedule = ($role === 'superadmin') || ($role === 'admin') || ($is_coordenador == 1);
         if (!$can_schedule) {
             http_response_code(403);
             die('Acesso negado. Você não tem permissão para gerenciar agendamentos.');
@@ -71,6 +71,16 @@ class AgendamentoController extends BaseController
         foreach ($requiredFields as $field) {
             if (empty($_POST[$field])) {
                 $_SESSION['error_message'] = "Preencha todos os campos obrigatórios.";
+                redirect('/agendar-evento');
+            }
+        }
+
+        // Coordenadores só podem criar eventos não esportivos
+        $role = Auth::role();
+        $is_coordenador = Auth::get('is_coordenador');
+        if ($is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin') {
+            if ($_POST['tipo_agendamento'] === 'esportivo') {
+                $_SESSION['error_message'] = "Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.";
                 redirect('/agendar-evento');
             }
         }
@@ -282,6 +292,16 @@ class AgendamentoController extends BaseController
             empty($data['data_agendamento']) || empty($data['periodo'])) {
             $_SESSION['error_message'] = "Todos os campos obrigatórios precisam ser preenchidos.";
             redirect("/agendamento/editar/$id");
+        }
+
+        // Coordenadores só podem criar eventos não esportivos
+        $role = Auth::role();
+        $is_coordenador = Auth::get('is_coordenador');
+        if ($is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin') {
+            if ($data['tipo_agendamento'] === 'esportivo') {
+                $_SESSION['error_message'] = "Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.";
+                redirect("/agendamento/editar/$id");
+            }
         }
 
         // Dados específicos por tipo de evento

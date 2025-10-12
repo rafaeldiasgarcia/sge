@@ -47,3 +47,27 @@ function redirect(string $url)
     header('Location: ' . $url);
     exit();
 }
+
+/**
+ * Formata um telefone brasileiro de 11 dígitos no padrão (00) 00000-0000.
+ * 
+ * @param string|null $telefone O telefone com apenas números (11 dígitos).
+ * @return string O telefone formatado ou string vazia se inválido.
+ */
+function formatarTelefone(?string $telefone): string
+{
+    if (empty($telefone)) {
+        return '';
+    }
+    
+    // Remove tudo que não for número
+    $telefone = preg_replace('/[^0-9]/', '', $telefone);
+    
+    // Verifica se tem 11 dígitos
+    if (strlen($telefone) !== 11) {
+        return $telefone; // Retorna como está se não tiver 11 dígitos
+    }
+    
+    // Formata: (00) 00000-0000
+    return '(' . substr($telefone, 0, 2) . ') ' . substr($telefone, 2, 5) . '-' . substr($telefone, 7, 4);
+}

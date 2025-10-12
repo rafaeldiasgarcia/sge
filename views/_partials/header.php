@@ -23,6 +23,11 @@ use Application\Core\Auth;
     <?php if (isset($isAuthPage) && $isAuthPage): ?>
     <link rel="stylesheet" href="/css/auth.css">
     <?php endif; ?>
+    <?php if (isset($additional_styles) && is_array($additional_styles)): ?>
+        <?php foreach ($additional_styles as $style): ?>
+    <link rel="stylesheet" href="<?php echo $style; ?>">
+        <?php endforeach; ?>
+    <?php endif; ?>
     <?php if (Auth::check()): ?>
     <script>
         // Variável global com o role do usuário para uso em JavaScript
@@ -66,8 +71,8 @@ use Application\Core\Auth;
                                 <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
                             <?php else: ?>
                                 <?php
-                                $tipo_usuario = Auth::get('tipo_usuario_detalhado');
-                                if ($tipo_usuario === 'Professor'): ?>
+                                $is_coordenador = Auth::get('is_coordenador');
+                                if ($is_coordenador == 1): ?>
                                     <li class="nav-item"><a class="nav-link" href="/agendar-evento"><i class="bi bi-calendar-plus"></i> <span>Agendar Event.</span></a></li>
                                 <?php endif; ?>
                             <?php endif; ?>
@@ -89,17 +94,9 @@ use Application\Core\Auth;
                             </div>
                         </li>
 
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown user-menu-item">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"><span> Olá, <?php
-                                if (isset($user) && isset($user['nome']) && !empty($user['nome'])) {
-                                    $nomeCompleto = htmlspecialchars($user['nome']);
-                                    $primeiroNome = explode(' ', $nomeCompleto)[0];
-                                    echo $primeiroNome;
-                                } else {
-                                    echo 'Usuário';
-                                }
-                                ?></span></i>
+                                <i class="bi bi-person-circle"><span> Perfil</span></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <?php if (Auth::role() === 'admin'): ?>

@@ -6,8 +6,18 @@
 # e despacha a URL para o roteador.
 #
 
-// Garante que a sessão seja a primeira coisa a ser iniciada.
+// Configura a sessão para expirar quando o navegador for fechado
 if (session_status() === PHP_SESSION_NONE) {
+    // Define o cookie de sessão para expirar ao fechar o navegador (lifetime = 0)
+    // e torna-o mais seguro com httponly e secure (se HTTPS estiver disponível)
+    session_set_cookie_params([
+        'lifetime' => 0,  // Sessão expira ao fechar o navegador
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
 

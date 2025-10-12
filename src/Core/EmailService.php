@@ -33,15 +33,15 @@ class EmailService
             $this->mailer->SMTPAuth   = true;
             
             // ⚠️ IMPORTANTE: Configure estas variáveis com suas credenciais
-            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'email@email.com';
-            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'senha de app';
+            $this->mailer->Username   = getenv('SMTP_EMAIL') ?: 'siltuche1@gmail.com';
+            $this->mailer->Password   = getenv('SMTP_PASSWORD') ?: 'vafk ocyf dotr evvm';
             
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mailer->Port       = 587;
             $this->mailer->CharSet    = 'UTF-8';
 
             // Configurações do remetente
-            $fromEmail = 'rafdgar@gmail.com';
+            $fromEmail = 'siltuche1@gmail.com';
             $this->mailer->setFrom($fromEmail, 'SGE UNIFIO');
 
             return true;

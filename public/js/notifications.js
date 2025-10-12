@@ -63,18 +63,48 @@ class SimpleNotifications {
         // Clique no sino (manter para mobile/touch)
         this.bell.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation(); // Previne que o clique vaze
             this.toggleDropdown();
         });
 
         // O botão "Marcar todas como lidas" foi removido do template.
         // Em vez disso, marcamos todas como lidas quando o usuário abre/clica no sino (comportamento estilo Instagram).
 
-        // Fechar ao clicar fora
+        // Fechar ao clicar fora (mas não fechar quando clicar em outros dropdowns do menu mobile)
         document.addEventListener('click', (e) => {
             if (this.notificationContainer && !this.notificationContainer.contains(e.target)) {
+                // Verifica se clicou em outro dropdown (ex: perfil)
+                const isOtherDropdown = e.target.closest('.nav-item.dropdown');
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                const isMobile = window.innerWidth <= 991.98;
+                const menuIsOpen = navbarCollapse && navbarCollapse.classList.contains('show');
+                
+                // Se estamos no mobile com menu aberto e clicamos em outro dropdown, não fecha
+                if (isMobile && menuIsOpen && isOtherDropdown) {
+                    return; // Deixa o sistema de dropdowns do header gerenciar
+                }
+                
                 this.closeDropdown();
             }
         });
+
+        // Sincronizar estado quando o dropdown é fechado externamente (pelo sistema do header)
+        if (this.dropdown) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        const hasShow = this.dropdown.classList.contains('show');
+                        // Se o dropdown foi fechado externamente, atualizar nosso estado
+                        if (!hasShow && this.isOpen) {
+                            this.isOpen = false;
+                        } else if (hasShow && !this.isOpen) {
+                            this.isOpen = true;
+                        }
+                    }
+                });
+            });
+            observer.observe(this.dropdown, { attributes: true });
+        }
     }
 
     async loadNotifications() {
@@ -152,6 +182,8 @@ class SimpleNotifications {
 
     openDropdown() {
         if (this.dropdown && !this.isOpen) {
+            // Usar classe .show como o sistema de dropdowns do header
+            this.dropdown.classList.add('show');
             this.dropdown.style.display = 'block';
             this.isOpen = true;
         }
@@ -159,6 +191,8 @@ class SimpleNotifications {
 
     closeDropdown() {
         if (this.dropdown && this.isOpen) {
+            // Usar classe .show como o sistema de dropdowns do header
+            this.dropdown.classList.remove('show');
             this.dropdown.style.display = 'none';
             this.isOpen = false;
             

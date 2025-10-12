@@ -22,7 +22,7 @@ class UsuarioRepository
     public function findByEmail(string $email)
     {
         $sql = "SELECT id, nome, email, senha, role, atletica_id, tipo_usuario_detalhado, curso_id,
-                       login_code, login_code_expires
+                       is_coordenador, login_code, login_code_expires
                 FROM usuarios 
                 WHERE email = :email";
         $stmt = $this->pdo->prepare($sql);
@@ -53,7 +53,7 @@ class UsuarioRepository
     {
         // Buscar usuário e verificar código e expiração
         $sql = "SELECT id, nome, email, role, atletica_id, tipo_usuario_detalhado, curso_id, 
-                       login_code, login_code_expires
+                       is_coordenador, login_code, login_code_expires
                 FROM usuarios 
                 WHERE email = :email";
 
@@ -263,8 +263,8 @@ class UsuarioRepository
 
     public function createUser(array $data)
     {
-        $sql = "INSERT INTO usuarios (nome, email, senha, ra, data_nascimento, telefone, tipo_usuario_detalhado, curso_id, role, atletica_join_status, atletica_id) 
-                VALUES (:nome, :email, :senha, :ra, :data_nascimento, :telefone, :tipo_usuario_detalhado, :curso_id, :role, :atletica_join_status, :atletica_id)";
+        $sql = "INSERT INTO usuarios (nome, email, senha, ra, data_nascimento, telefone, tipo_usuario_detalhado, curso_id, role, atletica_join_status, atletica_id, is_coordenador) 
+                VALUES (:nome, :email, :senha, :ra, :data_nascimento, :telefone, :tipo_usuario_detalhado, :curso_id, :role, :atletica_join_status, :atletica_id, :is_coordenador)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':nome', $data['nome']);
         $stmt->bindValue(':email', $data['email']);
@@ -277,6 +277,7 @@ class UsuarioRepository
         $stmt->bindValue(':role', $data['role']);
         $stmt->bindValue(':atletica_join_status', $data['atletica_join_status']);
         $stmt->bindValue(':atletica_id', $data['atletica_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':is_coordenador', $data['is_coordenador'] ?? 0, PDO::PARAM_INT);
         if ($stmt->execute()) {
             return $this->pdo->lastInsertId();
         }

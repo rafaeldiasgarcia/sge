@@ -6,20 +6,20 @@
 # oculta para visualizar eventos passados.
 #
 ?>
-<h1>Agenda da Quadra</h1>
-<p>Confira os próximos eventos aprovados e marque sua presença.</p>
+<h1 class="title-dashboard">Agenda da Quadra</h1>
+<p class="title-dashboard">Confira os próximos eventos aprovados e marque sua presença.</p>
 
 <div class="mb-5">
-    <h2 class="mb-4"><i class="bi bi-calendar-plus text-success"></i> Próximos Eventos</h2>
+    <h2 class="mb-4"><i class="bi bi-calendar-plus text-success icon-calender"></i> Próximos Eventos</h2>
 
     <!-- Botões para alternar entre tipos de eventos -->
-    <div class="d-flex gap-3 mb-4 align-items-stretch">
-        <button class="btn btn-primary btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
+    <div class="btn-eventos-container">
+        <button class="btn btn-primary btn-evento-toggle flex-fill d-flex align-items-center justify-content-center" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
             <i class="bi bi-trophy-fill me-2"></i>
             <span>Eventos Esportivos</span>
             <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_esportivos); ?></span>
         </button>
-        <button class="btn btn-success btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
+        <button class="btn title-nao-esportivos btn-evento-toggle flex-fill d-flex align-items-center justify-content-center" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
             <i class="bi bi-calendar-event-fill me-2"></i>
             <span>Eventos Não Esportivos</span>
             <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_nao_esportivos); ?></span>
@@ -40,7 +40,7 @@
                                  data-event-id="<?php echo $evento['id']; ?>"
                                  style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1 text-primary"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
+                                    <h5 class="mb-1 title-eventos-nao-es"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
                                     <small class="text-primary fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
                                 </div>
 
@@ -70,7 +70,7 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                    <button type="button" class="btn btn-sm presenca-btn"
                                             data-agendamento-id="<?php echo $evento['id']; ?>"
                                             data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
                                         <?php if ($evento['presenca_id']): ?>
@@ -97,20 +97,20 @@
 
     <!-- Seção de Eventos Não Esportivos -->
     <div id="eventosNaoEsportivos" class="eventos-section" style="display: none;">
-        <div class="card shadow-sm border-success">
-            <div class="card-header bg-success text-white">
+        <div class="card shadow-sm">
+            <div class="card-header title-nao-esportivos text-white">
                 <h3 class="mb-0"><i class="bi bi-calendar-event-fill"></i> Eventos Não Esportivos</h3>
             </div>
             <div class="card-body">
                 <?php if (!empty($eventos_futuros_nao_esportivos)): ?>
                     <div class="list-group">
                         <?php foreach ($eventos_futuros_nao_esportivos as $evento): ?>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-success event-clickable"
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 borda-card event-clickable"
                                  data-event-id="<?php echo $evento['id']; ?>"
                                  style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1 text-success"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
-                                    <small class="text-success fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
+                                    <h5 class="mb-1 title-eventos-nao-es"><?php echo htmlspecialchars($evento['titulo'] ?? ''); ?></h5>
+                                    <small class="data-card fw-bold"><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></small>
                                 </div>
 
                                 <div class="row mb-2">
@@ -129,7 +129,7 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline-success'; ?>"
+                                    <button type="button" class="btn btn-sm presenca-btn"
                                             data-agendamento-id="<?php echo $evento['id']; ?>"
                                             data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
                                         <?php if ($evento['presenca_id']): ?>
@@ -233,7 +233,7 @@
         </div>
     </div>
 <?php endif; ?>
-
+</body>
 <script>
 function toggleEventos(tipo) {
     // Esconder todas as seções
@@ -327,8 +327,6 @@ document.addEventListener('click', function(event) {
                 if (action === 'marcar') {
                     btn.setAttribute('data-action', 'desmarcar');
                     btn.innerHTML = '<i class="bi bi-x-circle-fill"></i> Desmarcar Presença';
-                    btn.classList.remove('btn-outline-success');
-                    btn.classList.add('btn-outline-danger');
                     
                     // Incrementar contador
                     if (badgePresencas) {
@@ -338,8 +336,6 @@ document.addEventListener('click', function(event) {
                 } else {
                     btn.setAttribute('data-action', 'marcar');
                     btn.innerHTML = '<i class="bi bi-check-circle"></i> Marcar Presença';
-                    btn.classList.remove('btn-outline-danger');
-                    btn.classList.add('btn-outline-success');
                     
                     // Decrementar contador
                     if (badgePresencas) {
@@ -347,8 +343,6 @@ document.addEventListener('click', function(event) {
                         badgePresencas.innerHTML = '<i class="bi bi-people-fill"></i> ' + Math.max(0, currentCount - 1) + ' pessoa(s) confirmaram presença';
                     }
                 }
-
-                console.log('Interface atualizada com sucesso!');
             } else {
                 console.error('Erro na resposta:', data.message);
                 alert('Erro ao atualizar presença. Tente novamente mais tarde.');

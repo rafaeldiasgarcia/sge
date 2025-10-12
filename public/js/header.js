@@ -71,29 +71,105 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dropdownToggle) {
                 dropdownToggle.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Previne que o clique vaze
 
-                    // Toggle do menu ao clicar
-                    if (dropdownMenu.classList.contains('show')) {
-                        dropdownMenu.classList.remove('show');
-                    } else {
+                    const navbarCollapse = document.querySelector('.navbar-collapse');
+                    const isMobile = window.innerWidth <= 991.98;
+                    const menuIsOpen = navbarCollapse && navbarCollapse.classList.contains('show');
+
+                    // Se estamos no mobile E o menu está aberto, apenas alterna entre dropdowns
+                    if (isMobile && menuIsOpen) {
                         // Fechar outros dropdowns abertos antes de abrir este
                         document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
                             if (menu !== dropdownMenu) {
                                 menu.classList.remove('show');
+                                // Também define display:none para compatibilidade com notifications.js
+                                if (menu.classList.contains('notification-dropdown')) {
+                                    menu.style.display = 'none';
+                                }
                             }
                         });
+                        // Sempre abre o dropdown clicado (não fecha se já estava aberto)
                         dropdownMenu.classList.add('show');
+                        // Se for o dropdown de notificações, também define display:block
+                        if (dropdownMenu.classList.contains('notification-dropdown')) {
+                            dropdownMenu.style.display = 'block';
+                        }
+                    } else {
+                        // Comportamento normal (desktop ou menu fechado): toggle
+                        if (dropdownMenu.classList.contains('show')) {
+                            dropdownMenu.classList.remove('show');
+                        } else {
+                            // Fechar outros dropdowns abertos antes de abrir este
+                            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                                if (menu !== dropdownMenu) {
+                                    menu.classList.remove('show');
+                                }
+                            });
+                            dropdownMenu.classList.add('show');
+                        }
                     }
+                }, false); // Usa bubble phase
+            }
+        });
+
+        // Fechar todos os dropdowns ao clicar fora (uma única vez para todos)
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-item.dropdown')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
                 });
             }
+        });
+    }
 
-            // Fechar dropdown ao clicar fora
-            document.addEventListener('click', function(e) {
-                if (!dropdown.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
+    /**
+     * Fecha popups de eventos quando o menu mobile é aberto
+     *
+     * Previne conflito de interação entre o menu mobile e popups de eventos
+     * que podem estar visíveis por trás do menu.
+     */
+    function initMobileMenuProtection() {
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        
+        if (navbarCollapse && navbarToggler) {
+            // Listener para quando o collapse Bootstrap é mostrado
+            navbarCollapse.addEventListener('show.bs.collapse', function() {
+                // Fecha popup de evento se estiver aberto
+                const eventPopup = document.querySelector('.event-popup-overlay');
+                if (eventPopup && eventPopup.classList.contains('active')) {
+                    eventPopup.classList.remove('active');
                 }
             });
-        });
+
+            // Previne que cliques nos links normais do menu mobile vazem para elementos abaixo
+            // MAS NÃO afeta os toggles de dropdown
+            const menuLinks = navbarCollapse.querySelectorAll('a.nav-link:not(.dropdown-toggle), a.dropdown-item');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                }, true);
+            });
+
+            // Fecha o menu ao clicar fora dele (mas não ao clicar em dropdowns internos)
+            document.addEventListener('click', function(e) {
+                // Se o menu está aberto
+                if (navbarCollapse.classList.contains('show')) {
+                    const isMobile = window.innerWidth <= 991.98;
+                    
+                    // Verifica se o clique foi em um dropdown interno (notificações ou perfil)
+                    const isDropdownClick = e.target.closest('.nav-item.dropdown');
+                    
+                    // Se não clicou no menu, nem no toggler, nem em dropdown interno, fecha o menu
+                    if (!navbarCollapse.contains(e.target) && 
+                        !navbarToggler.contains(e.target) && 
+                        !isDropdownClick) {
+                        navbarToggler.click(); // Fecha o menu
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -104,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function initHeader() {
         initDropdownHover();
+        initMobileMenuProtection();
 
         // Aqui podem ser adicionadas outras inicializações do header no futuro
         // As notificações agora são gerenciadas pelo arquivo notifications.js

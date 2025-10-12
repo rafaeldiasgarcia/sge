@@ -76,7 +76,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Telefone:</span>
-                    <span class="info-value"><?php echo htmlspecialchars($user['telefone'] ?? '(14) 99999-9999'); ?></span>
+                    <span class="info-value"><?php echo htmlspecialchars(formatarTelefone($user['telefone'] ?? null) ?: 'Não informado'); ?></span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Data de Nascimento:</span>
@@ -347,4 +347,24 @@ function openPasswordModal() {
     const modal = new bootstrap.Modal(document.getElementById('modalAlterarSenha'));
     modal.show();
 }
+
+// Ajustar tamanho do nome dinamicamente para sempre caber
+function ajustarTamanhoNome() {
+    const nomeElement = document.querySelector('.profile-info h2');
+    if (!nomeElement) return;
+    
+    const containerWidth = nomeElement.parentElement.offsetWidth;
+    let fontSize = 28; // Tamanho padrão
+    nomeElement.style.fontSize = fontSize + 'px';
+    
+    // Reduzir o tamanho da fonte até o texto caber
+    while (nomeElement.scrollWidth > containerWidth && fontSize > 16) {
+        fontSize -= 1;
+        nomeElement.style.fontSize = fontSize + 'px';
+    }
+}
+
+// Chamar ao carregar e ao redimensionar a janela
+document.addEventListener('DOMContentLoaded', ajustarTamanhoNome);
+window.addEventListener('resize', ajustarTamanhoNome);
 </script>

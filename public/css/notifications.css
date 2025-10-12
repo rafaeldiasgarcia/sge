@@ -10,6 +10,7 @@
     border-radius: 12px;
     background: white;
     display: none;
+    z-index: 10500;
 }
 
 /* Item de notificações no menu - SEM interferência com animações */
@@ -181,9 +182,17 @@
         padding: 0 !important;
         box-shadow: none !important;
         border-radius: .5rem !important;
-        z-index: 1999 !important;
+        z-index: 10501 !important;
         overflow: auto !important;
         max-height: calc(100vh - 140px) !important;
+        transition: opacity 0.2s ease !important;
+        opacity: 1 !important;
+    }
+    
+    /* Ocultar notificações quando não estiver com classe .show */
+    .header-right .navbar-collapse .notification-dropdown:not(.show) {
+        display: none !important;
+        opacity: 0 !important;
     }
 
     /* Cabeçalho do dropdown fixo no topo do painel interno para não esconder conteúdo */
@@ -191,7 +200,7 @@
         position: sticky !important;
         top: 0 !important;
         background: #fff !important;
-        z-index: 2000 !important;
+        z-index: 10502 !important;
         border-bottom: 1px solid #dee2e6 !important;
     }
 

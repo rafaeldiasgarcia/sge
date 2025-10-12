@@ -75,7 +75,8 @@ class AgendaController extends BaseController
                 'data_atual' => $data_atual,
                 'role' => Auth::role(),
                 'atletica_id' => Auth::get('atletica_id'),
-                'tipo_usuario_detalhado' => Auth::get('tipo_usuario_detalhado')
+                'tipo_usuario_detalhado' => Auth::get('tipo_usuario_detalhado'),
+                'additional_styles' => ['/css/usuario.css', '/css/agenda.css']
             ]);
         } catch (\Exception $e) {
             die("Erro ao carregar a agenda: " . $e->getMessage());

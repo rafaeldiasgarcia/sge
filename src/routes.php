@@ -1,8 +1,7 @@
 <?php
 #
 # Arquivo de Definição de Rotas.
-# Mapeia cada URL (URI) e método HTTP (GET, POST) para uma ação específica
-# em um Controller (ex: 'HomeController@index').
+# Mapeia cada URL (URI) e método HTTP (GET, POST) para uma ação específica em um Controller (ex: 'HomeController@index').
 # É incluído pelo index.php e usado pela classe Router.
 #
 

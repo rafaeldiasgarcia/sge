@@ -1269,11 +1269,19 @@ img {
     font-size: 16px;
 }
 
+.profile-info {
+    max-width: 500px;
+    overflow: hidden;
+}
+
 .profile-info h2 {
     margin: 0;
-    font-size: 28px;
+    font-size: clamp(18px, 4vw, 28px);
     font-weight: 700;
     color: #1e293b;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.2;
 }
 
 .profile-info p {
@@ -1619,6 +1627,14 @@ img {
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
+    }
+    
+    .profile-info {
+        max-width: 100%;
+    }
+    
+    .profile-info h2 {
+        font-size: clamp(16px, 5vw, 24px);
     }
     
     .profile-header-buttons {

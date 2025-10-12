@@ -17,7 +17,8 @@ class UsuarioController extends BaseController
         $userData = [
             'nome' => Auth::name(),
             'role' => Auth::role(),
-            'tipo_usuario' => Auth::get('tipo_usuario_detalhado')
+            'tipo_usuario' => Auth::get('tipo_usuario_detalhado'),
+            'is_coordenador' => Auth::get('is_coordenador')
         ];
 
         $agendamentoRepository = $this->repository('AgendamentoRepository');
