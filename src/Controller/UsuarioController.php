@@ -1,7 +1,7 @@
 <?php
 #
 # Controller para as funcionalidades do Usuário.
-# Gerencia o dashboard do usuário, a edição de perfil (dados pessoais e senha)
+# Gerencia o dashboard do usuário, a edição de perfil (dados pessoais e senha).
 # e as inscrições em modalidades esportivas.
 #
 namespace Application\Controller;
