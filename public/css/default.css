@@ -1,3 +1,9 @@
+/**
+ * DEFAULT.CSS
+ * Estilos globais base do sistema SGE UNIFIO.
+ * Inclui: tipografia, layout geral, footer, mensagens de feedback.
+ */
+
 body {
     font-family: 'Montserrat', Arial, sans-serif;
     min-height: 100vh; /* Garante altura mínima da tela */

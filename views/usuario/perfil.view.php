@@ -1,8 +1,50 @@
 <?php
-#
-# View da página de Perfil do Usuário.
-# Contém informações do usuário divididas em abas: Informações, Meus Eventos, Histórico e Configurações.
-#
+/**
+ * ============================================================================
+ * VIEW: PERFIL DO USUÁRIO
+ * ============================================================================
+ * 
+ * Página completa do perfil com informações pessoais, eventos e atlética.
+ * Interface com abas para organizar diferentes seções de dados.
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar informações pessoais e acadêmicas
+ * - Ver eventos com presença confirmada (futuros e passados)
+ * - Gerenciar vínculo com atlética
+ * - Alterar senha via modal
+ * - Solicitar/cancelar participação em atlética
+ * - Avatar com iniciais
+ * 
+ * ABAS DISPONÍVEIS:
+ * 1. Informações: dados pessoais e acadêmicos
+ * 2. Meus Eventos: histórico de presenças confirmadas
+ * 3. Atlética: gerenciamento de vínculo com atlética
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $user          - Dados completos do usuário
+ *                             [nome, email, telefone, ra, data_nascimento,
+ *                              tipo_usuario_detalhado, curso_nome, role,
+ *                              atletica_id, status_membro_atletica]
+ * @var array $atletica_info - Informações da atlética (se vinculado)
+ *                             [nome, id]
+ * @var array $eventos       - Eventos com presença (futuros e passados)
+ * @var array $atleticas     - Lista de atléticas disponíveis (para solicitação)
+ * 
+ * GERENCIAMENTO DE ATLÉTICA:
+ * - Solicitar entrada: POST /usuario/solicitar-atletica
+ * - Cancelar solicitação: POST /usuario/cancelar-solicitacao-atletica
+ * - Sair da atlética: POST /usuario/sair-atletica
+ * 
+ * STATUS POSSÍVEIS:
+ * - null: não vinculado
+ * - 'pendente': aguardando aprovação
+ * - 'membro': membro ativo
+ * - 'recusado': solicitação recusada
+ * 
+ * CONTROLLER: UsuarioController::perfil()
+ * CSS: usuario.css
+ * JAVASCRIPT: Inline (tabs, modal de senha)
+ */
 ?>
 <head>
     <link rel="stylesheet" href="/css/usuario.css">

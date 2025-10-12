@@ -1,9 +1,27 @@
 <?php
-#
-# Repositório para a tabela 'modalidades'.
-# Contém todas as operações de CRUD para as modalidades esportivas
-# disponíveis no sistema.
-#
+/**
+ * Repositório de Modalidades (ModalidadeRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'modalidades'.
+ * Modalidades são os esportes disponíveis para inscrição no sistema,
+ * como Futsal, Vôlei, Basquete, Handebol, etc.
+ * 
+ * Responsabilidades:
+ * - CRUD completo de modalidades esportivas
+ * 
+ * Relacionamentos:
+ * - Uma modalidade pode ter várias inscrições de alunos
+ * - Modalidades são usadas para classificar agendamentos esportivos
+ * 
+ * Exemplos de modalidades:
+ * - Futsal
+ * - Vôlei
+ * - Basquete
+ * - Handebol
+ * - Futevôlei
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +29,7 @@ use PDO;
 
 class ModalidadeRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

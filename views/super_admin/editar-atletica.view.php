@@ -1,8 +1,9 @@
 <?php
-#
-# View com o formulário para editar uma atlética existente.
-# Usado pelo Super Administrador.
-#
+/**
+ * VIEW: EDITAR ATLÉTICA (SUPER ADMIN)
+ * Formulário para editar dados de uma atlética (nome, curso).
+ * CONTROLLER: SuperAdminController::editarAtletica()
+ */
 ?>
 <h2>Editando Atlética</h2>
 <div class="card">

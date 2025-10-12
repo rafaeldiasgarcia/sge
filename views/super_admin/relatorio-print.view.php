@@ -1,8 +1,9 @@
 <?php
-#
-# View especial para a impressão de relatórios.
-# Possui um layout simplificado, sem navegação, otimizado para impressão ou PDF.
-#
+/**
+ * VIEW: RELATÓRIO PARA IMPRESSÃO (SUPER ADMIN)
+ * Layout simplificado sem navegação, otimizado para impressão e exportação PDF.
+ * CONTROLLER: SuperAdminController::relatorioPrint()
+ */
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

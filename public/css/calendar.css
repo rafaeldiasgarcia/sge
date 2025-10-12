@@ -4,6 +4,12 @@
  */
 
 /* ===== Calendário ===== */
+/**
+ * CALENDAR.CSS
+ * Estilos do calendário interativo de agendamentos.
+ * Inclui: grid de dias, slots de período, badges de disponibilidade, navegação.
+ */
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);

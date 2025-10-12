@@ -1,7 +1,33 @@
--- ===================================================================
--- SCRIPT DE POPULAÇÃO DE DADOS
--- Este script insere dados iniciais no banco de dados
--- ===================================================================
+-- ============================================================================
+-- SCRIPT DE POPULAÇÃO DE DADOS - SGE UNIFIO
+-- Sistema de Gerenciamento de Eventos da Quadra Poliesportiva
+-- ============================================================================
+--
+-- Este script insere dados iniciais (seed data) no banco de dados para
+-- desenvolvimento e demonstração do sistema.
+--
+-- IMPORTANTE: Execute o arquivo 0-schema.sql ANTES deste arquivo!
+-- Ordem de execução: 1º schema.sql, 2º db_populate.sql
+--
+-- Dados incluídos:
+-- - 1 Super Administrador (acesso completo ao sistema)
+-- - 3 Atléticas (Engenharia, Administração, Direito)
+-- - 10 Cursos vinculados às atléticas
+-- - 6 Modalidades esportivas (Futsal, Vôlei, Basquete, Handebol, Tênis de Mesa, Futevôlei)
+-- - 15 Usuários de teste (alunos, professores, coordenadores, admins)
+-- - Agendamentos de exemplo (pendentes, aprovados, finalizados)
+-- - Inscrições em modalidades
+-- - Notificações de exemplo
+--
+-- Credenciais de Teste:
+-- Super Admin: superadmin@unifio.br / senha123
+-- Admin Engenharia: admin@unifio.br / senha123
+-- Usuário Comum: joao.silva@unifio.br / senha123
+--
+-- Nota: Todas as senhas são "senha123" para facilitar testes.
+-- EM PRODUÇÃO, use senhas fortes e únicas!
+--
+-- ============================================================================
 
 USE `application`;
 

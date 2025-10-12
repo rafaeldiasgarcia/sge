@@ -1,8 +1,10 @@
 <?php
-#
-# View para envio de notificação global para todos os usuários.
-# Permite ao super admin enviar avisos importantes como manutenção da quadra.
-#
+/**
+ * VIEW: ENVIAR NOTIFICAÇÃO GLOBAL (SUPER ADMIN)
+ * Formulário para enviar notificações para todos os usuários do sistema.
+ * Útil para avisos de manutenção, mudanças importantes, etc.
+ * CONTROLLER: SuperAdminController::enviarNotificacaoGlobal()
+ */
 ?>
 <h1>Enviar Notificação Global</h1>
 <p>Envie uma notificação para todos os usuários da plataforma.</p>

@@ -1,8 +1,9 @@
 <?php
-#
-# View para o Super Admin gerenciar as modalidades esportivas.
-# Permite criar, listar, editar e excluir os esportes disponíveis no sistema.
-#
+/**
+ * VIEW: GERENCIAR MODALIDADES ESPORTIVAS (SUPER ADMIN)
+ * CRUD de modalidades esportivas (adicionar, editar, excluir esportes).
+ * CONTROLLER: SuperAdminController::gerenciarModalidades()
+ */
 ?>
 <h2>Gerenciar Modalidades</h2>
 <p>Adicione, edite ou remova os tipos de esportes disponíveis para os eventos.</p>

@@ -1,10 +1,27 @@
 <?php
-#
-# Serviço de Envio de E-mails.
-# Centraliza a lógica de envio de e-mails para autenticação e notificações.
-# Utiliza PHPMailer para enviar e-mails via SMTP.
-# Troque o email e senha nas linhas 36 e 37
-#
+/**
+ * Serviço de Envio de E-mails (EmailService)
+ * 
+ * Centraliza toda a lógica de envio de e-mails da aplicação usando PHPMailer.
+ * 
+ * Funcionalidades:
+ * - Envio de códigos de verificação para autenticação 2FA
+ * - Envio de links de recuperação de senha
+ * - Templates HTML profissionais e responsivos
+ * - Configuração SMTP com Gmail
+ * 
+ * ⚠️ IMPORTANTE: Configure as credenciais SMTP antes de usar em produção!
+ * As credenciais devem ser definidas nas variáveis de ambiente:
+ * - SMTP_EMAIL: E-mail remetente
+ * - SMTP_PASSWORD: Senha de aplicativo do Gmail
+ * 
+ * Para gerar senha de aplicativo no Gmail:
+ * 1. Ative a verificação em duas etapas
+ * 2. Acesse: https://myaccount.google.com/apppasswords
+ * 3. Gere uma senha para "Outro (nome personalizado)"
+ * 
+ * @package Application\Core
+ */
 namespace Application\Core;
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -12,12 +29,30 @@ use PHPMailer\PHPMailer\Exception;
 
 class EmailService
 {
+    /**
+     * Instância do PHPMailer para envio de e-mails
+     * @var PHPMailer
+     */
     private $mailer;
+    
+    /**
+     * Flag indicando se o SMTP foi configurado com sucesso
+     * @var bool
+     */
     private $isConfigured;
 
+    /**
+     * Construtor - Inicializa o PHPMailer e configura o SMTP
+     * 
+     * Se a configuração SMTP falhar, os e-mails não serão enviados
+     * mas o sistema continuará funcionando (modo graceful degradation)
+     */
     public function __construct()
     {
+        // Ativa exceções no PHPMailer para melhor tratamento de erros
         $this->mailer = new PHPMailer(true);
+        
+        // Tenta configurar o SMTP e armazena o resultado
         $this->isConfigured = $this->configureSMTP();
     }
 

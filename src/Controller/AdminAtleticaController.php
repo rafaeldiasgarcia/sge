@@ -1,9 +1,54 @@
 <?php
-#
-# Controller para o Painel do Administrador da Atlética.
-# Gerencia todas as ações relacionadas à administração de uma atlética específica,
-# como aprovar membros, gerenciar inscrições e eventos.
-#
+/**
+ * Controller do Administrador de Atlética (AdminAtleticaController)
+ * 
+ * Gerencia as funcionalidades administrativas específicas de cada atlética.
+ * Admins de atlética têm permissões limitadas apenas à sua própria atlética.
+ * 
+ * Funcionalidades principais:
+ * 
+ * 1. Dashboard:
+ *    - Estatísticas da atlética (membros, atletas, eventos)
+ *    - Pendências aguardando aprovação
+ *    - Links rápidos para ações comuns
+ * 
+ * 2. Gerenciamento de Membros:
+ *    - Listar solicitações pendentes de entrada
+ *    - Aprovar novos membros
+ *    - Recusar solicitações
+ *    - Listar membros ativos
+ *    - Promover membros a administradores
+ *    - Rebaixar administradores a membros
+ *    - Remover membros da atlética
+ * 
+ * 3. Inscrições em Modalidades:
+ *    - Listar inscrições pendentes
+ *    - Aprovar inscrições em modalidades esportivas
+ *    - Rejeitar inscrições
+ *    - Ver inscrições aprovadas por modalidade
+ * 
+ * 4. Gerenciamento de Eventos:
+ *    - Ver eventos futuros esportivos
+ *    - Gerenciar inscrições de atletas em eventos
+ *    - Adicionar atletas aos eventos
+ *    - Remover atletas dos eventos
+ * 
+ * Restrições:
+ * - Admin só pode gerenciar sua própria atlética
+ * - Não pode promover/rebaixar super admins
+ * - Não pode aprovar agendamentos (apenas super admin)
+ * 
+ * Fluxo de Aprovação de Membros:
+ * 1. Aluno solicita entrada (atletica_join_status = 'pendente')
+ * 2. Admin visualiza na lista de pendentes
+ * 3. Admin aprova ou recusa
+ * 4. Se aprovado: tipo_usuario_detalhado = 'Membro das Atléticas'
+ * 5. Aluno recebe notificação do resultado
+ * 
+ * Todas as ações são protegidas pelo middleware Auth::protectAdmin()
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

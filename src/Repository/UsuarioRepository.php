@@ -1,10 +1,25 @@
 <?php
-#
-# Repositório para a tabela 'usuarios'.
-# Esta classe é a única que deve interagir diretamente com a tabela 'usuarios'.
-# Ela abstrai toda a lógica SQL para criação, busca, atualização e exclusão de usuários,
-# além de operações relacionadas como inscrições em modalidades e validação de RAs.
-#
+/**
+ * Repositório de Usuários (UsuarioRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'usuarios'.
+ * Esta classe implementa o padrão Repository, abstraindo toda a lógica SQL
+ * e fornecendo uma interface limpa para operações de banco de dados.
+ * 
+ * Responsabilidades:
+ * - CRUD completo de usuários (Create, Read, Update, Delete)
+ * - Gerenciamento de autenticação (códigos de login, tokens de recuperação)
+ * - Gerenciamento de perfis e permissões (roles)
+ * - Operações de atlética (associar, desassociar, aprovar membros)
+ * - Gerenciamento de inscrições em modalidades esportivas
+ * - Validação de RAs (Registro Acadêmico)
+ * - Busca e filtragem de usuários por diversos critérios
+ * 
+ * A classe segue o princípio de responsabilidade única, sendo a ÚNICA
+ * camada que deve interagir diretamente com a tabela 'usuarios'.
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -12,13 +27,29 @@ use PDO;
 
 class UsuarioRepository
 {
+    /**
+     * Instância da conexão PDO
+     * @var PDO
+     */
     private $pdo;
 
+    /**
+     * Construtor - Obtém a instância única da conexão com o banco
+     */
     public function __construct()
     {
         $this->pdo = Connection::getInstance();
     }
 
+    /**
+     * Busca um usuário pelo endereço de e-mail
+     * 
+     * Usado principalmente no processo de login para verificar se o e-mail existe
+     * e obter as informações necessárias para autenticação.
+     * 
+     * @param string $email O endereço de e-mail do usuário
+     * @return array|false Array com dados do usuário ou false se não encontrado
+     */
     public function findByEmail(string $email)
     {
         $sql = "SELECT id, nome, email, senha, role, atletica_id, tipo_usuario_detalhado, curso_id,
@@ -31,6 +62,17 @@ class UsuarioRepository
         return $stmt->fetch();
     }
 
+    /**
+     * Atualiza o código de verificação 2FA para login
+     * 
+     * Armazena um código de 6 dígitos e sua data de expiração no banco.
+     * Este código é enviado por e-mail e tem validade de 15 minutos.
+     * 
+     * @param int $id ID do usuário
+     * @param string $code Código de 6 dígitos gerado
+     * @param string $expires Data/hora de expiração no formato 'Y-m-d H:i:s'
+     * @return bool True se atualizado com sucesso
+     */
     public function updateLoginCode(int $id, string $code, string $expires): bool
     {
         $sql = "UPDATE usuarios SET login_code = :code, login_code_expires = :expires WHERE id = :id";
@@ -40,6 +82,7 @@ class UsuarioRepository
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $result = $stmt->execute();
         
+        // Log para debug (útil em desenvolvimento)
         if ($result) {
             error_log("updateLoginCode: Código '{$code}' salvo com sucesso para user_id: {$id}, expira em: {$expires}");
         } else {
@@ -49,9 +92,24 @@ class UsuarioRepository
         return $result;
     }
 
+    /**
+     * Valida o código de verificação 2FA e retorna o usuário se válido
+     * 
+     * Este método realiza validação completa:
+     * 1. Verifica se o e-mail existe
+     * 2. Verifica se existe um código armazenado
+     * 3. Verifica se o código não expirou
+     * 4. Compara o código informado com o armazenado
+     * 
+     * Inclui logs detalhados para facilitar debug do processo de autenticação.
+     * 
+     * @param string $email E-mail do usuário
+     * @param string $code Código de 6 dígitos informado pelo usuário
+     * @return array|null Dados do usuário se código válido, null caso contrário
+     */
     public function findUserByLoginCode(string $email, string $code)
     {
-        // Buscar usuário e verificar código e expiração
+        // Buscar usuário pelo e-mail
         $sql = "SELECT id, nome, email, role, atletica_id, tipo_usuario_detalhado, curso_id, 
                        is_coordenador, login_code, login_code_expires
                 FROM usuarios 
@@ -68,7 +126,7 @@ class UsuarioRepository
             return null;
         }
 
-        // Debug
+        // Logs de debug para rastrear problemas de autenticação
         error_log("findUserByLoginCode: Código no banco: '" . ($user['login_code'] ?? 'NULL') . "' (tipo: " . gettype($user['login_code']) . ")");
         error_log("findUserByLoginCode: Código recebido: '{$code}' (tipo: " . gettype($code) . ")");
         error_log("findUserByLoginCode: Expira em: " . ($user['login_code_expires'] ?? 'NULL'));
@@ -78,28 +136,38 @@ class UsuarioRepository
         $dbCode = trim((string)($user['login_code'] ?? ''));
         $inputCode = trim((string)$code);
 
-        // Verifica se o código existe e não está vazio
+        // Verifica se existe código armazenado
         if (empty($dbCode)) {
             error_log("findUserByLoginCode: Código no banco está vazio");
             return null;
         }
 
-        // Verifica se o código expirou
+        // Verifica se o código expirou (compara timestamp da expiração com hora atual)
         if (strtotime($user['login_code_expires']) <= time()) {
             error_log("findUserByLoginCode: Código expirado");
             return null;
         }
 
-        // Verifica se o código corresponde
+        // Compara os códigos (comparação case-sensitive)
         if ($dbCode === $inputCode) {
             error_log("findUserByLoginCode: Código válido!");
             return $user;
         }
 
+        // Código não corresponde
         error_log("findUserByLoginCode: Código não corresponde. DB: '{$dbCode}' vs Input: '{$inputCode}'");
         return null;
     }
 
+    /**
+     * Limpa o código de verificação após uso bem-sucedido
+     * 
+     * Remove o código e sua expiração do banco após o login ser concluído,
+     * garantindo que o código não possa ser reutilizado.
+     * 
+     * @param int $id ID do usuário
+     * @return bool True se limpado com sucesso
+     */
     public function clearLoginCode(int $id): bool
     {
         $sql = "UPDATE usuarios SET login_code = NULL, login_code_expires = NULL WHERE id = :id";
@@ -108,8 +176,18 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+    // ========== MÉTODOS DE RECUPERAÇÃO DE SENHA ==========
+
     /**
-     * Salva o token de redefinição de senha e sua data de expiração no banco.
+     * Armazena o token de redefinição de senha e sua data de expiração
+     * 
+     * O token é gerado com bin2hex(random_bytes(32)) e tem validade de 1 hora.
+     * É enviado por e-mail como parte do link de recuperação.
+     * 
+     * @param int $userId ID do usuário
+     * @param string $token Token único de 64 caracteres hexadecimais
+     * @param string $expires Data/hora de expiração no formato 'Y-m-d H:i:s'
+     * @return bool True se salvo com sucesso
      */
     public function updateResetToken(int $userId, string $token, string $expires): bool
     {
@@ -121,9 +199,14 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
-
     /**
-     * Busca um usuário por um token de redefinição válido (não expirado).
+     * Busca um usuário por um token de redefinição válido (não expirado)
+     * 
+     * Valida automaticamente se o token ainda está dentro do prazo de validade
+     * usando a comparação com NOW() diretamente no SQL.
+     * 
+     * @param string $token Token enviado na URL de redefinição
+     * @return array|false Dados do usuário se token válido, false caso contrário
      */
     public function findUserByResetToken(string $token)
     {
@@ -135,7 +218,16 @@ class UsuarioRepository
     }
 
     /**
-     * Atualiza a senha do usuário e limpa os campos de token de redefinição.
+     * Atualiza a senha e limpa o token de redefinição
+     * 
+     * Operação atômica que:
+     * 1. Define a nova senha (já deve vir hash ada)
+     * 2. Remove o token de redefinição
+     * 3. Remove a data de expiração do token
+     * 
+     * @param int $userId ID do usuário
+     * @param string $newPasswordHash Hash da nova senha (gerado com password_hash)
+     * @return bool True se atualizado com sucesso
      */
     public function updatePasswordAndClearToken(int $userId, string $newPasswordHash): bool
     {
@@ -146,6 +238,17 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+    // ========== MÉTODOS DE BUSCA E PERFIL ==========
+
+    /**
+     * Busca um usuário por ID com informações da atlética associada
+     * 
+     * Faz JOINs com as tabelas 'cursos' e 'atleticas' para trazer informações
+     * completas do usuário incluindo o nome da atlética do seu curso.
+     * 
+     * @param int $id ID do usuário
+     * @return array|false Dados completos do usuário ou false se não encontrado
+     */
     public function findById(int $id)
     {
         $sql = "SELECT u.*, c.atletica_id, a.nome as atletica_nome 
@@ -159,12 +262,30 @@ class UsuarioRepository
         return $stmt->fetch();
     }
 
+    /**
+     * Atualiza os dados do perfil do usuário de forma dinâmica
+     * 
+     * Constrói a query SQL dinamicamente baseado nos campos fornecidos no array $data.
+     * Isso permite atualizar apenas os campos necessários sem precisar enviar todos.
+     * 
+     * Campos suportados:
+     * - nome: Nome completo do usuário
+     * - email: E-mail (deve ser único no sistema)
+     * - data_nascimento: Data no formato 'Y-m-d'
+     * - curso_id: ID do curso (pode ser null)
+     * - telefone: Telefone com 11 dígitos
+     * 
+     * @param int $id ID do usuário
+     * @param array $data Array associativo com os campos a serem atualizados
+     * @return bool True se atualizado com sucesso (ou se não houver campos para atualizar)
+     */
     public function updateProfileData(int $id, array $data): bool
     {
         // Construir a query dinamicamente baseado nos campos fornecidos
         $fields = [];
         $params = [':id' => $id];
         
+        // Adiciona cada campo presente no array $data à query
         if (isset($data['nome'])) {
             $fields[] = "nome = :nome";
             $params[':nome'] = $data['nome'];
@@ -182,6 +303,7 @@ class UsuarioRepository
         
         if (isset($data['curso_id'])) {
             $fields[] = "curso_id = :curso_id";
+            // Converte valor vazio para null
             $params[':curso_id'] = $data['curso_id'] ?: null;
         }
         
@@ -190,18 +312,22 @@ class UsuarioRepository
             $params[':telefone'] = $data['telefone'];
         }
         
-        // Se não há campos para atualizar, retorna verdadeiro
+        // Se não há campos para atualizar, retorna sucesso
         if (empty($fields)) {
             return true;
         }
         
+        // Monta a query completa
         $sql = "UPDATE usuarios SET " . implode(', ', $fields) . " WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         
+        // Bind dos parâmetros com os tipos corretos
         foreach ($params as $key => $value) {
             if ($key === ':id' || $key === ':curso_id') {
+                // IDs são inteiros
                 $stmt->bindValue($key, $value, PDO::PARAM_INT);
             } else {
+                // Demais campos são strings
                 $stmt->bindValue($key, $value);
             }
         }
@@ -420,15 +546,31 @@ class UsuarioRepository
         return $stmt->execute();
     }
 
+    // ========== MÉTODOS DE VALIDAÇÃO DE RAs ==========
+
+    /**
+     * Busca participantes por uma lista de RAs
+     * 
+     * Usado para exibir a lista de participantes confirmados de um evento.
+     * Retorna um array formatado com "Nome - RA" para cada participante encontrado.
+     * 
+     * @param array $ras Array de RAs (Registro Acadêmico) para buscar
+     * @return array Array de strings no formato "Nome - RA"
+     */
     public function findParticipantesByRAs(array $ras): array
     {
         if (empty($ras)) {
             return [];
         }
+        
+        // Cria placeholders dinâmicos para a cláusula IN
+        // Exemplo: para 3 RAs, gera "?,?,?"
         $placeholders = str_repeat('?,', count($ras) - 1) . '?';
         $sql = "SELECT nome, ra FROM usuarios WHERE ra IN ($placeholders) ORDER BY nome";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($ras);
+        
+        // Formata o resultado como "Nome - RA"
         $participantes = [];
         while ($row = $stmt->fetch()) {
             $participantes[] = $row['nome'] . ' - ' . $row['ra'];
@@ -436,19 +578,35 @@ class UsuarioRepository
         return $participantes;
     }
 
+    /**
+     * Identifica RAs que não existem no sistema
+     * 
+     * Compara uma lista de RAs fornecida com os RAs existentes no banco,
+     * retornando aqueles que não foram encontrados. Útil para validação
+     * de listas de participantes antes de criar um evento.
+     * 
+     * @param array $ras Array de RAs para validar
+     * @return array Array com os RAs que não existem no sistema
+     */
     public function findRAsInexistentes(array $ras): array
     {
         if (empty($ras)) {
             return [];
         }
+        
+        // Busca quais RAs existem no banco
         $placeholders = str_repeat('?,', count($ras) - 1) . '?';
         $sql = "SELECT ra FROM usuarios WHERE ra IN ($placeholders)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($ras);
+        
+        // Coleta os RAs encontrados
         $rasEncontrados = [];
         while ($row = $stmt->fetch()) {
             $rasEncontrados[] = $row['ra'];
         }
+        
+        // Retorna a diferença (RAs que não foram encontrados)
         return array_diff($ras, $rasEncontrados);
     }
 }

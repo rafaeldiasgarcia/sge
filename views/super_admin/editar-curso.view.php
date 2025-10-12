@@ -1,8 +1,9 @@
 <?php
-#
-# View com o formulário para editar um curso existente.
-# Permite alterar o nome do curso e sua associação com uma atlética.
-#
+/**
+ * VIEW: EDITAR CURSO (SUPER ADMIN)
+ * Formulário para editar nome do curso e associação com atlética.
+ * CONTROLLER: SuperAdminController::editarCurso()
+ */
 ?>
 <h2>Editando Curso</h2>
 <div class="card">

@@ -1,12 +1,55 @@
 <?php
-#
-# View Parcial do Calendário.
-# Este arquivo contém apenas o HTML do calendário. Toda a lógica de busca de dados
-# foi movida para o AgendamentoController para ser carregada via AJAX.
-# As variáveis ($inicio, $ocupado, etc.) são passadas pelo controller.
-#
+/**
+ * ============================================================================
+ * VIEW PARCIAL: CALENDÁRIO DE AGENDAMENTOS
+ * ============================================================================
+ * 
+ * Renderiza o calendário interativo para seleção de datas e períodos de 
+ * agendamento de quadras esportivas.
+ * 
+ * FUNCIONAMENTO:
+ * - Exibe um mês por vez com navegação entre meses
+ * - Mostra disponibilidade em tempo real de cada período
+ * - Aplica regra de antecedência mínima de 4 dias
+ * - Bloqueia datas passadas automaticamente
+ * - Dois períodos por dia: P1 (19:15-20:55) e P2 (21:10-22:50)
+ * 
+ * VARIÁVEIS RECEBIDAS DO CONTROLLER:
+ * @var DateTime $inicio       - Primeiro dia do mês sendo exibido
+ * @var array    $ocupado      - Períodos ocupados indexados por data ['Y-m-d']['P1'|'P2']
+ * @var int      $diasNoMes    - Quantidade de dias no mês
+ * @var int      $primeiroW    - Dia da semana do primeiro dia (0=domingo)
+ * @var string   $prevMes      - String Y-m do mês anterior
+ * @var string   $nextMes      - String Y-m do próximo mês
+ * 
+ * INTEGRAÇÃO:
+ * - Usado em: agenda.view.php, editar-evento.view.php
+ * - JavaScript: calendar.js (navegação AJAX)
+ * - CSS: calendar.css, agenda.css
+ * - Controller: AgendaController::calendario()
+ * 
+ * REGRAS DE NEGÓCIO:
+ * - Antecedência mínima: 4 dias
+ * - Não permite agendamento em datas passadas
+ * - Badge de cor indica disponibilidade:
+ *   * Verde: ambos períodos livres
+ *   * Amarelo: um período ocupado
+ *   * Vermelho: ambos períodos ocupados
+ *   * Cinza: data indisponível (passada ou antecedência insuficiente)
+ */
 
-// Funções auxiliares para renderização do calendário
+// ============================================================================
+// FUNÇÕES AUXILIARES DE RENDERIZAÇÃO
+// ============================================================================
+
+/**
+ * Determina as classes CSS para um slot (botão de período) do calendário
+ * 
+ * @param bool $busy         - Se o período já está ocupado
+ * @param bool $dateInvalid  - Se a data é inválida (passada ou antecedência insuficiente)
+ * @param bool $isPastDate   - Se a data já passou
+ * @return string            - Classes CSS do Bootstrap para o botão
+ */
 function slotClassCal(bool $busy, bool $dateInvalid, bool $isPastDate) { 
     // Para dias passados ou com antecedência insuficiente, mantém as cores originais mas desabilitados
     if ($dateInvalid) {
@@ -17,21 +60,48 @@ function slotClassCal(bool $busy, bool $dateInvalid, bool $isPastDate) {
     return $busy ? 'btn-outline-secondary disabled' : 'btn-success'; 
 }
 
+/**
+ * Determina a cor do badge de disponibilidade do dia
+ * 
+ * @param string $ymd                    - Data no formato Y-m-d
+ * @param array  $ocupado                - Array de períodos ocupados
+ * @param bool   $isPastDate             - Se a data já passou
+ * @param bool   $isInsufficientAdvance  - Se falta antecedência mínima
+ * @return string                        - Classes CSS do badge
+ */
 function dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance) {
     // Para todos os casos (passados, antecedência insuficiente ou válidos), usa as cores normais
     $p1 = !empty($ocupado[$ymd]['P1']);
     $p2 = !empty($ocupado[$ymd]['P2']);
+    
+    // Ambos períodos livres
     if (!$p1 && !$p2) return 'bg-success';
+    
+    // Apenas um período ocupado (XOR lógico)
     if ($p1 xor $p2) return 'bg-warning text-dark';
+    
+    // Ambos períodos ocupados
     return 'bg-danger';
 }
 
+/**
+ * Verifica se uma data já passou
+ * 
+ * @param string $ymd  - Data no formato Y-m-d
+ * @return bool        - True se a data é anterior a hoje
+ */
 function isDateInPast($ymd) {
     $hoje = new \DateTime();
     $dataEvento = new \DateTime($ymd);
     return $dataEvento < $hoje;
 }
 
+/**
+ * Verifica se uma data tem antecedência insuficiente (menos de 4 dias)
+ * 
+ * @param string $ymd  - Data no formato Y-m-d
+ * @return bool        - True se faltam menos de 4 dias
+ */
 function hasInsufficientAdvance($ymd) {
     $hoje = new \DateTime();
     $dataEvento = new \DateTime($ymd);
@@ -42,8 +112,14 @@ function hasInsufficientAdvance($ymd) {
 }
 ?>
 
-<h5 class="mb-3 text-primary border-bottom pb-2"><i class="bi bi-calendar-check"></i> Selecione a Data e o Período com 4 dias de antecedência.</h5>
+<!-- ========================================================================
+     CABEÇALHO DO CALENDÁRIO
+     ======================================================================== -->
+<h5 class="mb-3 text-primary border-bottom pb-2">
+    <i class="bi bi-calendar-check"></i> Selecione a Data e o Período com 4 dias de antecedência.
+</h5>
 
+<!-- Legenda de cores do calendário -->
 <div class="d-flex align-items-center gap-3 small mb-2">
     <span><span class="badge bg-success me-1">&nbsp;</span> Livre</span>
     <span><span class="badge bg-warning text-dark me-1">&nbsp;</span> Um período ocupado</span>
@@ -51,14 +127,22 @@ function hasInsufficientAdvance($ymd) {
     <span><span class="badge bg-light border text-dark me-1">&nbsp;</span> Horário indisponível</span>
 </div>
 
+<!-- ========================================================================
+     CONTAINER PRINCIPAL DO CALENDÁRIO
+     Este div é o alvo das atualizações AJAX ao navegar entre meses
+     ======================================================================== -->
 <div id="cal" class="border rounded-3 p-3 mb-4">
+    
+    <!-- Navegação de mês (anterior/próximo) -->
     <div class="d-flex justify-content-between align-items-center mb-2">
         <button type="button" class="btn btn-sm btn-outline-secondary nav-cal" data-mes="<?= $prevMes; ?>">
             <i class="bi bi-chevron-left"></i>
         </button>
 
+        <!-- Exibição do mês e ano atual -->
         <div class="fw-semibold">
             <?php
+            // Array de nomes de meses em português
             $meses = [
                 1 => 'janeiro', 2 => 'fevereiro', 3 => 'março', 4 => 'abril',
                 5 => 'maio', 6 => 'junho', 7 => 'julho', 8 => 'agosto',
@@ -75,36 +159,71 @@ function hasInsufficientAdvance($ymd) {
         </button>
     </div>
 
+    <!-- Cabeçalho com dias da semana -->
     <div class="calendar-grid text-center fw-semibold text-muted mb-2">
         <?php foreach (['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'] as $d): ?><div><?= $d ?></div><?php endforeach; ?>
     </div>
 
+    <!-- Grid principal do calendário -->
     <div class="calendar-grid">
-        <?php for ($i=0; $i<$primeiroW; $i++): ?><div class="calendar-cell"></div><?php endfor; ?>
-        <?php for ($dia=1; $dia<=$diasNoMes; $dia++):
-            $ymd    = $inicio->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT);
+        <?php 
+        // Adiciona células vazias antes do primeiro dia do mês
+        for ($i=0; $i<$primeiroW; $i++): ?>
+            <div class="calendar-cell"></div>
+        <?php endfor; ?>
+        
+        <?php 
+        // Loop por cada dia do mês
+        for ($dia=1; $dia<=$diasNoMes; $dia++):
+            // Formata data no padrão Y-m-d para comparações
+            $ymd = $inicio->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT);
+            
+            // Verifica restrições de data
             $isPastDate = isDateInPast($ymd);
             $isInsufficientAdvance = hasInsufficientAdvance($ymd);
             $dateInvalid = $isPastDate || $isInsufficientAdvance;
-            $badge  = dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance);
+            
+            // Determina cor do badge de disponibilidade
+            $badge = dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance);
+            
+            // Verifica se cada período está ocupado
             $p1busy = !empty($ocupado[$ymd]['P1']);
             $p2busy = !empty($ocupado[$ymd]['P2']);
+            
+            // Desabilita períodos ocupados ou em datas inválidas
             $p1disabled = $p1busy || $dateInvalid;
             $p2disabled = $p2busy || $dateInvalid;
             
-            // Classes CSS para diferentes estados
+            // Adiciona classe CSS especial para datas indisponíveis
             $cellClass = '';
             if ($isPastDate || $isInsufficientAdvance) {
                 $cellClass = 'past-date';
             }
             ?>
             <div class="calendar-cell <?= $cellClass ?>">
+                <!-- Linha superior: número do dia + badge de disponibilidade -->
                 <div class="dayline">
                     <span class="calendar-day"><?= $dia ?></span>
                     <span class="badge <?= $badge ?>">&nbsp;</span>
                 </div>
-                <button type="button" class="btn btn-sm slot <?= slotClassCal($p1busy, $dateInvalid, $isPastDate) ?>" data-date="<?= $ymd ?>" data-periodo="P1" <?= $p1disabled?'disabled':'' ?>>19:15 - 20:55</button>
-                <button type="button" class="btn btn-sm slot <?= slotClassCal($p2busy, $dateInvalid, $isPastDate) ?>" data-date="<?= $ymd ?>" data-periodo="P2" <?= $p2disabled?'disabled':'' ?>>21:10 - 22:50</button>
+                
+                <!-- Botão do Período 1 (19:15 - 20:55) -->
+                <button type="button" 
+                        class="btn btn-sm slot <?= slotClassCal($p1busy, $dateInvalid, $isPastDate) ?>" 
+                        data-date="<?= $ymd ?>" 
+                        data-periodo="P1" 
+                        <?= $p1disabled ? 'disabled' : '' ?>>
+                    19:15 - 20:55
+                </button>
+                
+                <!-- Botão do Período 2 (21:10 - 22:50) -->
+                <button type="button" 
+                        class="btn btn-sm slot <?= slotClassCal($p2busy, $dateInvalid, $isPastDate) ?>" 
+                        data-date="<?= $ymd ?>" 
+                        data-periodo="P2" 
+                        <?= $p2disabled ? 'disabled' : '' ?>>
+                    21:10 - 22:50
+                </button>
             </div>
         <?php endfor; ?>
     </div>

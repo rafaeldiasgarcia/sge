@@ -1,8 +1,10 @@
 <?php
-#
-# View com o formulário para o Super Admin editar os dados de qualquer usuário.
-# Permite alterar nome, email, perfil, curso e outras informações.
-#
+/**
+ * VIEW: EDITAR USUÁRIO (SUPER ADMIN)
+ * Formulário completo para editar dados de um usuário (nome, email, perfil, curso, etc).
+ * CONTROLLER: SuperAdminController::editarUsuario()
+ */
+
 $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_editado['atletica_nome']);
 ?>
 <h2>Editando Usuário: <?php echo htmlspecialchars($usuario_editado['nome']); ?></h2>

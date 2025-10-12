@@ -1,10 +1,27 @@
 <?php
-#
-# Controller para a página da Agenda.
-# Responsável por buscar os eventos aprovados no banco de dados,
-# separá-los por data e tipo, e exibi-los na view. Também processa
-# as ações de marcar/desmarcar presença.
-#
+/**
+ * Controller da Agenda (AgendaController)
+ * 
+ * Gerencia a visualização e interação com a agenda de eventos da quadra.
+ * Exibe eventos aprovados em formato de calendário e permite que usuários
+ * marquem presença.
+ * 
+ * Funcionalidades:
+ * - Exibir eventos aprovados e finalizados no calendário
+ * - Separar eventos por data e período (primeiro/segundo)
+ * - Marcar/desmarcar presença em eventos
+ * - Enviar notificações quando presença é confirmada
+ * - Filtrar eventos por tipo (esportivo/não-esportivo)
+ * - Exibir detalhes de eventos com atléticas confirmadas
+ * 
+ * Visualizações:
+ * - Lista de eventos ordenados por data
+ * - Contadores de presenças
+ * - Informações de atléticas participantes
+ * - Indicadores visuais de eventos com presença marcada
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

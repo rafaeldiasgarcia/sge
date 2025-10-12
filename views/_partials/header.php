@@ -1,9 +1,36 @@
 <?php
-#
-# Cabeçalho Padrão da Aplicação.
-# Contém o início do HTML, o <head> com os links de CSS, e a barra de navegação principal.
-# É incluído em todas as páginas pela função view().
-#
+/**
+ * Template do Cabeçalho da Aplicação (Header Partial)
+ * 
+ * Arquivo incluído automaticamente em todas as views pela função view() do helpers.php.
+ * Contém toda a estrutura inicial do HTML e a barra de navegação.
+ * 
+ * Conteúdo:
+ * - DOCTYPE e tags HTML de abertura
+ * - <head> completo com meta tags, título e links de CSS
+ * - Navbar responsivo com Bootstrap 5.3
+ * - Sistema de notificações em tempo real
+ * - Menu dropdown de usuário
+ * - Links condicionais baseados no perfil (role)
+ * 
+ * Perfis e Menus:
+ * - Super Admin: Todos os menus + link para painel de admin
+ * - Admin Atlética: Menus de gerenciamento da atlética
+ * - Usuário Comum: Agenda, Agendar, Meus Agendamentos, Perfil
+ * - Não autenticado: Apenas Login e Registro
+ * 
+ * CSS Incluídos:
+ * - Bootstrap 5.3.3 (framework CSS)
+ * - Bootstrap Icons 1.11.3 (ícones)
+ * - Fontes: Montserrat do Google Fonts
+ * - Estilos personalizados: header, default, calendar, notifications, event-popup
+ * - auth.css (apenas em páginas de autenticação)
+ * 
+ * JavaScript Inline:
+ * - window.userRole: Role do usuário atual para lógica JS
+ * 
+ * @package Views\Partials
+ */
 use Application\Core\Auth;
 ?>
 <!DOCTYPE html>

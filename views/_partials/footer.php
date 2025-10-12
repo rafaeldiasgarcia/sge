@@ -1,8 +1,26 @@
 <?php
-#
-# Rodapé Padrão da Aplicação.
-# Fecha as tags HTML abertas no header.
-#
+/**
+ * Template do Rodapé da Aplicação (Footer Partial)
+ * 
+ * Arquivo incluído automaticamente em todas as views pela função view() do helpers.php.
+ * Contém o rodapé do site e o fechamento das tags HTML.
+ * 
+ * Conteúdo:
+ * - Fecha tag </main> aberta no header
+ * - Rodapé institucional com logo e informações de contato da UNIFIO
+ * - Links e telefones de atendimento
+ * - Scripts JavaScript do Bootstrap e da aplicação
+ * - Fecha tags </body> e </html>
+ * 
+ * Scripts Incluídos Condicionalmente:
+ * - Bootstrap Bundle 5.3.3 (sempre)
+ * - calendar.js (exceto páginas de autenticação)
+ * - header.js (exceto páginas de autenticação)
+ * - event-popup.js (exceto páginas de autenticação)
+ * - notifications.js (apenas para usuários autenticados)
+ * 
+ * @package Views\Partials
+ */
 ?>
 </main>
 

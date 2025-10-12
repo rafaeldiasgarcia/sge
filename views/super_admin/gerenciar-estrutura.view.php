@@ -1,8 +1,9 @@
 <?php
-#
-# View unificada para o Super Admin gerenciar a estrutura acadêmica.
-# Permite criar, listar, editar e excluir Cursos e Atléticas.
-#
+/**
+ * VIEW: GERENCIAR ESTRUTURA ACADÊMICA (SUPER ADMIN)
+ * CRUD completo de Cursos e Atléticas. Interface com abas.
+ * CONTROLLER: SuperAdminController::gerenciarEstrutura()
+ */
 ?>
 <h2>Gerenciar Estrutura Acadêmica</h2>
 <p>Gerencie os cursos e as atléticas que formam a base do sistema.</p>
