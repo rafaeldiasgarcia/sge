@@ -18,11 +18,11 @@
         <div class="row">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome Completo</label>
-            <input type="text" name="nome" id="nome" class="form-control" required>
+            <input type="text" name="nome" id="nome" class="form-control" value="<?php echo htmlspecialchars($old['nome'] ?? ''); ?>" required>
         </div>
         <div class="mb-3">
             <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" required>
+            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" value="<?php echo htmlspecialchars($old['data_nascimento'] ?? ''); ?>" required max="">
         </div>
         </div>
 
@@ -30,17 +30,17 @@
         <div class="mb-3">
             <label for="tipo_usuario_detalhado" class="form-label">Vínculo com a Instituição</label>
             <select name="tipo_usuario_detalhado" id="tipo_usuario_detalhado" class="form-select" required>
-                <option value="" disabled selected>-- Selecione uma opção --</option>
-                <option value="Aluno">Aluno</option>
-                <option value="Membro das Atléticas">Membro das Atléticas</option>
-                <option value="Professor">Professor</option>
-                <option value="Comunidade Externa">Comunidade Externa</option>
+                <option value="" disabled <?php echo empty($old['tipo_usuario_detalhado']) ? 'selected' : ''; ?>>-- Selecione uma opção --</option>
+                <option value="Aluno" <?php echo ($old['tipo_usuario_detalhado'] ?? '') === 'Aluno' ? 'selected' : ''; ?>>Aluno</option>
+                <option value="Membro das Atléticas" <?php echo ($old['tipo_usuario_detalhado'] ?? '') === 'Membro das Atléticas' ? 'selected' : ''; ?>>Membro das Atléticas</option>
+                <option value="Professor" <?php echo ($old['tipo_usuario_detalhado'] ?? '') === 'Professor' ? 'selected' : ''; ?>>Professor</option>
+                <option value="Comunidade Externa" <?php echo ($old['tipo_usuario_detalhado'] ?? '') === 'Comunidade Externa' ? 'selected' : ''; ?>>Comunidade Externa</option>
             </select>
         </div>
 
         <div id="campo_ra" class="mb-3" style="display:none;">
             <label for="ra" class="form-label">Matrícula (RA)</label>
-            <input type="text" name="ra" id="ra" class="form-control" placeholder="00000" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="O RA deve conter exatamente 6 números.">
+            <input type="text" name="ra" id="ra" class="form-control" placeholder="00000" value="<?php echo htmlspecialchars($old['ra'] ?? ''); ?>" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="O RA deve conter exatamente 6 números.">
         </div>
 
         </div>
@@ -48,12 +48,12 @@
         <div class="row">
         <div class="mb-3">
             <label for="email" class="form-label" id="label_email">E-mail</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="*******@unifio.edu.br" required>
+            <input type="email" name="email" id="email" class="form-control" placeholder="*******@unifio.edu.br" value="<?php echo htmlspecialchars($old['email'] ?? ''); ?>" required>
         </div>
 
         <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(00) 00000-0000" required maxlength="15">
+            <input type="tel" name="telefone" id="telefone" class="form-control" placeholder="(00) 00000-0000" value="<?php echo htmlspecialchars($old['telefone'] ?? ''); ?>" required maxlength="15">
         </div>
         </div>
 
@@ -62,7 +62,7 @@
             <select name="curso_id" id="curso_id" class="form-select">
                 <option value="">-- Selecione seu curso --</option>
                 <?php if (isset($cursos)): foreach ($cursos as $curso): ?>
-                    <option value="<?php echo $curso['id']; ?>"><?php echo htmlspecialchars($curso['nome']); ?></option>
+                    <option value="<?php echo $curso['id']; ?>" <?php echo (isset($old['curso_id']) && $old['curso_id'] == $curso['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($curso['nome']); ?></option>
                 <?php endforeach; endif; ?>
             </select>
         </div>
@@ -98,6 +98,39 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Definir data máxima para data de nascimento (hoje)
+        const dataNascimentoInput = document.getElementById('data_nascimento');
+        const hoje = new Date();
+        const dataMaxima = hoje.toISOString().split('T')[0];
+        dataNascimentoInput.setAttribute('max', dataMaxima);
+
+        // Validação em tempo real para impedir datas futuras
+        dataNascimentoInput.addEventListener('blur', function(e) {
+            const dataSelecionada = new Date(e.target.value);
+            const dataHoje = new Date();
+            dataHoje.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas a data
+            
+            if (dataSelecionada > dataHoje) {
+                e.target.setCustomValidity('A data de nascimento não pode ser uma data futura.');
+                e.target.reportValidity();
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
+        // Validação adicional ao digitar
+        dataNascimentoInput.addEventListener('input', function(e) {
+            const dataSelecionada = new Date(e.target.value);
+            const dataHoje = new Date();
+            dataHoje.setHours(0, 0, 0, 0);
+            
+            if (dataSelecionada > dataHoje) {
+                e.target.setCustomValidity('A data de nascimento não pode ser uma data futura.');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
         const tipoUsuarioSelect = document.getElementById('tipo_usuario_detalhado');
         const campoRa = document.getElementById('campo_ra');
         const inputRa = document.getElementById('ra');

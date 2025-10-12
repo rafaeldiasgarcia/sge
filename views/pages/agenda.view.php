@@ -26,13 +26,13 @@
     <h2 class="mb-4"><i class="bi bi-calendar-plus text-success icon-calender"></i> Próximos Eventos</h2>
 
     <!-- Botões para alternar entre tipos de eventos -->
-    <div class="d-flex gap-3 mb-4 align-items-stretch">
-        <button class="btn btn-primary btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
+    <div class="btn-eventos-container">
+        <button class="btn btn-primary btn-evento-toggle flex-fill d-flex align-items-center justify-content-center" id="btnEventosEsportivos" onclick="toggleEventos('esportivos')">
             <i class="bi bi-trophy-fill me-2"></i>
             <span>Eventos Esportivos</span>
             <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_esportivos); ?></span>
         </button>
-        <button class="btn title-nao-esportivos btn-lg flex-fill d-flex align-items-center justify-content-center" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
+        <button class="btn title-nao-esportivos btn-evento-toggle flex-fill d-flex align-items-center justify-content-center" id="btnEventosNaoEsportivos" onclick="toggleEventos('nao_esportivos')">
             <i class="bi bi-calendar-event-fill me-2"></i>
             <span>Eventos Não Esportivos</span>
             <span class="badge bg-light text-dark ms-2"><?php echo count($eventos_futuros_nao_esportivos); ?></span>
@@ -83,7 +83,7 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn presense-mark <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline'; ?>"
+                                    <button type="button" class="btn btn-sm presenca-btn"
                                             data-agendamento-id="<?php echo $evento['id']; ?>"
                                             data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
                                         <?php if ($evento['presenca_id']): ?>
@@ -142,7 +142,7 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn presense-mark <?php echo $evento['presenca_id'] ? 'btn-outline-danger' : 'btn-outline'; ?>"
+                                    <button type="button" class="btn btn-sm presenca-btn"
                                             data-agendamento-id="<?php echo $evento['id']; ?>"
                                             data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
                                         <?php if ($evento['presenca_id']): ?>
@@ -339,8 +339,6 @@ document.addEventListener('click', function(event) {
                 if (action === 'marcar') {
                     btn.setAttribute('data-action', 'desmarcar');
                     btn.innerHTML = '<i class="bi bi-x-circle-fill"></i> Desmarcar Presença';
-                    btn.classList.remove('btn-outline-success');
-                    btn.classList.add('btn-outline-danger');
                     
                     // Incrementar contador
                     if (badgePresencas) {
@@ -350,8 +348,6 @@ document.addEventListener('click', function(event) {
                 } else {
                     btn.setAttribute('data-action', 'marcar');
                     btn.innerHTML = '<i class="bi bi-check-circle"></i> Marcar Presença';
-                    btn.classList.remove('btn-outline-danger');
-                    btn.classList.add('btn-outline-success');
                     
                     // Decrementar contador
                     if (badgePresencas) {
@@ -359,8 +355,6 @@ document.addEventListener('click', function(event) {
                         badgePresencas.innerHTML = '<i class="bi bi-people-fill"></i> ' + Math.max(0, currentCount - 1) + ' pessoa(s) confirmaram presença';
                     }
                 }
-
-                console.log('Interface atualizada com sucesso!');
             } else {
                 console.error('Erro na resposta:', data.message);
                 alert('Erro ao atualizar presença. Tente novamente mais tarde.');

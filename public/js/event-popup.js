@@ -79,30 +79,13 @@ class EventPopup {
         this.showLoading();
 
         try {
-            console.log('Buscando evento ID:', eventId);
             const response = await fetch(`/agendamento/detalhes?id=${eventId}`);
-            console.log('Status da resposta:', response.status);
-            console.log('Headers:', response.headers);
-
-            const contentType = response.headers.get('content-type');
-            console.log('Content-Type:', contentType);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const textResponse = await response.text();
-            console.log('Resposta do servidor (texto):', textResponse);
-
-            let data;
-            try {
-                data = JSON.parse(textResponse);
-                console.log('Dados parseados:', data);
-            } catch (e) {
-                console.error('Erro ao fazer parse do JSON:', e);
-                console.error('Resposta recebida:', textResponse);
-                throw new Error('Resposta do servidor não é um JSON válido');
-            }
+            const data = await response.json();
 
             if (data.error) {
                 this.showError(data.error);
@@ -111,7 +94,7 @@ class EventPopup {
             }
         } catch (error) {
             console.error('Erro ao buscar detalhes do evento:', error);
-            this.showError('Erro ao carregar os detalhes do evento. Tente novamente. Detalhes: ' + error.message);
+            this.showError('Erro ao carregar os detalhes do evento. Tente novamente.');
         }
     }
 

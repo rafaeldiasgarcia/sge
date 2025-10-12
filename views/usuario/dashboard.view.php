@@ -94,6 +94,7 @@
     <?php
     $tipo_usuario = $user['tipo_usuario'] ?? '';
     $role = $user['role'] ?? '';
+    $is_coordenador = $user['is_coordenador'] ?? 0;
     ?>
     <div class="dashboard-shortcuts">
         <div class="shortcut-row">
@@ -104,7 +105,7 @@
                     <a href="/agenda" class="btn btn-primary mt-auto">Ver Agenda</a>
                 </div>
             </div>
-            <?php if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
+            <?php if ($role === 'admin' || $role === 'superadmin' || $is_coordenador == 1): ?>
             <div class="shortcut-card">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-calendar-plus text-warning"></i> Solicitar Agendamento</h5>
@@ -115,7 +116,7 @@
             <?php endif; ?>
         </div>
         <div class="shortcut-row">
-            <?php if ($user['tipo_usuario'] === 'Professor' || $role === 'admin' || $role === 'superadmin'): ?>
+            <?php if ($role === 'admin' || $role === 'superadmin' || $is_coordenador == 1): ?>
             <div class="shortcut-card">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-journal-text text-success"></i> Meus Agendamentos</h5>

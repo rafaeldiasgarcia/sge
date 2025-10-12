@@ -36,9 +36,52 @@
     color: var(--orange-color);
 }
 
-.presense-mark{
+/* Botão Marcar Presença - Laranja */
+.presenca-btn[data-action="marcar"] {
     background: var(--orange-color) !important;
-    color: #ffff !important;
+    border-color: var(--orange-color) !important;
+    color: #fff !important;
+}
+
+.presenca-btn[data-action="marcar"]:hover {
+    background: #d87120 !important;
+    border-color: #d87120 !important;
+    color: #fff !important;
+}
+
+.presenca-btn[data-action="marcar"]:active,
+.presenca-btn[data-action="marcar"]:focus {
+    background: #c66519 !important;
+    border-color: #c66519 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.25rem rgba(244, 127, 32, 0.25) !important;
+}
+
+/* Botão Desmarcar Presença - Azul */
+.presenca-btn[data-action="desmarcar"] {
+    background: var(--blue-color) !important;
+    border-color: var(--blue-color) !important;
+    color: #fff !important;
+}
+
+.presenca-btn[data-action="desmarcar"]:hover {
+    background: #0056b3 !important;
+    border-color: #0056b3 !important;
+    color: #fff !important;
+}
+
+.presenca-btn[data-action="desmarcar"]:active,
+.presenca-btn[data-action="desmarcar"]:focus {
+    background: #004494 !important;
+    border-color: #004494 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Estado desabilitado durante loading */
+.presenca-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .borda-card{
@@ -47,6 +90,101 @@
 
 .borda-card:hover{
     background: var(--orange-color-opacity) !important;
+}
 
+/* Container dos botões de toggle */
+.btn-eventos-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Ajustes para botões de eventos */
+.btn-evento-toggle {
+    min-height: 60px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.btn-evento-toggle .badge {
+    font-size: 0.875rem;
+}
+
+/* Estilos específicos para o botão não esportivo (laranja) */
+.btn-evento-toggle.title-nao-esportivos {
+    background: var(--orange-color);
+    border-color: var(--orange-color);
+    color: #fff;
+}
+
+.btn-evento-toggle.title-nao-esportivos:hover {
+    background: var(--orange-color);
+    border-color: var(--orange-color);
+    color: #fff;
+    opacity: 0.95;
+}
+
+.btn-evento-toggle.title-nao-esportivos:active,
+.btn-evento-toggle.title-nao-esportivos:focus,
+.btn-evento-toggle.title-nao-esportivos.active {
+    background: #d87120 !important;
+    border-color: #d87120 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.25rem rgba(244, 127, 32, 0.25) !important;
+}
+
+/* Estado pressed (quando segurar o botão) */
+.btn-evento-toggle.title-nao-esportivos:active:focus {
+    background: #c66519 !important;
+    border-color: #c66519 !important;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 992px) {
+    .btn-evento-toggle {
+        font-size: 0.95rem;
+        padding: 0.65rem 0.85rem;
+    }
+    
+    .btn-evento-toggle .badge {
+        font-size: 0.8rem;
+    }
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .btn-eventos-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-evento-toggle {
+        width: 100%;
+        font-size: 0.9rem;
+        min-height: 50px;
+        padding: 0.6rem 0.75rem;
+    }
+    
+    .btn-evento-toggle i {
+        font-size: 1.1rem;
+    }
+    
+    .btn-evento-toggle .badge {
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+    .btn-evento-toggle {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.6rem;
+    }
+    
+    .btn-evento-toggle span:not(.badge) {
+        display: inline-block;
+    }
 }
 

@@ -20,6 +20,21 @@
                     <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Evento</h4>
                 </div>
                 <div class="card-body">
+                    <?php
+                    // Verificar se o usuário é coordenador (mas não é admin ou superadmin)
+                    $role = $user['role'] ?? 'usuario';
+                    $is_coordenador = $user['is_coordenador'] ?? 0;
+                    $isCoordenadorPuro = ($is_coordenador == 1) && ($role !== 'admin') && ($role !== 'superadmin');
+                    ?>
+
+                    <?php if ($isCoordenadorPuro): ?>
+                        <div class="alert alert-warning border-warning">
+                            <i class="bi bi-info-circle-fill"></i> <strong>Atenção Coordenadores:</strong>
+                            Você pode editar apenas <strong>Eventos Não Esportivos</strong> (Palestras, Workshops, Apresentações, etc).
+                            Para eventos esportivos, entre em contato com a administração.
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (isset($_SESSION['warning_message'])): ?>
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle"></i> <?php echo $_SESSION['warning_message']; unset($_SESSION['warning_message']); ?>

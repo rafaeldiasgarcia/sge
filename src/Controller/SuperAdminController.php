@@ -185,10 +185,20 @@ class SuperAdminController extends BaseController
     {
         Auth::protectSuperAdmin();
         $userId = (int)($_POST['id'] ?? 0);
+        
+        // Limpar telefone removendo formatação (parênteses, traços, espaços)
+        $telefone = trim($_POST['telefone'] ?? '');
+        if (!empty($telefone)) {
+            $telefone = preg_replace('/[^0-9]/', '', $telefone); // Remove tudo que não é número
+        } else {
+            $telefone = null;
+        }
+        
         $data = [
             'nome' => trim($_POST['nome'] ?? ''),
             'email' => trim($_POST['email'] ?? ''),
-            'ra' => trim($_POST['ra'] ?? null),
+            'ra' => !empty(trim($_POST['ra'] ?? '')) ? trim($_POST['ra']) : null,
+            'telefone' => $telefone,
             'role' => $_POST['role'] ?? 'usuario',
             'tipo_usuario_detalhado' => $_POST['tipo_usuario_detalhado'] ?? 'Aluno',
             'curso_id' => !empty($_POST['curso_id']) ? (int)$_POST['curso_id'] : null,

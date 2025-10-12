@@ -40,7 +40,8 @@ abstract class BaseController
             'email' => Auth::get('email'),
             'role' => Auth::role(),
             'tipo_usuario' => Auth::get('tipo_usuario_detalhado'),
-            'atletica_id' => Auth::get('atletica_id')
+            'atletica_id' => Auth::get('atletica_id'),
+            'is_coordenador' => Auth::get('is_coordenador')
         ];
     }
 }

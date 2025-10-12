@@ -163,6 +163,7 @@ class AuthController extends BaseController
         $_SESSION['role'] = $user['role'];
         $_SESSION['tipo_usuario_detalhado'] = $user['tipo_usuario_detalhado'];
         $_SESSION['curso_id'] = $user['curso_id'];
+        $_SESSION['is_coordenador'] = $user['is_coordenador'] ?? 0;
 
         if ($user['role'] === 'admin') {
             // Se atletica_id não estiver presente, buscar no banco de dados
@@ -197,9 +198,15 @@ class AuthController extends BaseController
         try {
             $cursoRepository = $this->repository('CursoRepository');
             $cursos = $cursoRepository->findAll();
+            
+            // Recuperar dados antigos se houver erro
+            $oldInput = $_SESSION['old_input'] ?? [];
+            unset($_SESSION['old_input']); // Limpar após usar
+            
             view('auth/registro', [
                 'title' => 'Criar Conta - SGE UNIFIO',
-                'cursos' => $cursos
+                'cursos' => $cursos,
+                'old' => $oldInput
             ]);
         } catch (\Exception $e) {
             die('Não foi possível carregar a página de registro. Erro no banco de dados.');
@@ -217,7 +224,7 @@ class AuthController extends BaseController
             'senha' => $_POST['senha'] ?? '',
             'confirmar_senha' => $_POST['confirmar_senha'] ?? '',
             'curso_id' => !empty($_POST['curso_id']) ? (int)$_POST['curso_id'] : null,
-            'ra' => trim($_POST['ra'] ?? null)
+            'ra' => !empty(trim($_POST['ra'] ?? '')) ? trim($_POST['ra']) : null
         ];
 
         $errors = [];
@@ -235,8 +242,8 @@ class AuthController extends BaseController
             if (strlen($telefone_numeros) !== 11) {
                 $errors[] = "O telefone deve conter exatamente 11 dígitos no formato (00)00000-0000.";
             } else {
-                // Formatar o telefone no padrão correto
-                $data['telefone'] = '(' . substr($telefone_numeros, 0, 2) . ')' . substr($telefone_numeros, 2, 5) . '-' . substr($telefone_numeros, 7, 4);
+                // Salvar apenas os números no banco de dados
+                $data['telefone'] = $telefone_numeros;
             }
         }
 
@@ -255,6 +262,9 @@ class AuthController extends BaseController
 
         if (!empty($errors)) {
             $_SESSION['error_message'] = implode('<br>', $errors);
+            $_SESSION['old_input'] = $data; // Salvar os dados preenchidos
+            unset($_SESSION['old_input']['senha']); // Não manter a senha por segurança
+            unset($_SESSION['old_input']['confirmar_senha']);
             redirect('/registro');
         }
 
@@ -276,6 +286,9 @@ class AuthController extends BaseController
 
         $data['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
         $data['role'] = 'usuario';
+        
+        // Professores automaticamente são coordenadores (podem agendar eventos não esportivos)
+        $data['is_coordenador'] = ($data['tipo_usuario_detalhado'] === 'Professor') ? 1 : 0;
 
         try {
             $userRepository = $this->repository('UsuarioRepository');
@@ -288,6 +301,10 @@ class AuthController extends BaseController
             } else {
                 $_SESSION['error_message'] = "Ocorreu um erro ao realizar o cadastro. Tente novamente.";
             }
+            // Salvar os dados preenchidos (exceto senha)
+            $oldData = $data;
+            unset($oldData['senha']);
+            $_SESSION['old_input'] = $oldData;
             redirect('/registro');
         }
     }

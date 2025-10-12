@@ -51,20 +51,22 @@ nav .container {
     transition: width 0.4s ease;
     position: relative;
     padding: 8px 10px;
-    color: var(--orange-color);
+    color: #333; /* Cor padrão preta */
 }
 
-/* Ícones fixos */
+/* Ícones fixos - laranja */
 .navbar-nav .nav-item .nav-link i {
     font-size: 1.2rem;
     flex-shrink: 0;
+    color: var(--orange-color);
 }
 
-/* Texto inicialmente invisível */
+/* Texto inicialmente invisível - preto */
 .navbar-nav .nav-item .nav-link span {
     margin-left: 8px;
     opacity: 0;
     transition: opacity 0.3s ease 0.1s;
+    color: #333;
 }
 
 /* Quando passar o mouse sobre o nav-item inteiro: expande e revela */
@@ -91,6 +93,15 @@ nav .container {
     top: 2px;
 }
 
+/* Menu do usuário - permitir expansão maior para nomes longos */
+.user-menu-item:hover .nav-link {
+    width: 250px;
+}
+
+.user-menu-item .nav-link:hover {
+    width: 250px;
+}
+
 /* Controle de hover para dropdowns */
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
@@ -99,6 +110,11 @@ nav .container {
 .nav-item.dropdown .dropdown-menu {
     display: none;
     margin-top: 0;
+}
+
+/* Ajustar espaçamento da setinha do dropdown do usuário */
+.user-menu-item .dropdown-toggle::after {
+    margin-left: 10px; /* Mude este valor para aumentar/diminuir o espaço */
 }
 
 /* Estado inicial dos itens */
@@ -131,11 +147,11 @@ nav .container {
 .dropdown-item {
     font-family: "Montserrat", sans-serif;
     font-weight: 500;
-    color: var(--orange-color);
+    color: #333;
 }
 
 .dropdown-menu .dropdown-menu-end{
-    color: var(--orange-color);
+    color: #333;
 }
 
 /* ===== Bootstrap toggler fixes =====
@@ -176,7 +192,7 @@ nav .container {
         position: absolute;
         top: 12px;
         right: 12px;
-        z-index: 2000;
+        z-index: 10600; /* Sempre acessível, acima de tudo */
         border-radius: 8px;
         padding: .4rem .5rem;
         background: #fff;
@@ -185,18 +201,19 @@ nav .container {
 
     /* O menu colapsado aparece como um painel absoluto abaixo do toggler */
     .header-right .navbar-collapse {
-        position: absolute;
+        position: fixed; /* Mudado de absolute para fixed */
         top: 64px; /* abaixo do toggler/header */
-        right: 0;
+        right: 12px;
         left: auto;
         background: #fff;
-        z-index: 1999;
+        z-index: 10500; /* Acima dos popups de eventos */
         box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
         width: 260px; /* ajustar se necessário */
         padding: .25rem 0;
         border-radius: 8px;
         max-height: calc(100vh - 84px);
         overflow-y: auto;
+        pointer-events: auto; /* Garante que cliques sejam capturados */
     }
 
     .header-right .navbar-nav {
@@ -204,30 +221,40 @@ nav .container {
         gap: 0;
     }
 
-    /* Força textos visíveis e na cor laranja no mobile */
+    /* Força textos visíveis no mobile */
     .header-right .navbar-nav .nav-link {
         padding: .6rem 1rem;
         width: 100% !important;
         overflow: visible;
+        color: #333 !important;
+    }
+
+    /* Ícones em laranja no mobile */
+    .header-right .navbar-nav .nav-link i {
         color: var(--orange-color) !important;
     }
 
+    /* Textos em preto no mobile */
     .header-right .navbar-nav .nav-link span {
         opacity: 1 !important;
-        color: var(--orange-color) !important;
+        color: #333 !important;
         margin-left: 8px;
     }
 
-    /* Forçar cor laranja em todos os elementos do painel colapsado (mais específico) */
-    .header-right .navbar-collapse,
-    .header-right .navbar-collapse .navbar-nav,
+    /* Textos em preto no painel colapsado do mobile */
     .header-right .navbar-collapse .nav-link,
     .header-right .navbar-collapse .nav-link span,
     .header-right .navbar-collapse .dropdown-item,
-    .header-right .navbar-collapse .dropdown-header,
+    .header-right .navbar-collapse .dropdown-header {
+        color: #333 !important;
+    }
+
+    /* Notificações em preto no mobile */
     .header-right .navbar-collapse .notification-dropdown,
-    .header-right .navbar-collapse .notification-dropdown * {
-        color: var(--orange-color) !important;
+    .header-right .navbar-collapse .notification-dropdown .notification-item,
+    .header-right .navbar-collapse .notification-dropdown .notification-message,
+    .header-right .navbar-collapse .notification-dropdown .notification-empty {
+        color: #333 !important;
     }
 
     /* Garantir que o painel colapsado tenha fundo branco (evita textos brancos sobre branco) */
@@ -244,11 +271,41 @@ nav .container {
     }
 
     /* Ajuste para dropdowns dentro do painel fixo (exceto painel de notificações) */
-    .header-right .dropdown-menu:not(.notification-dropdown) {
-        position: static;
-        float: none;
-        box-shadow: none;
-        background: transparent;
-        border: 0;
+    .header-right .navbar-collapse .dropdown-menu:not(.notification-dropdown) {
+        position: static !important;
+        float: none !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        border: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        transition: opacity 0.2s ease !important;
     }
+
+    /* Garantir que itens do dropdown sejam visíveis */
+    .header-right .navbar-collapse .dropdown-menu:not(.notification-dropdown) .dropdown-item {
+        padding: .6rem 1rem !important;
+        background: #fff !important;
+        display: block !important;
+    }
+
+    /* Ocultar dropdown quando não estiver com classe .show */
+    .header-right .navbar-collapse .dropdown-menu:not(.notification-dropdown):not(.show) {
+        display: none !important;
+        opacity: 0 !important;
+    }
+
+    /* Bloquear apenas cliques nos eventos quando o menu mobile está aberto */
+    body:has(.navbar-collapse.show) .fc-event,
+    body:has(.navbar-collapse.show) .event-clickable,
+    body:has(.navbar-collapse.show) .fc-daygrid-event,
+    body:has(.navbar-collapse.show) .fc-timegrid-event,
+    body:has(.navbar-collapse.show) .event-popup-overlay {
+        pointer-events: none !important;
+    }
+
 }
+
