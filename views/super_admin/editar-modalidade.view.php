@@ -1,7 +1,9 @@
 <?php
-#
-# View com o formulário para editar uma modalidade esportiva.
-#
+/**
+ * VIEW: EDITAR MODALIDADE (SUPER ADMIN)
+ * Formulário para editar nome de modalidade esportiva.
+ * CONTROLLER: SuperAdminController::editarModalidade()
+ */
 ?>
 <h2>Editando Modalidade</h2>
 <div class="card">

@@ -1,9 +1,34 @@
 <?php
-#
-# Repositório para as operações do Admin de Atlética.
-# Contém todas as queries SQL relacionadas às ações que um admin de atlética
-# pode realizar, como buscar membros pendentes, aprovar inscrições, etc.
-#
+/**
+ * Repositório do Administrador de Atlética (AdminAtleticaRepository)
+ * 
+ * Camada de acesso a dados especializada em operações que admins de atlética
+ * podem realizar. Administradores de atlética têm permissões específicas para
+ * gerenciar membros e inscrições da sua atlética.
+ * 
+ * Responsabilidades:
+ * - Gerenciar solicitações de entrada na atlética
+ * - Aprovar/recusar novos membros
+ * - Gerenciar inscrições em modalidades esportivas
+ * - Gerenciar inscrições em eventos
+ * - Promover membros a administradores
+ * - Rebaixar administradores a membros comuns
+ * - Remover membros da atlética
+ * - Buscar estatísticas da atlética
+ * 
+ * Fluxo de entrada na atlética:
+ * 1. Aluno solicita entrada (atletica_join_status = 'pendente')
+ * 2. Admin aprova ou recusa
+ * 3. Se aprovado: tipo_usuario_detalhado = 'Membro das Atléticas'
+ * 4. Se recusado: atletica_join_status = 'none'
+ * 
+ * Permissões do Admin:
+ * - Gerenciar membros da própria atlética apenas
+ * - Não pode gerenciar super admins
+ * - Pode promover membros a admins (com aprovação)
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +36,7 @@ use PDO;
 
 class AdminAtleticaRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

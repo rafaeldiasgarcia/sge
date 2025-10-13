@@ -1,9 +1,39 @@
 <?php
-#
-# Controller para as Notificações (API).
-# Fornece endpoints JSON para o frontend buscar notificações em tempo real
-# e marcá-las como lidas, sem a necessidade de recarregar a página.
-#
+/**
+ * Controller de Notificações - API JSON (NotificationController)
+ * 
+ * Fornece endpoints RESTful em formato JSON para o sistema de notificações.
+ * Permite que o frontend busque e gerencie notificações sem recarregar a página.
+ * 
+ * Endpoints disponíveis:
+ * 
+ * GET /notifications/get
+ * - Retorna as últimas notificações do usuário logado
+ * - Inclui contagem de não lidas
+ * - Formato: { notifications: [...], unread_count: N }
+ * 
+ * POST /notifications/mark-read
+ * - Marca uma notificação específica como lida
+ * - Parâmetro: notification_id
+ * - Retorna: { success: true/false }
+ * 
+ * POST /notifications/mark-all-read
+ * - Marca todas as notificações do usuário como lidas
+ * - Retorna: { success: true/false }
+ * 
+ * Características:
+ * - Respostas em JSON puro
+ * - Requer autenticação (Auth::protect)
+ * - Headers Content-Type: application/json
+ * - Usado por AJAX no frontend (notifications.js)
+ * 
+ * Integração Frontend:
+ * - public/js/notifications.js faz polling periódico
+ * - Badge de contador atualizado em tempo real
+ * - Dropdown de notificações atualizado automaticamente
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

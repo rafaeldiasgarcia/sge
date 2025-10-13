@@ -1,7 +1,30 @@
-/*
- * Lógica JavaScript para o calendário interativo.
- * Controla a seleção de datas, a navegação entre meses via AJAX
- * e a interação com os campos do formulário de agendamento.
+/**
+ * Calendário Interativo de Agendamentos
+ * 
+ * Implementa um calendário dinâmico para seleção de datas e períodos
+ * de agendamento da quadra poliesportiva.
+ * 
+ * Funcionalidades:
+ * - Seleção visual de data e período (primeiro/segundo)
+ * - Navegação entre meses via AJAX (sem recarregar página)
+ * - Indicadores visuais de disponibilidade:
+ *   * Verde: Horário disponível
+ *   * Vermelho: Horário ocupado
+ *   * Cinza: Data passada (desabilitado)
+ * - Validação de datas passadas (não permite seleção)
+ * - Sincronização com campos hidden do formulário
+ * - Feedback visual da seleção atual
+ * 
+ * Períodos:
+ * - Primeiro: 19:15 - 20:55
+ * - Segundo: 21:10 - 22:50
+ * 
+ * Integração:
+ * - Endpoint AJAX: /calendario-partial
+ * - Campos do formulário: data_agendamento, periodo
+ * - Botão de envio habilitado apenas após seleção completa
+ * 
+ * @version 1.0
  */
 document.addEventListener("DOMContentLoaded", () => {
     const calendarContainer = document.getElementById('calendar-wrapper');

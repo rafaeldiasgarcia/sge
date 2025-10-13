@@ -1,6 +1,34 @@
 /**
  * Sistema de Popup de Detalhes do Evento
- * Exibe todas as informações do evento e permite salvar como PDF
+ * 
+ * Implementa um modal/popup completo para exibir todos os detalhes de um evento
+ * de forma organizada e visualmente agradável. Inclui funcionalidade de impressão/PDF.
+ * 
+ * Funcionalidades:
+ * - Busca detalhes do evento via AJAX
+ * - Exibe todas as informações formatadas
+ * - Lista de participantes confirmados
+ * - Botão de imprimir/salvar PDF
+ * - Design responsivo
+ * - Fechamento por overlay ou botão X
+ * - Animações suaves de abertura/fechamento
+ * 
+ * Informações Exibidas:
+ * - Tipo e subtipo do evento
+ * - Data, horário e período
+ * - Responsável e solicitante
+ * - Descrição completa
+ * - Materiais necessários
+ * - Lista de participantes (se houver)
+ * - Infraestrutura adicional
+ * - Observações administrativas
+ * 
+ * Integração:
+ * - Endpoint: GET /agendamento/detalhes?id=X
+ * - Retorna JSON com todos os dados do evento
+ * 
+ * @class EventPopup
+ * @version 1.0
  */
 
 class EventPopup {

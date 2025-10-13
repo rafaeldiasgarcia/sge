@@ -1,4 +1,31 @@
 <?php
+/**
+ * ============================================================================
+ * VIEW: GERENCIAR AGENDAMENTOS (SUPER ADMIN)
+ * ============================================================================
+ * 
+ * Interface de aprovação/rejeição de solicitações de agendamento com abas
+ * para diferentes status.
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar agendamentos por status (pendentes, aprovados, rejeitados)
+ * - Aprovar/rejeitar solicitações com justificativa
+ * - Ver detalhes completos de cada evento
+ * - Filtros por tipo (esportivo/não esportivo)
+ * 
+ * ABAS:
+ * - Pendentes: aguardando análise
+ * - Aprovados: eventos confirmados
+ * - Rejeitados: solicitações negadas
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $pendentes   - Agendamentos aguardando análise
+ * @var array $aprovados   - Agendamentos aprovados
+ * @var array $rejeitados  - Agendamentos rejeitados
+ * 
+ * CONTROLLER: SuperAdminController::gerenciarAgendamentos()
+ */
+
 use Application\Core\Auth;
 ?>
 

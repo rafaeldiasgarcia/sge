@@ -1,10 +1,21 @@
 <?php
-#
-# Controller da Página Inicial.
-# Gerencia a rota raiz ('/') da aplicação. Sua principal função é atuar
-# como um despachante, redirecionando os usuários para o dashboard
-# apropriado após o login, ou para a página de login se não estiverem autenticados.
-#
+/**
+ * Controller da Página Inicial (HomeController)
+ * 
+ * Gerencia a rota raiz ('/') da aplicação, atuando como um dispatcher
+ * inteligente que redireciona usuários para a página apropriada baseado
+ * no seu estado de autenticação e perfil.
+ * 
+ * Lógica de Redirecionamento:
+ * - Usuários não autenticados → /login
+ * - Super Administradores → /superadmin/dashboard
+ * - Demais usuários autenticados → /dashboard
+ * 
+ * Este controller implementa o padrão Front Controller, centralizando
+ * o ponto de entrada da aplicação e delegando para os controllers específicos.
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 class HomeController extends BaseController

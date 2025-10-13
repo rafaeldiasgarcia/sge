@@ -1,9 +1,23 @@
 <?php
-#
-# Repositório para a tabela 'cursos'.
-# Contém todas as operações de CRUD para os cursos, além de métodos para
-# buscar o ID da atlética associada e desvincular cursos de uma atlética.
-#
+/**
+ * Repositório de Cursos (CursoRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'cursos'.
+ * Cursos são as graduações oferecidas pela instituição e podem estar
+ * vinculados a uma atlética.
+ * 
+ * Responsabilidades:
+ * - CRUD completo de cursos
+ * - Busca de ID de atlética associada ao curso
+ * - Desvinculação de cursos de uma atlética (quando atlética é excluída)
+ * 
+ * Relacionamentos:
+ * - Um curso pertence a no máximo uma atlética (relação N:1)
+ * - Um curso pode ter vários usuários matriculados
+ * - O campo atletica_id pode ser NULL (cursos sem atlética)
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +25,7 @@ use PDO;
 
 class CursoRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

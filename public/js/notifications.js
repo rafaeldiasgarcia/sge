@@ -1,6 +1,32 @@
 /**
- * Sistema de Notificações - VERSÃO NOVA E SIMPLES
- * Foco: Badge aparece automaticamente quando há notificações não lidas
+ * Sistema de Notificações em Tempo Real
+ * 
+ * Implementa um sistema de notificações assíncronas usando AJAX e polling.
+ * As notificações são atualizadas automaticamente sem necessidade de recarregar a página.
+ * 
+ * Funcionalidades:
+ * - Polling automático a cada 30 segundos
+ * - Badge com contador de não lidas
+ * - Dropdown com lista de notificações
+ * - Marcar notificações como lidas individualmente ou em massa
+ * - Ícones personalizados por tipo de notificação
+ * - Som de notificação (opcional)
+ * 
+ * Tipos de Notificação Suportados:
+ * - agendamento_aprovado: ✅ Seu agendamento foi aprovado
+ * - agendamento_rejeitado: ❌ Agendamento rejeitado
+ * - agendamento_cancelado: ⚠️ Evento cancelado
+ * - presenca_confirmada: ✅ Presença confirmada
+ * - lembrete_evento: 📅 Lembrete de evento
+ * - info: ℹ️ Informação geral
+ * - aviso: ⚠️ Aviso importante
+ * 
+ * Integração Backend:
+ * - GET /notifications - Busca notificações
+ * - POST /notifications/read - Marca como lida
+ * 
+ * @class SimpleNotifications
+ * @version 2.0
  */
 
 class SimpleNotifications {

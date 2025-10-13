@@ -1,14 +1,53 @@
 <?php
-#
-# Controller de Autenticação.
-# Gerencia todo o fluxo de autenticação de usuários: login, verificação em
-# duas etapas (simulada), logout, registro e a funcionalidade de
-# recuperação de senha.
-#
+/**
+ * Controller de Autenticação (AuthController)
+ * 
+ * Gerencia todo o fluxo de autenticação e autorização de usuários no sistema.
+ * Implementa autenticação em duas etapas (2FA) via e-mail e recuperação de senha.
+ * 
+ * Funcionalidades principais:
+ * - Login com verificação de e-mail e senha
+ * - Autenticação em dois fatores (2FA) via código por e-mail
+ * - Registro de novos usuários
+ * - Recuperação de senha via e-mail
+ * - Redefinição de senha com token de segurança
+ * - Logout e limpeza de sessão
+ * 
+ * Fluxo de Login:
+ * 1. Usuário informa e-mail e senha
+ * 2. Sistema verifica credenciais
+ * 3. Para não-superadmins: Gera código de 6 dígitos e envia por e-mail
+ * 4. Usuário informa código recebido
+ * 5. Sistema valida código e cria sessão
+ * 6. Superadmins fazem login direto (sem 2FA)
+ * 
+ * Fluxo de Recuperação de Senha:
+ * 1. Usuário informa e-mail
+ * 2. Sistema gera token único e envia link por e-mail
+ * 3. Token válido por 1 hora
+ * 4. Usuário clica no link e define nova senha
+ * 5. Sistema valida token, atualiza senha e limpa token
+ * 
+ * Segurança:
+ * - Senhas armazenadas com hash (password_hash do PHP)
+ * - Tokens de redefinição únicos e com prazo de validade
+ * - Códigos 2FA expiram em 15 minutos
+ * - Mensagens de erro genéricas para não expor se e-mail existe
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 class AuthController extends BaseController
 {
+    /**
+     * Exibe o formulário de login
+     * 
+     * Renderiza a view de login com o título da página.
+     * Se já houver usuário logado, poderia redirecionar para dashboard.
+     * 
+     * @return void
+     */
     public function showLoginForm()
     {
         view('auth/login', [
@@ -16,11 +55,31 @@ class AuthController extends BaseController
         ]);
     }
 
+    /**
+     * Processa o login do usuário (1ª etapa)
+     * 
+     * Fluxo:
+     * 1. Valida presença de e-mail e senha
+     * 2. Busca usuário no banco pelo e-mail
+     * 3. Verifica se a senha está correta usando password_verify
+     * 4. Se superadmin: faz login direto
+     * 5. Se não-superadmin: gera código 2FA e envia por e-mail
+     * 
+     * Códigos de verificação:
+     * - São números aleatórios de 6 dígitos
+     * - Expiram em 15 minutos
+     * - São armazenados na tabela usuarios
+     * - São enviados por e-mail via EmailService
+     * 
+     * @return void Redireciona para tela de verificação ou dashboard
+     */
     public function login()
     {
+        // Coleta credenciais do formulário
         $email = $_POST['email'] ?? '';
         $senha = $_POST['senha'] ?? '';
 
+        // Validação básica
         if (empty($email) || empty($senha)) {
             $_SESSION['error_message'] = "Por favor, preencha e-mail e senha.";
             redirect('/login');
@@ -30,33 +89,39 @@ class AuthController extends BaseController
             $userRepository = $this->repository('UsuarioRepository');
             $user = $userRepository->findByEmail($email);
 
+            // Verifica se usuário existe
+            // Mensagem genérica para não expor se e-mail existe no sistema
             if (!$user) {
                 $_SESSION['error_message'] = "E-mail ou senha inválidos.";
                 redirect('/login');
                 return;
             }
 
+            // Verifica se a senha está correta
+            // password_verify compara a senha informada com o hash armazenado
             if (!password_verify($senha, $user['senha'])) {
                 $_SESSION['error_message'] = "E-mail ou senha inválidos.";
                 redirect('/login');
                 return;
             }
 
-            // Se for superadmin, não precisa de verificação
+            // Superadmins fazem login direto sem 2FA (para facilitar administração)
             if ($user['role'] === 'superadmin') {
                 $this->createSession($user);
                 redirect('/');
                 return;
             }
 
-            // Gerar código de verificação
+            // Para usuários comuns e admins: gerar código 2FA
+            // Gera código aleatório de 6 dígitos
             $code = (string) rand(100000, 999999);
+            // Define expiração em 15 minutos
             $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
 
-            // Limpa qualquer código anterior
+            // Limpa qualquer código anterior do usuário
             $userRepository->clearLoginCode($user['id']);
 
-            // Salva o novo código
+            // Salva o novo código no banco
             $updateSuccess = $userRepository->updateLoginCode($user['id'], $code, $expires);
 
             if (!$updateSuccess) {
@@ -65,7 +130,7 @@ class AuthController extends BaseController
                 return;
             }
 
-            // Enviar código por e-mail usando PHPMailer
+            // Envia código por e-mail usando EmailService
             $emailService = new \Application\Core\EmailService();
             $emailSent = $emailService->sendVerificationCode($user['email'], $user['nome'], $code);
 
@@ -76,12 +141,17 @@ class AuthController extends BaseController
                 return;
             }
 
+            // Log de sucesso (útil para debug)
             error_log("Email enviado com sucesso para {$user['email']}. Código: {$code}");
+            
+            // Armazena e-mail na sessão temporariamente para a próxima etapa
             $_SESSION['login_email'] = $user['email'];
 
+            // Redireciona para tela de verificação do código
             redirect('/login/verify');
 
         } catch (\Exception $e) {
+            // Captura qualquer erro inesperado e loga
             error_log("Erro no login: " . $e->getMessage());
             $_SESSION['error_message'] = "Ocorreu um erro no sistema. Tente novamente.";
             redirect('/login');

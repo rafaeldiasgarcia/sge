@@ -1,10 +1,43 @@
 <?php
-#
-# View da Agenda Pública da Quadra.
-# Exibe todos os eventos futuros (esportivos e não esportivos) e permite
-# que os usuários marquem ou desmarquem presença. Também possui uma seção
-# oculta para visualizar eventos passados.
-#
+/**
+ * ============================================================================
+ * VIEW: AGENDA PÚBLICA DA QUADRA
+ * ============================================================================
+ * 
+ * Exibe todos os eventos aprovados (futuros e passados) com opção de
+ * confirmação de presença.
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar eventos esportivos e não esportivos separadamente
+ * - Marcar/desmarcar presença em eventos futuros via AJAX
+ * - Ver contador de presenças confirmadas em tempo real
+ * - Expandir seção de eventos passados
+ * - Popup com detalhes do evento ao clicar
+ * - Interface responsiva com alternância entre abas
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $eventos_futuros_esportivos     - Eventos esportivos futuros
+ * @var array $eventos_futuros_nao_esportivos - Eventos não esportivos futuros
+ * @var array $eventos_passados_esportivos    - Eventos esportivos passados
+ * @var array $eventos_passados_nao_esportivos- Eventos não esportivos passados
+ * @var array $eventos_passados               - Todos os eventos passados
+ * 
+ * ESTRUTURA DE EVENTOS:
+ * - id, titulo, data_agendamento, horario_periodo, periodo
+ * - esporte_tipo (apenas esportivos)
+ * - responsavel, atletica_nome, atletica_confirmada
+ * - total_presencas, presenca_id (se user marcou presença)
+ * 
+ * FEATURES:
+ * - Atualização AJAX de presenças sem reload
+ * - Contadores dinâmicos
+ * - Toggle entre eventos esportivos/não esportivos
+ * - Seção colapsável de eventos passados
+ * 
+ * CONTROLLER: AgendaController::agenda()
+ * JAVASCRIPT: Inline (marcação de presença AJAX, toggles)
+ * CSS: agenda.css, calendar.css
+ */
 ?>
 <h1 class="title-dashboard">Agenda da Quadra</h1>
 <p class="title-dashboard">Confira os próximos eventos aprovados e marque sua presença.</p>

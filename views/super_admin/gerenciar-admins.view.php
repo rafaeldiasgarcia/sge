@@ -1,8 +1,9 @@
 <?php
-#
-# View para o Super Admin gerenciar os administradores de atléticas.
-# Permite promover usuários elegíveis a admin e rebaixar admins existentes.
-#
+/**
+ * VIEW: GERENCIAR ADMINISTRADORES (SUPER ADMIN)
+ * Gerenciar admins de atléticas: promover usuários elegíveis e rebaixar admins.
+ * CONTROLLER: SuperAdminController::gerenciarAdmins()
+ */
 ?>
 <h2>Gerenciar Administradores de Atléticas</h2>
 <?php if (isset($_SESSION['success_message'])): ?>

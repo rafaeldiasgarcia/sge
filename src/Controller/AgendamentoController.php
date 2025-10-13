@@ -1,10 +1,34 @@
 <?php
-#
-# Controller para o gerenciamento de Agendamentos.
-# Lida com a exibição do formulário, criação, edição, listagem e
-# cancelamento de solicitações de agendamento por parte dos usuários.
-# Também fornece o HTML parcial do calendário para requisições AJAX.
-#
+/**
+ * Controller de Agendamentos (AgendamentoController)
+ * 
+ * Gerencia todo o ciclo de vida dos agendamentos de eventos na quadra,
+ * desde a criação até o cancelamento. Implementa regras de negócio
+ * complexas de validação e disponibilidade.
+ * 
+ * Funcionalidades principais:
+ * - Criação de agendamentos (esportivos e não-esportivos)
+ * - Edição de agendamentos pendentes
+ * - Cancelamento de agendamentos
+ * - Listagem de agendamentos do usuário
+ * - Verificação de disponibilidade de horários
+ * - Validação de regras de negócio (limites semanais, conflitos)
+ * - Envio de notificações sobre mudanças de status
+ * - Geração de calendário AJAX para visualização
+ * 
+ * Regras de Negócio implementadas:
+ * - Apenas 1 agendamento aprovado por horário/data
+ * - Usuários podem agendar no máximo 1 evento esportivo por modalidade por semana
+ * - Atléticas podem ter no máximo 1 treino por modalidade por semana
+ * - Agendamentos editados retornam para status 'pendente'
+ * - Super Admin deve aprovar todos os agendamentos
+ * 
+ * Tipos de Agendamento:
+ * - Esportivo: Treinos, Jogos, Campeonatos
+ * - Não Esportivo: Eventos Culturais, Reuniões, Outros
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

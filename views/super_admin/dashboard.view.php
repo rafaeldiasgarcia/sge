@@ -1,9 +1,21 @@
 <?php
-#
-# View do Dashboard do Super Administrador.
-# Apresenta um menu com links para todas as seções de gerenciamento
-# de alto nível do sistema.
-#
+/**
+ * ============================================================================
+ * VIEW: DASHBOARD DO SUPER ADMINISTRADOR
+ * ============================================================================
+ * 
+ * Painel principal com acesso a todas as funcionalidades administrativas do
+ * sistema. Interface com cards organizados por categoria.
+ * 
+ * SEÇÕES DISPONÍVEIS:
+ * - Agendamentos: solicitar, visualizar próprios, aprovar/recusar todos
+ * - Usuários: gerenciar todos os usuários e coordenadores
+ * - Estrutura: gerenciar atléticas, cursos e modalidades
+ * - Notificações: enviar notificações globais
+ * - Relatórios: gerar relatórios do sistema
+ * 
+ * CONTROLLER: SuperAdminController::dashboard()
+ */
 ?>
 <h1>Painel do Super Administrador</h1>
 <p>Acesso total para gerenciamento da estrutura e dos usuários do sistema.</p>

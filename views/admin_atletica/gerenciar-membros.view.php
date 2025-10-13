@@ -1,18 +1,54 @@
 <?php
-#
-# View para o Admin de Atlética gerenciar as solicitações de novos membros.
-# Permite aprovar ou recusar pedidos de alunos para entrar na atlética.
-#
+/**
+ * ============================================================================
+ * VIEW: GERENCIAR SOLICITAÇÕES DE MEMBROS
+ * ============================================================================
+ * 
+ * Interface simplificada focada exclusivamente em aprovar ou recusar
+ * solicitações de entrada na atlética (sem gerenciamento de membros ativos).
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar todas as solicitações pendentes de entrada
+ * - Aprovar solicitação: torna o aluno membro oficial da atlética
+ * - Recusar solicitação: rejeita o pedido (aluno pode solicitar novamente)
+ * - Badge com contador de solicitações pendentes
+ * 
+ * DIFERENÇA:
+ * - Este arquivo foca apenas nas solicitações pendentes, sem incluir
+ *   o gerenciamento completo de membros ativos
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $pendentes - Lista de solicitações aguardando aprovação
+ *                         [id, nome, curso_nome]
+ * 
+ * FLUXO DE APROVAÇÃO:
+ * 1. Aluno solicita entrada na atlética
+ * 2. Solicitação aparece nesta view
+ * 3. Admin aprova → aluno vira membro com role 'usuario'
+ * 4. Admin recusa → solicitação é rejeitada
+ * 
+ * AÇÕES DISPONÍVEIS:
+ * - POST /admin/atletica/membros/acao
+ *   Ações: aprovar, recusar
+ * 
+ * CONTROLLER: AdminAtleticaController::gerenciarMembros()
+ */
 ?>
+
 <h2>Gerenciar Solicitações de Membros</h2>
 <p>Aprove ou recuse os pedidos de alunos para entrar na sua atlética.</p>
 
+<!-- Mensagens de feedback -->
 <?php if (isset($_SESSION['success_message'])): ?>
-    <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <div class="alert alert-success">
+        <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+    </div>
 <?php endif; ?>
 
 <?php if (isset($_SESSION['error_message'])): ?>
-    <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+    <div class="alert alert-danger">
+        <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+    </div>
 <?php endif; ?>
 
 <div class="card">

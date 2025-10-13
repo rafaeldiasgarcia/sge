@@ -1,9 +1,35 @@
 <?php
-#
-# Repositório para a tabela 'agendamentos'.
-# Centraliza todas as interações com o banco de dados relacionadas a agendamentos,
-# como criar, buscar, atualizar, aprovar, rejeitar e verificar a disponibilidade de horários.
-#
+/**
+ * Repositório de Agendamentos (AgendamentoRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'agendamentos'.
+ * Gerencia todos os aspectos relacionados a agendamentos de eventos esportivos
+ * e não esportivos na quadra poliesportiva.
+ * 
+ * Responsabilidades principais:
+ * - CRUD de agendamentos (criar, buscar, atualizar, deletar)
+ * - Verificação de disponibilidade de horários
+ * - Aprovação e rejeição de agendamentos
+ * - Cancelamento de eventos
+ * - Gerenciamento de presenças em eventos
+ * - Validação de regras de negócio (limite de treinos semanais, horários ocupados)
+ * - Busca de eventos por diversos filtros (data, período, status, usuário)
+ * - Cálculo de ocupação da quadra por período
+ * - Atualização automática de status (eventos passados para 'finalizado')
+ * 
+ * Regras de Negócio:
+ * - Cada horário/período pode ter apenas 1 agendamento aprovado
+ * - Atléticas podem ter no máximo 1 treino por modalidade por semana
+ * - Usuários podem agendar no máximo 1 evento esportivo por modalidade por semana
+ * - Eventos com status 'aprovado' aparecem no calendário para todos
+ * - Presenças só podem ser marcadas em eventos aprovados
+ * 
+ * Períodos disponíveis:
+ * - 'primeiro': 19:15 - 20:55
+ * - 'segundo': 21:10 - 22:50
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,8 +37,15 @@ use PDO;
 
 class AgendamentoRepository
 {
+    /**
+     * Instância da conexão PDO
+     * @var PDO
+     */
     private $pdo;
 
+    /**
+     * Construtor - Obtém a instância única da conexão com o banco
+     */
     public function __construct()
     {
         $this->pdo = Connection::getInstance();

@@ -1,9 +1,43 @@
 <?php
-#
-# View do Dashboard do Usuário.
-# É a página inicial para usuários logados, mostrando atalhos para as
-# principais funcionalidades e uma lista de eventos onde ele marcou presença.
-#
+/**
+ * ============================================================================
+ * VIEW: DASHBOARD DO USUÁRIO
+ * ============================================================================
+ * 
+ * Página inicial para usuários autenticados. Exibe cards de atalhos
+ * personalizados por role e eventos com presença confirmada.
+ * 
+ * FUNCIONALIDADES:
+ * - Carrossel de boas-vindas animado (2 slides)
+ * - Cards de atalhos baseados em permissões
+ * - Visualização de próximos eventos com presença marcada
+ * - Separação entre eventos esportivos e não esportivos
+ * - Links diretos para principais funcionalidades
+ * 
+ * CARDS DE ATALHO (CONDICIONAIS):
+ * - Agenda dos Eventos: todos os usuários
+ * - Solicitar Agendamento: admin, superadmin, coordenadores
+ * - Meus Agendamentos: admin, superadmin, coordenadores
+ * - Painel da Atlética: apenas admins com atlética vinculada
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $user              - Dados do usuário logado
+ *                                 [nome, email, role, tipo_usuario,
+ *                                  is_coordenador, atletica_id]
+ * @var array $eventos_presenca  - Eventos futuros onde usuário marcou presença
+ *                                 [id, titulo, tipo_agendamento, data_agendamento,
+ *                                  horario_periodo, responsavel, esporte_tipo]
+ * 
+ * FEATURES:
+ * - Design responsivo com carrossel Bootstrap
+ * - Cards clicáveis que abrem popup de evento
+ * - Separação visual entre esportivos (verde) e não esportivos (azul)
+ * - Animações CSS customizadas
+ * 
+ * CONTROLLER: HomeController::dashboard()
+ * CSS: usuario.css, default.css, calendar.css
+ * JAVASCRIPT: event-popup.js (popup de detalhes)
+ */
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +45,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE UNIFIO</title>
+    <title>SGE UNIFIO - Dashboard</title>
     <link rel="stylesheet" href="/css/usuario.css">
     <link rel="stylesheet" href="/css/default.css">
     <link rel="stylesheet" href="/css/calendar.css">

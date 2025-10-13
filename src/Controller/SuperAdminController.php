@@ -1,10 +1,54 @@
 <?php
-#
-# Controller para o Painel do Super Administrador.
-# Centraliza todas as funcionalidades de mais alto nível, como gerenciamento
-# de usuários, estrutura acadêmica (cursos, atléticas), modalidades,
-# aprovação de agendamentos e geração de relatórios.
-#
+/**
+ * Controller do Super Administrador (SuperAdminController)
+ * 
+ * Gerencia todas as funcionalidades administrativas de mais alto nível do sistema.
+ * Super Administradores têm acesso completo a todas as funcionalidades e dados.
+ * 
+ * Áreas de Gerenciamento:
+ * 
+ * 1. Usuários:
+ *    - Criar, editar e excluir usuários
+ *    - Alterar perfis (roles)
+ *    - Gerenciar coordenadores
+ *    - Listar todos os usuários
+ * 
+ * 2. Estrutura Acadêmica:
+ *    - CRUD de Atléticas
+ *    - CRUD de Cursos
+ *    - Vincular cursos a atléticas
+ * 
+ * 3. Modalidades Esportivas:
+ *    - Criar, editar e excluir modalidades
+ *    - Gerenciar lista de esportes disponíveis
+ * 
+ * 4. Agendamentos:
+ *    - Aprovar/rejeitar agendamentos pendentes
+ *    - Cancelar agendamentos aprovados
+ *    - Alterar data/horário de agendamentos
+ *    - Adicionar observações administrativas
+ *    - Visualizar detalhes completos
+ * 
+ * 5. Administradores:
+ *    - Promover usuários a admin de atlética
+ *    - Rebaixar admins a usuários comuns
+ *    - Listar admins por atlética
+ * 
+ * 6. Relatórios:
+ *    - Relatório geral com estatísticas
+ *    - Relatório por período
+ *    - Relatório por evento
+ *    - Relatório por usuário
+ *    - Exportação para impressão
+ * 
+ * 7. Notificações:
+ *    - Enviar notificações globais
+ *    - Notificar todos os usuários
+ * 
+ * Todas as ações são protegidas pelo middleware Auth::protectSuperAdmin()
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

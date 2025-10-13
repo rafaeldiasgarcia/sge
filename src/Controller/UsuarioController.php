@@ -1,9 +1,40 @@
 <?php
-#
-# Controller para as funcionalidades do Usuário.
-# Gerencia o dashboard do usuário, a edição de perfil (dados pessoais e senha)
-# e as inscrições em modalidades esportivas.
-#
+/**
+ * Controller do Usuário (UsuarioController)
+ * 
+ * Gerencia as funcionalidades disponíveis para usuários comuns autenticados,
+ * incluindo dashboard, perfil, inscrições e gestão de atlética.
+ * 
+ * Funcionalidades principais:
+ * - Dashboard personalizado com próximos eventos
+ * - Visualização e edição de perfil
+ * - Alteração de senha
+ * - Gerenciamento de inscrições em modalidades esportivas
+ * - Solicitação para entrar em atlética
+ * - Saída de atlética
+ * 
+ * Dashboard exibe:
+ * - Próximo evento esportivo com presença confirmada
+ * - Próximo evento não-esportivo com presença confirmada
+ * - Estatísticas de participação
+ * - Links rápidos para ações comuns
+ * 
+ * Perfil permite editar:
+ * - Nome completo
+ * - E-mail
+ * - Data de nascimento
+ * - Telefone
+ * - Curso
+ * - Senha (com confirmação de senha antiga)
+ * 
+ * Inscrições em Modalidades:
+ * - Ver modalidades disponíveis
+ * - Inscrever-se em modalidades
+ * - Cancelar inscrições (se pendentes)
+ * - Status: pendente, aprovado, rejeitado
+ * 
+ * @package Application\Controller
+ */
 namespace Application\Controller;
 
 use Application\Core\Auth;

@@ -1,14 +1,62 @@
 <?php
-#
-# View com o formulário completo para agendamento de eventos.
-# Inclui o calendário interativo e campos dinâmicos que mudam
-# conforme o tipo de evento selecionado.
-#
+/**
+ * ============================================================================
+ * VIEW: AGENDAR EVENTO NA QUADRA
+ * ============================================================================
+ * 
+ * Formulário completo para solicitação de agendamento de eventos na quadra
+ * esportiva com campos dinâmicos baseados no tipo de evento.
+ * 
+ * FUNCIONALIDADES:
+ * - Calendário interativo para seleção de data/período
+ * - Campos dinâmicos (esportivo vs não esportivo)
+ * - Validações client-side
+ * - Restrições por role (coordenadores só eventos não esportivos)
+ * - Upload implícito via FormData
+ * - Antecedência mínima de 4 dias
+ * 
+ * TIPOS DE EVENTO:
+ * 1. ESPORTIVO:
+ *    - Requer: esporte, subtipo (treino/campeonato), materiais, participantes (RAs)
+ *    - Campos: árbitro, público estimado
+ *    - Se sem materiais: descrição + checkbox de responsabilização
+ * 
+ * 2. NÃO ESPORTIVO:
+ *    - Requer: subtipo (palestra/workshop/etc), público estimado
+ *    - Campos: aberto ao público, infraestrutura adicional
+ *    - Se fechado: descrição do público-alvo
+ * 
+ * RESTRIÇÕES DE ACESSO:
+ * - Coordenadores: apenas eventos não esportivos
+ * - Admins/SuperAdmins: todos os tipos
+ * 
+ * VALIDAÇÕES:
+ * - Data/período obrigatórios (via calendário)
+ * - Antecedência mínima de 4 dias
+ * - Limite de 1 treino por esporte por semana (atlética)
+ * - Campos obrigatórios conforme tipo
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $modalidades - Lista de esportes disponíveis
+ * @var array $user        - Dados do usuário logado (role, is_coordenador)
+ * @var  ...calendário...  - Variáveis do calendário (ver calendar.php)
+ * 
+ * FLUXO:
+ * 1. Usuário seleciona data/período no calendário
+ * 2. Preenche tipo de evento
+ * 3. Campos específicos aparecem dinamicamente
+ * 4. Submit envia para /agendar-evento
+ * 5. Aguarda aprovação do coordenador
+ * 
+ * CONTROLLER: AgendamentoController::criarAgendamento()
+ * JAVASCRIPT: calendar.js, event-form.js
+ * CSS: calendar.css
+ */
 ?>
-<!-- CSS específico -->
+<!-- CSS específico para calendário -->
 <link rel="stylesheet" href="/css/calendar.css">
 
-<!-- JavaScript necessário -->
+<!-- JavaScript para interatividade -->
 <script src="/js/calendar.js" defer></script>
 <script src="/js/event-form.js" defer></script>
 

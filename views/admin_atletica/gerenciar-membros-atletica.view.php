@@ -1,21 +1,55 @@
 <?php
-#
-# View para o Admin de Atlética gerenciar todos os membros da sua atlética.
-# Permite promover a admin, rebaixar admins e remover membros da atlética.
-#
+/**
+ * ============================================================================
+ * VIEW: GERENCIAR MEMBROS DA ATLÉTICA
+ * ============================================================================
+ * 
+ * Interface dedicada exclusivamente ao gerenciamento de membros ativos da
+ * atlética (sem a aba de solicitações).
+ * 
+ * FUNCIONALIDADES:
+ * - Listar todos os membros ativos da atlética
+ * - Visualizar informações completas (nome, RA, email, curso, perfil)
+ * - Promover membros comuns a administradores
+ * - Rebaixar administradores a membros comuns
+ * - Remover membros da atlética (ação irreversível)
+ * - Proteção: não permite auto-modificação
+ * 
+ * DIFERENÇA:
+ * - Este arquivo é similar a gerenciar-inscricoes.view.php, mas sem a aba
+ *   de solicitações pendentes, focando apenas na gestão de membros ativos
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $membros - Lista de membros ativos da atlética
+ *                       [id, nome, email, ra, curso_nome, role]
+ * 
+ * HIERARQUIA DE ROLES:
+ * - 'usuario': membro comum da atlética
+ * - 'admin': administrador da atlética
+ * 
+ * AÇÕES DISPONÍVEIS:
+ * - POST /admin/atletica/gerenciar-membros/acao
+ *   Ações: promover_admin, rebaixar_admin, remover_atletica
+ * 
+ * CONTROLLER: AdminAtleticaController::gerenciarMembrosAtletica()
+ */
 ?>
+
 <h1>Gerenciar Membros da Atlética</h1>
 <p>Visualize e gerencie todos os membros da sua atlética, incluindo suas permissões e status.</p>
 
+<!-- Mensagens de feedback -->
 <?php if (isset($_SESSION['success_message'])): ?>
     <div class="alert alert-success">
-        <i class="bi bi-check-circle"></i> <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+        <i class="bi bi-check-circle"></i> 
+        <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
     </div>
 <?php endif; ?>
 
 <?php if (isset($_SESSION['error_message'])): ?>
     <div class="alert alert-danger">
-        <i class="bi bi-exclamation-triangle"></i> <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+        <i class="bi bi-exclamation-triangle"></i> 
+        <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
     </div>
 <?php endif; ?>
 

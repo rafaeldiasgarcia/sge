@@ -1,8 +1,21 @@
 <?php
-#
-# View para o Super Admin listar todos os usuários do sistema.
-# Apresenta uma tabela com as informações básicas de cada usuário e um link para edição.
-#
+/**
+ * ============================================================================
+ * VIEW: GERENCIAR USUÁRIOS (SUPER ADMIN)
+ * ============================================================================
+ * 
+ * Lista e permite editar todos os usuários do sistema.
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar lista completa de usuários
+ * - Ver role principal e vínculo institucional
+ * - Acessar edição detalhada de cada usuário
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $usuarios - Lista completa de usuários do sistema
+ * 
+ * CONTROLLER: SuperAdminController::gerenciarUsuarios()
+ */
 ?>
 <h2>Gerenciar Todos os Usuários</h2>
 <p>Visualize e edite as informações de qualquer usuário cadastrado no sistema.</p>

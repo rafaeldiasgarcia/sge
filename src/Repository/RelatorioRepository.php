@@ -1,9 +1,33 @@
 <?php
-#
-# Repositório para a geração de Relatórios.
-# Contém queries complexas que agregam dados de múltiplas tabelas para
-# fornecer estatísticas e listas detalhadas sobre eventos, usuários e períodos.
-#
+/**
+ * Repositório de Relatórios (RelatorioRepository)
+ * 
+ * Camada de acesso a dados especializada em queries complexas de agregação
+ * para geração de relatórios e estatísticas do sistema.
+ * 
+ * Responsabilidades:
+ * - Gerar relatórios gerais com estatísticas agregadas
+ * - Buscar eventos em um período específico
+ * - Obter dados detalhados de um evento
+ * - Listar presenças por evento
+ * - Listar agendamentos por usuário
+ * - Listar presenças por usuário
+ * 
+ * Tipos de relatórios:
+ * - Relatório Geral: Estatísticas gerais de eventos, presenças e participantes
+ * - Relatório por Período: Lista de eventos em um intervalo de datas
+ * - Relatório de Evento: Detalhes completos de um evento específico
+ * - Relatório de Usuário: Histórico de agendamentos e presenças de um usuário
+ * 
+ * Métricas fornecidas:
+ * - Total de eventos (geral e por tipo)
+ * - Total de presenças confirmadas
+ * - Estimativa de participantes
+ * - Taxa de aprovação/rejeição
+ * - Distribuição por modalidade esportiva
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +35,7 @@ use PDO;
 
 class RelatorioRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

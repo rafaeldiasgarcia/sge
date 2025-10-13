@@ -1,14 +1,52 @@
 <?php
-#
-# View com o formulário completo para edição de eventos.
-# Similar ao formulário de agendamento, mas com campos pré-preenchidos
-# e mantendo as mesmas regras de validação.
-#
+/**
+ * ============================================================================
+ * VIEW: EDITAR EVENTO
+ * ============================================================================
+ * 
+ * Formulário de edição de evento com campos pré-preenchidos. Estrutura
+ * idêntica ao formulário de agendamento mas permite modificar evento existente.
+ * 
+ * FUNCIONALIDADES:
+ * - Editar todos os campos do evento (exceto se aprovado/rejeitado)
+ * - Calendário para alterar data/período
+ * - Campos dinâmicos conforme tipo de evento
+ * - Mesmas validações do agendamento
+ * - Restrições por role
+ * 
+ * PERMISSÕES:
+ * - Usuário pode editar apenas seus próprios eventos
+ * - Apenas eventos com status 'pendente' podem ser editados
+ * - Coordenadores: apenas eventos não esportivos
+ * - Eventos aprovados/rejeitados: apenas visualização
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $evento       - Dados completos do evento a editar
+ * @var array $modalidades  - Lista de esportes disponíveis
+ * @var array $user         - Dados do usuário logado
+ * @var  ...calendário...   - Variáveis do calendário
+ * 
+ * VALIDAÇÕES:
+ * - Mesmas validações do formulário de agendamento
+ * - Antecedência mínima de 4 dias
+ * - Campos obrigatórios por tipo
+ * 
+ * FLUXO:
+ * 1. Carregar dados do evento
+ * 2. Preencher campos
+ * 3. Usuário modifica
+ * 4. POST para /editar-evento/{id}
+ * 5. Volta a pendente se necessário
+ * 
+ * CONTROLLER: AgendamentoController::editarEvento()
+ * JAVASCRIPT: calendar.js, event-form.js
+ * CSS: calendar.css
+ */
 ?>
-<!-- CSS específico -->
+<!-- CSS específico para calendário -->
 <link rel="stylesheet" href="/css/calendar.css">
 
-<!-- JavaScript necessário -->
+<!-- JavaScript para interatividade -->
 <script src="/js/calendar.js" defer></script>
 <script src="/js/event-form.js" defer></script>
 

@@ -1,9 +1,10 @@
 <?php
-#
-# View da página de Relatórios do Super Admin.
-# Contém os formulários para gerar diferentes tipos de relatórios e
-# exibe os resultados na mesma página.
-#
+/**
+ * VIEW: RELATÓRIOS DO SISTEMA (SUPER ADMIN)
+ * Interface para gerar e visualizar relatórios detalhados sobre eventos,
+ * períodos e atividades de usuários. Permite impressão e exportação.
+ * CONTROLLER: SuperAdminController::relatorios()
+ */
 ?>
 <h1>Relatórios do Sistema</h1>
 <p>Gere relatórios detalhados sobre eventos, períodos e atividades de usuários.</p>

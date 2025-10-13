@@ -1,9 +1,22 @@
 <?php
-#
-# Repositório para a tabela 'atleticas'.
-# Contém todas as operações de CRUD (Create, Read, Update, Delete) para as atléticas,
-# além de métodos específicos como encontrar atléticas sem vínculo com cursos.
-#
+/**
+ * Repositório de Atléticas (AtleticaRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'atleticas'.
+ * Atléticas são organizações estudantis associadas a um ou mais cursos.
+ * 
+ * Responsabilidades:
+ * - CRUD completo de atléticas
+ * - Busca de atléticas sem vínculos com cursos (findUnlinked)
+ * - Busca de atlética por ID de curso
+ * 
+ * Relacionamentos:
+ * - Uma atlética pode estar vinculada a vários cursos (relação 1:N)
+ * - Uma atlética pode ter vários usuários como membros
+ * - Uma atlética pode ter vários administradores
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +24,7 @@ use PDO;
 
 class AtleticaRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

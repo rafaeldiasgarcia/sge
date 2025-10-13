@@ -1,9 +1,31 @@
 <?php
-#
-# Repositório para a tabela 'notificacoes'.
-# Gerencia a busca e a atualização de notificações para os usuários,
-# incluindo a contagem de não lidas e a marcação como lida.
-#
+/**
+ * Repositório de Notificações (NotificationRepository)
+ * 
+ * Camada de acesso a dados para a tabela 'notificacoes'.
+ * Gerencia o sistema de notificações do aplicativo, permitindo que
+ * usuários recebam alertas sobre eventos importantes.
+ * 
+ * Responsabilidades:
+ * - Criar notificações individuais ou em massa
+ * - Buscar notificações de um usuário
+ * - Marcar notificações como lidas
+ * - Contar notificações não lidas
+ * - Criar notificações globais (para todos os usuários)
+ * - Limpar notificações antigas
+ * 
+ * Tipos de notificações:
+ * - 'agendamento_aprovado': Agendamento foi aprovado
+ * - 'agendamento_rejeitado': Agendamento foi rejeitado
+ * - 'agendamento_cancelado': Evento foi cancelado
+ * - 'presenca_confirmada': Presença foi marcada
+ * - 'lembrete_evento': Lembrete de evento próximo
+ * - 'info': Informação geral
+ * - 'aviso': Aviso importante
+ * - 'sistema': Notificação do sistema
+ * 
+ * @package Application\Repository
+ */
 namespace Application\Repository;
 
 use Application\Core\Connection;
@@ -11,6 +33,7 @@ use PDO;
 
 class NotificationRepository
 {
+    /** @var PDO Instância da conexão PDO */
     private $pdo;
 
     public function __construct()

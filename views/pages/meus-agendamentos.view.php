@@ -1,18 +1,62 @@
 <?php
-#
-# View que lista todos os agendamentos feitos pelo usuário logado.
-# Mostra o status de cada solicitação e permite editar ou cancelar
-# as que ainda não foram finalizadas.
-#
+/**
+ * ============================================================================
+ * VIEW: MEUS AGENDAMENTOS
+ * ============================================================================
+ * 
+ * Lista todos os agendamentos solicitados pelo usuário logado com opções
+ * de edição e cancelamento.
+ * 
+ * FUNCIONALIDADES:
+ * - Visualizar histórico completo de solicitações
+ * - Ver status de cada agendamento (pendente/aprovado/rejeitado)
+ * - Editar eventos pendentes
+ * - Cancelar eventos (qualquer status)
+ * - Ver observações/justificativas de aprovação/rejeição
+ * - Clicar no evento para ver detalhes em popup
+ * 
+ * STATUS POSSÍVEIS:
+ * - pendente: aguardando análise do coordenador
+ * - aprovado: evento confirmado, aparece na agenda pública
+ * - rejeitado: solicitação negada pelo coordenador
+ * - cancelado: cancelado pelo usuário
+ * 
+ * VARIÁVEIS RECEBIDAS:
+ * @var array $agendamentos - Lista de todos os agendamentos do usuário
+ *                            [id, titulo, tipo_agendamento, subtipo_evento,
+ *                             data_agendamento, periodo, horario_periodo,
+ *                             status_agendamento, motivo_rejeicao]
+ * 
+ * AÇÕES DISPONÍVEIS:
+ * - Editar (apenas pendentes): redireciona para /editar-evento/{id}
+ * - Cancelar (todos): POST para /cancelar-agendamento com confirmação
+ * - Visualizar detalhes: popup via event-clickable
+ * 
+ * BADGES DE STATUS:
+ * - Pendente: badge warning (amarelo)
+ * - Aprovado: badge success (verde)
+ * - Rejeitado: badge danger (vermelho)
+ * - Cancelado: badge secondary (cinza)
+ * 
+ * CONTROLLER: AgendamentoController::meusAgendamentos()
+ * JAVASCRIPT: event-popup.js (detalhes do evento)
+ */
 ?>
+
 <h2>Meus Agendamentos</h2>
 <p>Acompanhe e gerencie o status de todas as suas solicitações de uso da quadra.</p>
 
+<!-- Mensagens de feedback -->
 <?php if (isset($_SESSION['success_message'])): ?>
-    <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <div class="alert alert-success">
+        <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+    </div>
 <?php endif; ?>
+
 <?php if (isset($_SESSION['error_message'])): ?>
-    <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+    <div class="alert alert-danger">
+        <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+    </div>
 <?php endif; ?>
 
 <div class="card">

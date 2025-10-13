@@ -1,12 +1,36 @@
--- phpMyAdmin SQL Dump
--- version 5.2.2
--- https://www.phpmyadmin.net/
+-- ============================================================================
+-- SCHEMA DO BANCO DE DADOS - SGE UNIFIO
+-- Sistema de Gerenciamento de Eventos da Quadra Poliesportiva
+-- ============================================================================
 --
--- Host: sge-db
--- Tempo de geração: 28/09/2025 às 03:46
--- Versão do servidor: 9.4.0
--- Versão do PHP: 8.2.27
-
+-- Este arquivo contém a estrutura completa do banco de dados da aplicação.
+-- 
+-- IMPORTANTE: Execute este arquivo ANTES de popular o banco com dados.
+-- Ordem de execução: 1º schema.sql, 2º db_populate.sql
+-- 
+-- Versão do MySQL: 9.4.0
+-- Charset: UTF8MB4 (suporte completo a Unicode, incluindo emojis)
+-- Collation: utf8mb4_unicode_ci (case-insensitive, melhor ordenação)
+--
+-- Estrutura do Banco:
+-- - usuarios: Usuários do sistema (alunos, professores, admins)
+-- - atleticas: Organizações estudantis esportivas
+-- - cursos: Cursos de graduação da instituição
+-- - modalidades: Esportes disponíveis (Futsal, Vôlei, etc)
+-- - agendamentos: Solicitações de uso da quadra
+-- - presencas: Confirmações de presença em eventos
+-- - inscricoes_modalidade: Inscrições de alunos em modalidades
+-- - inscricoes_eventos: Inscrições de atletas em eventos específicos
+-- - notificacoes: Sistema de notificações para usuários
+--
+-- Relacionamentos Principais:
+-- - Cursos pertencem a Atléticas (N:1)
+-- - Usuários pertencem a Cursos (N:1)
+-- - Usuários podem ser membros de Atléticas
+-- - Agendamentos são criados por Usuários
+-- - Usuários marcam Presenças em Agendamentos
+-- - Usuários se inscrevem em Modalidades
+--
 -- ===================================================================
 -- CONFIGURAÇÕES DE CHARSET E COLLATION
 -- UTF8MB4 suporta todos os caracteres Unicode, incluindo:

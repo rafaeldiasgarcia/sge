@@ -1,5 +1,24 @@
 /**
- * Controle dos formulários de eventos (agendamento e edição)
+ * Controle Dinâmico do Formulário de Agendamento
+ * 
+ * Gerencia a exibição condicional de campos do formulário de agendamento
+ * baseado nas escolhas do usuário.
+ * 
+ * Funcionalidades:
+ * - Mostrar/ocultar campos conforme tipo de evento (esportivo/não-esportivo)
+ * - Mostrar/ocultar campos de materiais conforme necessidade
+ * - Validação de campos condicionais
+ * - Controle de campos "Outro" personalizados
+ * - Feedback visual das seleções
+ * 
+ * Lógica Condicional:
+ * - Se Esportivo: mostra subtipo, esporte, participantes
+ * - Se Não Esportivo: mostra subtipo alternativo, público alvo
+ * - Se Possui Materiais: mostra lista de materiais e responsabilização
+ * - Se Evento Aberto ao Público: mostra descrição do público alvo
+ * - Se subtipo "Outro": mostra campo de texto para especificar
+ * 
+ * @version 1.0
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do formulário
