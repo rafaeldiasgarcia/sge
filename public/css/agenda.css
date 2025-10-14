@@ -59,14 +59,14 @@
 
 /* Botão Desmarcar Presença - Azul */
 .presenca-btn[data-action="desmarcar"] {
-    background: var(--blue-color) !important;
-    border-color: var(--blue-color) !important;
+    background: red !important;
+    border-color: red !important;
     color: #fff !important;
 }
 
 .presenca-btn[data-action="desmarcar"]:hover {
-    background: #0056b3 !important;
-    border-color: #0056b3 !important;
+    background: red !important;
+    border-color: red !important;
     color: #fff !important;
 }
 
@@ -78,6 +78,9 @@
     box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25) !important;
 }
 
+.border-radius-card{
+    border-radius: 5px;
+}
 /* Estado desabilitado durante loading */
 .presenca-btn:disabled {
     opacity: 0.6;
@@ -131,7 +134,6 @@
     background: #d87120 !important;
     border-color: #d87120 !important;
     color: #fff !important;
-    box-shadow: 0 0 0 0.25rem rgba(244, 127, 32, 0.25) !important;
 }
 
 /* Estado pressed (quando segurar o botão) */

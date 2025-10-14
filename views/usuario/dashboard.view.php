@@ -198,7 +198,7 @@
                         <div class="row">
                             <!-- Eventos Esportivos -->
                             <div class="col-md-6">
-                                <h6><i class="bi bi-trophy text-success"></i> Próximo evento esportivo</h6>
+                                <h6><i class="bi bi-trophy trofeu-icon"></i> Próximo evento esportivo</h6>
                                 <?php
                                 $eventosEsportivos = array_filter($eventos_presenca, function($evento) {
                                     return $evento['tipo_agendamento'] === 'esportivo';
@@ -210,9 +210,9 @@
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($eventosEsportivos as $evento): ?>
-                                        <div class="card mb-3 border-success event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
+                                        <div class="card mb-3 border-primary event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
                                             <div class="card-body">
-                                                <h6 class="card-title text-success"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
+                                                <h6 class="card-title text-black"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                                                 <?php if ($evento['esporte_tipo']): ?>
                                                     <small class="text-muted d-block"><?php echo htmlspecialchars($evento['esporte_tipo']); ?></small>
                                                 <?php endif; ?>
@@ -229,7 +229,7 @@
 
                             <!-- Eventos Não Esportivos -->
                             <div class="col-md-6">
-                                <h6><i class="bi bi-calendar-event text-primary"></i> Proximo evento não esportivo</h6>
+                                <h6><i class="bi bi-calendar-event agenda-icon"></i> Proximo evento não esportivo</h6>
                                 <?php
                                 $eventosNaoEsportivos = array_filter($eventos_presenca, function($evento) {
                                     return $evento['tipo_agendamento'] !== 'esportivo';
@@ -241,9 +241,9 @@
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($eventosNaoEsportivos as $evento): ?>
-                                        <div class="card mb-3 border-primary event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
+                                        <div class="card mb-3 borda-card event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
                                             <div class="card-body">
-                                                <h6 class="card-title text-primary"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
+                                                <h6 class="card-title text-black"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                                                 <p class="card-text mb-2">
                                                     <strong>Data:</strong> <?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?><br>
                                                     <strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo']); ?><br>

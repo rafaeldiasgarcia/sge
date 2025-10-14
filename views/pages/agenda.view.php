@@ -69,7 +69,7 @@
                 <?php if (!empty($eventos_futuros_esportivos)): ?>
                     <div class="list-group">
                         <?php foreach ($eventos_futuros_esportivos as $evento): ?>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-primary event-clickable"
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-primary border-radius-card event-clickable"
                                  data-event-id="<?php echo $evento['id']; ?>"
                                  style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
@@ -138,7 +138,7 @@
                 <?php if (!empty($eventos_futuros_nao_esportivos)): ?>
                     <div class="list-group">
                         <?php foreach ($eventos_futuros_nao_esportivos as $evento): ?>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 borda-card event-clickable"
+                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 borda-card border-radius-card event-clickable"
                                  data-event-id="<?php echo $evento['id']; ?>"
                                  style="cursor: pointer;">
                                 <div class="d-flex w-100 justify-content-between">
