@@ -12,16 +12,17 @@
  * - Aprovar/rejeitar solicitações com justificativa
  * - Ver detalhes completos de cada evento
  * - Filtros por tipo (esportivo/não esportivo)
+ * - Visualizar histórico de eventos rejeitados com motivos
  * 
  * ABAS:
- * - Pendentes: aguardando análise
- * - Aprovados: eventos confirmados
- * - Rejeitados: solicitações negadas
+ * - Pendentes: aguardando análise (com ações de aprovar/rejeitar)
+ * - Aprovados: eventos confirmados (com ações de editar/cancelar)
+ * - Rejeitados: histórico de solicitações negadas (somente visualização)
  * 
  * VARIÁVEIS RECEBIDAS:
  * @var array $pendentes   - Agendamentos aguardando análise
  * @var array $aprovados   - Agendamentos aprovados
- * @var array $rejeitados  - Agendamentos rejeitados
+ * @var array $rejeitados  - Agendamentos rejeitados (com motivo)
  * 
  * CONTROLLER: SuperAdminController::gerenciarAgendamentos()
  */
@@ -60,6 +61,11 @@ use Application\Core\Auth;
                 Eventos Aprovados
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rejeitados-tab" data-bs-toggle="tab" data-bs-target="#rejeitados" type="button" role="tab">
+                Eventos Rejeitados
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="agendamentosTabContent">
@@ -70,6 +76,7 @@ use Application\Core\Auth;
                     <thead>
                         <tr>
                             <th>Título</th>
+                            <th>Tipo</th>
                             <th>Solicitante</th>
                             <th>Data</th>
                             <th>Período</th>
@@ -79,7 +86,7 @@ use Application\Core\Auth;
                     <tbody>
                         <?php if (empty($pendentes)): ?>
                             <tr>
-                                <td colspan="5" class="text-center">Não há solicitações pendentes.</td>
+                                <td colspan="6" class="text-center">Não há solicitações pendentes.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($pendentes as $agendamento): ?>
@@ -91,6 +98,14 @@ use Application\Core\Auth;
                                                 <i class="bi bi-pencil-fill"></i> EDITADO
                                             </span>
                                         <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge <?php echo $agendamento['tipo_agendamento'] === 'esportivo' ? 'bg-success' : 'bg-info'; ?>">
+                                            <?php echo ucfirst($agendamento['tipo_agendamento']); ?>
+                                            <?php if ($agendamento['tipo_agendamento'] === 'esportivo'): ?>
+                                                <br><?php echo $agendamento['esporte_tipo']; ?>
+                                            <?php endif; ?>
+                                        </span>
                                     </td>
                                     <td><?php echo htmlspecialchars($agendamento['solicitante']); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($agendamento['data_agendamento'])); ?></td>
@@ -153,6 +168,57 @@ use Application\Core\Auth;
                                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelar-<?php echo $evento['id']; ?>">
                                             Cancelar
                                         </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Aba de Eventos Rejeitados -->
+        <div class="tab-pane fade" id="rejeitados" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Tipo</th>
+                            <th>Solicitante</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Motivo da Rejeição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($rejeitados)): ?>
+                            <tr>
+                                <td colspan="6" class="text-center">Não há eventos rejeitados.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($rejeitados as $evento): ?>
+                                <tr class="event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor: pointer;">
+                                    <td><?php echo htmlspecialchars($evento['titulo']); ?></td>
+                                    <td>
+                                        <span class="badge <?php echo $evento['tipo_agendamento'] === 'esportivo' ? 'bg-success' : 'bg-info'; ?>">
+                                            <?php echo ucfirst($evento['tipo_agendamento']); ?>
+                                            <?php if ($evento['tipo_agendamento'] === 'esportivo'): ?>
+                                                <br><?php echo $evento['esporte_tipo']; ?>
+                                            <?php endif; ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($evento['solicitante']); ?></td>
+                                    <td><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></td>
+                                    <td><?php echo $evento['horario_periodo']; ?></td>
+                                    <td>
+                                        <span class="text-danger">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            <?php 
+                                                $motivo = $evento['motivo_rejeicao'] ?? 'Sem motivo especificado';
+                                                echo htmlspecialchars(strlen($motivo) > 50 ? substr($motivo, 0, 50) . '...' : $motivo);
+                                            ?>
+                                        </span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

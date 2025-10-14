@@ -39,12 +39,20 @@
             </div>
             <h6>Lista de Eventos no Período</h6>
             <table class="table table-striped table-bordered">
-                <thead><tr><th>Data</th><th>Título</th><th>Responsável</th><th>Público Previsto</th><th>Presenças</th></tr></thead>
+                <thead><tr><th>Data</th><th>Título</th><th>Tipo</th><th>Responsável</th><th>Público Previsto</th><th>Presenças</th></tr></thead>
                 <tbody>
                 <?php foreach ($dados_relatorio['eventos_lista'] as $evento): ?>
                     <tr>
                         <td><?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?></td>
                         <td><?php echo htmlspecialchars($evento['titulo']); ?></td>
+                        <td>
+                            <?php 
+                            echo ucfirst($evento['tipo_agendamento']);
+                            if ($evento['tipo_agendamento'] === 'esportivo' && !empty($evento['esporte_tipo'])) {
+                                echo ' - ' . htmlspecialchars($evento['esporte_tipo']);
+                            }
+                            ?>
+                        </td>
                         <td><?php echo htmlspecialchars($evento['responsavel']); ?></td>
                         <td><?php echo $evento['estimativa_participantes'] ?? 0; ?></td>
                         <td><?php echo $evento['total_presencas']; ?></td>
@@ -58,8 +66,30 @@
             <h4>Relatório de Evento Específico</h4>
             <div class="summary-card p-3 rounded mb-4">
                 <h5><?php echo htmlspecialchars($evento['titulo']); ?></h5>
-                <p class="mb-1"><strong>Data:</strong> <?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?> | <strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel']); ?></p>
+                <p class="mb-1">
+                    <strong>Data:</strong> <?php echo date('d/m/Y', strtotime($evento['data_agendamento'])); ?> | 
+                    <strong>Tipo:</strong> <?php echo ucfirst($evento['tipo_agendamento']); ?><?php if ($evento['tipo_agendamento'] === 'esportivo' && !empty($evento['esporte_tipo'])): ?> - <?php echo htmlspecialchars($evento['esporte_tipo']); ?><?php endif; ?> | 
+                    <strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel']); ?>
+                </p>
                 <p class="mb-0"><strong>Público Previsto:</strong> <?php echo $evento['estimativa_participantes'] ?? 0; ?> | <strong class="text-success">Presenças Confirmadas:</strong> <?php echo $evento['total_presencas']; ?></p>
+                
+                <?php if ($evento['tipo_agendamento'] === 'esportivo' && isset($evento['possui_materiais'])): ?>
+                    <hr class="my-2">
+                    <p class="mb-0">
+                        <strong>Materiais:</strong>
+                        <?php if ($evento['possui_materiais'] == 1): ?>
+                            <span class="badge bg-success">✓ Possui materiais próprios</span>
+                        <?php else: ?>
+                            <span class="badge bg-warning text-dark">⚠ Não possui materiais próprios</span>
+                        <?php endif; ?>
+                    </p>
+                    <?php if ($evento['possui_materiais'] == 0 && !empty($evento['materiais_necessarios'])): ?>
+                        <p class="mb-0 mt-2">
+                            <strong>Materiais Necessários/Utilizados:</strong><br>
+                            <small style="white-space: pre-line; display: block; background: #f8f9fa; padding: 8px; border: 1px solid #dee2e6; border-radius: 4px; margin-top: 5px;"><?php echo htmlspecialchars($evento['materiais_necessarios']); ?></small>
+                        </p>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
             <h6>Lista de Presenças Confirmadas</h6>
             <table class="table table-striped table-bordered">
@@ -87,11 +117,23 @@
                 <div class="col-md-6">
                     <h6>Agendamentos Criados (<?php echo count($dados_relatorio['agendamentos']); ?>)</h6>
                     <table class="table table-sm table-striped table-bordered">
-                        <thead><tr><th>Título</th><th>Data</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Título</th><th>Tipo</th><th>Data</th><th>Status</th></tr></thead>
                         <tbody>
-                        <?php if(empty($dados_relatorio['agendamentos'])): ?><tr><td colspan="3">Nenhum.</td></tr><?php endif; ?>
+                        <?php if(empty($dados_relatorio['agendamentos'])): ?><tr><td colspan="4">Nenhum.</td></tr><?php endif; ?>
                         <?php foreach ($dados_relatorio['agendamentos'] as $ag): ?>
-                            <tr><td><?php echo htmlspecialchars($ag['titulo']); ?></td><td><?php echo date('d/m/Y', strtotime($ag['data_agendamento'])); ?></td><td><?php echo ucfirst($ag['status']); ?></td></tr>
+                            <tr>
+                                <td><?php echo htmlspecialchars($ag['titulo']); ?></td>
+                                <td>
+                                    <?php 
+                                    echo ucfirst($ag['tipo_agendamento'] ?? 'N/A');
+                                    if (!empty($ag['esporte_tipo']) && $ag['tipo_agendamento'] === 'esportivo') {
+                                        echo '<br><small>' . htmlspecialchars($ag['esporte_tipo']) . '</small>';
+                                    }
+                                    ?>
+                                </td>
+                                <td><?php echo date('d/m/Y', strtotime($ag['data_agendamento'])); ?></td>
+                                <td><?php echo ucfirst($ag['status']); ?></td>
+                            </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>

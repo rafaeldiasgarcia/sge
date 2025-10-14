@@ -64,22 +64,6 @@ class AgendaController extends BaseController
             $eventos_passados_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'esportivo');
             $eventos_passados_nao_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'nao_esportivo');
 
-            // DEBUG: Ver quantos eventos passados temos
-            error_log("=== DEBUG AGENDA ===");
-            error_log("Data atual: " . $data_atual);
-            error_log("Total de eventos: " . count($eventos));
-            error_log("Eventos futuros: " . count($eventos_futuros));
-            error_log("Eventos passados: " . count($eventos_passados));
-            error_log("Eventos passados esportivos: " . count($eventos_passados_esportivos));
-            error_log("Eventos passados não esportivos: " . count($eventos_passados_nao_esportivos));
-
-            if (count($eventos_passados) > 0) {
-                error_log("Primeiros 3 eventos passados:");
-                foreach (array_slice($eventos_passados, 0, 3) as $ev) {
-                    error_log("  - ID: " . $ev['id'] . " | Data: " . $ev['data_agendamento'] . " | Título: " . $ev['titulo']);
-                }
-            }
-
             view('pages/agenda', [
                 'title' => 'Agenda da Quadra',
                 'user' => $this->getUserData(),
@@ -119,8 +103,15 @@ class AgendaController extends BaseController
 
                 if ($action === 'marcar') {
                     $agendamentoRepo->marcarPresenca(Auth::id(), $agendamentoId);
-                    // Enviar notificação de presença confirmada
-                    $this->notificationService->notifyPresencaConfirmada(Auth::id(), $agendamentoId);
+                    // Enviar notificação de presença confirmada (com tratamento de erro)
+                    try {
+                        if ($this->notificationService) {
+                            $this->notificationService->notifyPresencaConfirmada(Auth::id(), $agendamentoId);
+                        }
+                    } catch (\Exception $notifError) {
+                        error_log("Erro ao enviar notificação: " . $notifError->getMessage());
+                        // Continua mesmo se a notificação falhar
+                    }
                 } elseif ($action === 'desmarcar') {
                     $agendamentoRepo->desmarcarPresenca(Auth::id(), $agendamentoId);
                 }
@@ -137,6 +128,8 @@ class AgendaController extends BaseController
                     'Presença desmarcada com sucesso!';
 
             } catch (\Exception $e) {
+                error_log("Erro ao processar presença: " . $e->getMessage());
+                
                 // Resposta para AJAX em caso de erro
                 if ($isAjax) {
                     header('Content-Type: application/json');

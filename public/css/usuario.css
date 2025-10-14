@@ -1359,12 +1359,18 @@ img {
 /* Sistema de Tabs */
 .profile-tabs {
     display: flex;
+    justify-content: center; /* Centraliza os tabs */
+    align-items: center;
     gap: 0;
     margin-bottom: 0;
     border-bottom: 2px solid #e2e8f0;
     background: white;
     border-radius: 12px 12px 0 0;
     padding: 0 20px;
+    flex-wrap: nowrap; /* Mantém sempre na mesma linha */
+    overflow: hidden; /* Bloqueia qualquer scroll */
+    touch-action: none; /* Desabilita gestos de toque no container */
+    user-select: none; /* Impede seleção no container */
 }
 
 .profile-tab {
@@ -1379,7 +1385,14 @@ img {
     margin-bottom: -2px;
     transition: all 0.2s;
     position: relative;
-    
+    white-space: nowrap; /* Impede quebra de texto */
+    flex-shrink: 0; /* Impede que o tab encolha */
+    user-select: none; /* Impede seleção de texto */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: auto; /* Permite clique nos tabs */
+    pointer-events: auto; /* Garante que os tabs sejam clicáveis */
 }
 
 .profile-tab:hover {
@@ -1645,6 +1658,15 @@ img {
         grid-template-columns: 1fr;
         gap: 20px;
     }
+    
+    /* Garantir que os tabs fiquem centralizados em tablets */
+    .profile-tabs {
+        justify-content: center;
+    }
+    
+    .profile-tab {
+        padding: 14px 24px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1672,14 +1694,13 @@ img {
     }
     
     .profile-tabs {
-        overflow-x: auto;
         padding: 0 10px;
+        overflow: hidden; /* Sem scroll em mobile também */
     }
     
     .profile-tab {
-        padding: 12px 16px;
+        padding: 12px 20px;
         font-size: 14px;
-        white-space: nowrap;
     }
     
     .profile-tab-content {
@@ -1720,6 +1741,12 @@ img {
     }
     
     .profile-info p {
+        font-size: 13px;
+    }
+    
+    /* Ajustar tabs em telas muito pequenas */
+    .profile-tab {
+        padding: 12px 16px;
         font-size: 13px;
     }
 }

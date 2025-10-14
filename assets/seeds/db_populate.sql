@@ -254,7 +254,67 @@ INSERT INTO `agendamentos` (`usuario_id`, `titulo`, `tipo_agendamento`, `esporte
 (12, 'Confraternização PREDADORA', 'nao_esportivo', NULL, '2025-11-25', 'segundo', 'Festa de encerramento do semestre.', 'pendente', 'Julia Alves', 40),
 (7, 'Última Aula - Formandos Engenharia', 'nao_esportivo', NULL, '2025-11-27', 'primeiro', 'Despedida dos formandos.', 'pendente', 'Prof. Carlos Andrade', 80),
 (13, 'Torneio de Xadrez', 'esportivo', 'Xadrez', '2025-11-28', 'segundo', 'Campeonato interno de xadrez.', 'pendente', 'Pedro Martins', 20),
-(21, 'Aula Aberta de Meditação', 'nao_esportivo', NULL, '2025-11-29', 'primeiro', 'Técnicas de mindfulness para estudantes.', 'pendente', 'Sra. Ana Paula', 30);
+(21, 'Aula Aberta de Meditação', 'nao_esportivo', NULL, '2025-11-29', 'primeiro', 'Técnicas de mindfulness para estudantes.', 'pendente', 'Sra. Ana Paula', 30),
+
+-- EVENTOS REJEITADOS - Para popular a aba de eventos rejeitados
+(17, 'Festa de Aniversário na Quadra', 'nao_esportivo', NULL, '2025-09-14', 'segundo', 'Comemoração de aniversário.', 'rejeitado', 'Bruno Rodrigues', 25),
+(18, 'Treino Livre de Skate', 'esportivo', NULL, '2025-09-17', 'primeiro', 'Treino de manobras de skate.', 'rejeitado', 'Larissa Gonçalves', 12),
+(19, 'Gravação de TikTok', 'nao_esportivo', NULL, '2025-09-21', 'segundo', 'Gravação de vídeos para redes sociais.', 'rejeitado', 'Rafael Almeida', 8),
+(20, 'Churrasco da Turma', 'nao_esportivo', NULL, '2025-10-05', 'segundo', 'Confraternização com churrasco.', 'rejeitado', 'Sr. Jorge Santos', 30),
+(21, 'Aula Particular de Tênis', 'esportivo', 'Tênis de Campo', '2025-10-06', 'primeiro', 'Professor particular.', 'rejeitado', 'Sra. Ana Paula', 2),
+(17, 'Treino de Parkour', 'esportivo', NULL, '2025-10-10', 'segundo', 'Treino de saltos e acrobacias.', 'rejeitado', 'Bruno Rodrigues', 10),
+(18, 'Show Acústico', 'nao_esportivo', NULL, '2025-10-11', 'primeiro', 'Apresentação musical.', 'rejeitado', 'Larissa Gonçalves', 40),
+(19, 'Treino de Crossfit Externo', 'esportivo', NULL, '2025-10-13', 'primeiro', 'Box de crossfit externo.', 'rejeitado', 'Rafael Almeida', 20),
+(11, 'Treino Extra Futsal', 'esportivo', 'Futsal', '2025-10-04', 'primeiro', 'Treino adicional solicitado.', 'rejeitado', 'Lucas Mendes', 18),
+(12, 'Amistoso Vôlei Extra', 'esportivo', 'Voleibol', '2025-10-04', 'segundo', 'Jogo amistoso.', 'rejeitado', 'Julia Alves', 24),
+(14, 'Campeonato Basquete 3x3', 'esportivo', 'Basquetebol', '2025-10-19', 'primeiro', 'Torneio aberto.', 'rejeitado', 'Fernanda Oliveira', 60),
+(15, 'Palestra com Influencer', 'nao_esportivo', NULL, '2025-10-21', 'primeiro', 'Palestra motivacional.', 'rejeitado', 'Gabriel Pereira', 150);
+
+-- Atualizar motivos de rejeição
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Horário reservado para treinos oficiais das atléticas.' WHERE `titulo` = 'Uso da quadra para Lazer';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Quadra destinada exclusivamente para atividades esportivas e acadêmicas.' WHERE `titulo` = 'Festa de Aniversário na Quadra';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Skate não permitido devido ao risco de danos ao piso.' WHERE `titulo` = 'Treino Livre de Skate';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Quadra não pode ser reservada para produção de conteúdo de redes sociais.' WHERE `titulo` = 'Gravação de TikTok';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Quadra não possui infraestrutura para eventos gastronômicos.' WHERE `titulo` = 'Churrasco da Turma';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Aulas particulares comerciais não são permitidas nas instalações.' WHERE `titulo` = 'Aula Particular de Tênis';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Parkour oferece riscos às instalações e não é modalidade reconhecida.' WHERE `titulo` = 'Treino de Parkour';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Eventos musicais devem ser no auditório. Quadra possui acústica inadequada.' WHERE `titulo` = 'Show Acústico';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Grupos externos comerciais não têm permissão para usar as instalações.' WHERE `titulo` = 'Treino de Crossfit Externo';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Horário já ocupado. Verifique disponibilidade em outros períodos.' WHERE `titulo` = 'Treino Extra Futsal';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Horário conflitante com evento já aprovado.' WHERE `titulo` = 'Amistoso Vôlei Extra';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Eventos abertos ao público externo requerem autorização prévia e seguro. Documentação incompleta.' WHERE `titulo` = 'Campeonato Basquete 3x3';
+UPDATE `agendamentos` SET `motivo_rejeicao` = 'Palestrantes externos devem ser aprovados pela coordenação acadêmica.' WHERE `titulo` = 'Palestra com Influencer';
+
+--
+-- Configurando campo possui_materiais e materiais_necessarios para eventos esportivos
+--
+-- Eventos que POSSUEM materiais próprios (possui_materiais = 1)
+UPDATE `agendamentos` SET `possui_materiais` = 1 WHERE `tipo_agendamento` = 'esportivo' AND `possui_materiais` IS NULL;
+
+-- Eventos específicos que NÃO possuem materiais (possui_materiais = 0) com lista de materiais necessários
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = '3 bolas de basquete\n2 conjuntos de coletes (cores diferentes)\n1 bomba de ar\nCronômetro' 
+WHERE `titulo` IN ('Treino Basquete - SANGUINÁRIA', 'Treino Basquete SANGUINÁRIA', 'Amistoso Basquete vs LETAL');
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = '2 bolas de handebol\n2 conjuntos de coletes\n1 apito\nCones para treino' 
+WHERE `titulo` LIKE '%Treino Handebol%' AND `data_agendamento` >= '2025-10-14';
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = '1 bola de vôlei\nRede oficial\nAntenas\nFita para marcação de quadra' 
+WHERE `titulo` IN ('Treino Vôlei Feminino', 'Seletiva Final Vôlei', 'Amistoso Vôlei vs IMPÉRIO');
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = '2 bolas de futsal\n4 conjuntos de coletes (2 cores)\nCones de marcação\n1 apito' 
+WHERE `titulo` IN ('Jogo-Treino Futsal vs INSANA', 'Treino Tático Futsal', 'Amistoso Futsal FURIOSA x ALFA') AND `data_agendamento` >= '2025-10-14';
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = 'Equipamentos de ginástica\nColchonetes\nBloco de yoga (10 unidades)' 
+WHERE `titulo` = 'Aula de Yoga para Atletas';
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = 'Mesa oficial de tênis de mesa\nRede e suportes\n6 raquetes\n12 bolinhas' 
+WHERE `titulo` LIKE '%Tênis de Mesa%' OR `esporte_tipo` = 'Tênis de Mesa';
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = 'Bolas de queimada (mínimo 3)\nColetes para identificação de times\nCronômetro\nApito' 
+WHERE `esporte_tipo` = 'Queimada';
+
+UPDATE `agendamentos` SET `possui_materiais` = 0, `materiais_necessarios` = '1 bola oficial de vôlei de praia\nRede para vôlei de praia\nMarcadores de quadra' 
+WHERE `esporte_tipo` = 'Vôlei de Praia';
 
 --
 -- Inserindo dados na tabela `inscricoes_modalidade` (IDs baseados na nova ordem de inserção)
@@ -593,7 +653,71 @@ INSERT INTO `presencas` (`usuario_id`, `agendamento_id`, `data_presenca`) VALUES
 (17, 41, '2025-10-01 19:20:00'),
 (12, 42, '2025-10-02 21:15:00'),
 (14, 42, '2025-10-02 21:15:00'),
-(16, 42, '2025-10-02 21:15:00');
+(16, 42, '2025-10-02 21:15:00'),
+
+-- Outubro 2025 - Eventos aprovados a partir de 14/10 (com presenças)
+-- ID 45: Jogo-Treino Futsal vs INSANA (14/10)
+(11, 45, '2025-10-14 19:20:00'),
+(13, 45, '2025-10-14 19:25:00'),
+(17, 45, '2025-10-14 19:30:00'),
+(12, 45, '2025-10-14 19:35:00'),
+
+-- ID 46: Workshop de Primeiros Socorros (15/10)
+(14, 46, '2025-10-15 21:15:00'),
+(16, 46, '2025-10-15 21:20:00'),
+(11, 46, '2025-10-15 21:25:00'),
+(12, 46, '2025-10-15 21:30:00'),
+(15, 46, '2025-10-15 21:35:00'),
+
+-- ID 47: Palestra Ansiedade e Desempenho (16/10)
+(18, 47, '2025-10-16 19:15:00'),
+(19, 47, '2025-10-16 19:20:00'),
+(15, 47, '2025-10-16 19:25:00'),
+(11, 47, '2025-10-16 19:30:00'),
+
+-- ID 48: Torneio de Handebol - Quartas (17/10)
+(16, 48, '2025-10-17 21:15:00'),
+(14, 48, '2025-10-17 21:20:00'),
+(12, 48, '2025-10-17 21:25:00'),
+(11, 48, '2025-10-17 21:30:00'),
+
+-- ID 49: Júri Simulado - Direito (18/10)
+(12, 49, '2025-10-18 19:15:00'),
+(18, 49, '2025-10-18 19:20:00'),
+(9, 49, '2025-10-18 19:25:00'),
+(15, 49, '2025-10-18 19:30:00'),
+
+-- ID 50: Treino League of Legends - ALFA (19/10)
+(13, 50, '2025-10-19 21:15:00'),
+(11, 50, '2025-10-19 21:20:00'),
+(17, 50, '2025-10-19 21:25:00'),
+(19, 50, '2025-10-19 21:30:00'),
+
+-- ID 51: Treino Futsal - FURIOSA (20/10)
+(11, 51, '2025-10-20 19:15:00'),
+(13, 51, '2025-10-20 19:20:00'),
+(17, 51, '2025-10-20 19:25:00'),
+(12, 51, '2025-10-20 19:30:00'),
+
+-- ID 52: Aula de Yoga para Atletas (21/10)
+(11, 52, '2025-10-21 21:15:00'),
+(12, 52, '2025-10-21 21:20:00'),
+(14, 52, '2025-10-21 21:25:00'),
+(16, 52, '2025-10-21 21:30:00'),
+(18, 52, '2025-10-21 21:35:00'),
+
+-- ID 53: Seletiva Final Vôlei (22/10)
+(12, 53, '2025-10-22 19:15:00'),
+(14, 53, '2025-10-22 19:20:00'),
+(16, 53, '2025-10-22 19:25:00'),
+(18, 53, '2025-10-22 19:30:00'),
+
+-- ID 54: Hackathon Universitário (23/10)
+(11, 54, '2025-10-23 21:15:00'),
+(13, 54, '2025-10-23 21:20:00'),
+(17, 54, '2025-10-23 21:25:00'),
+(19, 54, '2025-10-23 21:30:00'),
+(8, 54, '2025-10-23 21:35:00');
 
 --
 -- Inserindo dados na tabela `notificacoes`

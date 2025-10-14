@@ -31,6 +31,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const dropdowns = document.querySelectorAll('.nav-item.dropdown');
 
         dropdowns.forEach(dropdown => {
+            // Pula o dropdown de notificações - ele é gerenciado pelo notifications.js
+            if (dropdown.classList.contains('notifications')) {
+                return;
+            }
+
             const dropdownMenu = dropdown.querySelector('.dropdown-menu');
             let hoverTimeout;
 
@@ -114,10 +119,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Fechar todos os dropdowns ao clicar fora (uma única vez para todos)
+        // Mas não fecha o dropdown de notificações - ele é gerenciado pelo notifications.js
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.nav-item.dropdown')) {
                 document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                    menu.classList.remove('show');
+                    // Não mexe no dropdown de notificações
+                    if (!menu.classList.contains('notification-dropdown')) {
+                        menu.classList.remove('show');
+                    }
                 });
             }
         });

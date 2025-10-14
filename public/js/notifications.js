@@ -131,6 +131,20 @@ class SimpleNotifications {
             });
             observer.observe(this.dropdown, { attributes: true });
         }
+
+        // Reajustar posição ao redimensionar a janela
+        window.addEventListener('resize', () => {
+            if (this.isOpen) {
+                this.adjustDropdownPosition();
+            }
+        });
+
+        // Reajustar posição ao fazer scroll
+        window.addEventListener('scroll', () => {
+            if (this.isOpen) {
+                this.adjustDropdownPosition();
+            }
+        }, true);
     }
 
     async loadNotifications() {
@@ -212,7 +226,48 @@ class SimpleNotifications {
             this.dropdown.classList.add('show');
             this.dropdown.style.display = 'block';
             this.isOpen = true;
+            
+            // Ajustar posição para garantir que fique dentro da viewport
+            this.adjustDropdownPosition();
+            
+            // NÃO marcar como lida ao abrir - apenas quando fechar
         }
+    }
+
+    adjustDropdownPosition() {
+        if (!this.dropdown) return;
+
+        // Resetar posicionamento customizado
+        this.dropdown.style.left = '';
+        this.dropdown.style.right = '';
+        this.dropdown.style.transform = '';
+
+        // Aguardar o próximo frame para obter dimensões corretas
+        requestAnimationFrame(() => {
+            const rect = this.dropdown.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Verificar se está saindo pela direita
+            if (rect.right > viewportWidth) {
+                const overflow = rect.right - viewportWidth;
+                this.dropdown.style.transform = `translateX(-${overflow + 10}px)`;
+            }
+            
+            // Verificar se está saindo pela esquerda
+            if (rect.left < 0) {
+                const overflow = Math.abs(rect.left);
+                this.dropdown.style.transform = `translateX(${overflow + 10}px)`;
+            }
+            
+            // Verificar se está saindo por baixo
+            if (rect.bottom > viewportHeight) {
+                const maxHeight = viewportHeight - rect.top - 20; // 20px de margem
+                if (maxHeight > 200) { // Altura mínima razoável
+                    this.dropdown.style.maxHeight = `${maxHeight}px`;
+                }
+            }
+        });
     }
 
     closeDropdown() {
@@ -222,7 +277,7 @@ class SimpleNotifications {
             this.dropdown.style.display = 'none';
             this.isOpen = false;
             
-            // Marcar todas como lidas quando o dropdown fechar
+            // Marcar todas como lidas quando o dropdown FECHAR
             if (this.badge && this.badge.classList.contains('active')) {
                 this.markAllAsRead();
             }
