@@ -60,25 +60,7 @@
 
     <!-- Formulário de registro -->
     <form action="/registro" method="post" class="auth-form-register">
-        <!-- Linha 1: Nome e Data de Nascimento -->
-        <div class="row">
-            <!-- Campo: Nome completo -->
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome Completo</label>
-                <input type="text" name="nome" id="nome" class="form-control" 
-                       value="<?php echo htmlspecialchars($old['nome'] ?? ''); ?>" required>
-            </div>
-            
-            <!-- Campo: Data de nascimento (com validação JS) -->
-            <div class="mb-3">
-                <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-                <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" 
-                       value="<?php echo htmlspecialchars($old['data_nascimento'] ?? ''); ?>" 
-                       required max="">
-            </div>
-        </div>
-
-        <!-- Linha 2: Vínculo e RA (condicional) -->
+        <!-- Linha 1: Vínculo e RA (condicional) -->
         <div class="row"> 
             <!-- Campo: Tipo de vínculo (controla exibição de outros campos) -->
             <div class="mb-3">
@@ -110,6 +92,24 @@
                        value="<?php echo htmlspecialchars($old['ra'] ?? ''); ?>" 
                        inputmode="numeric" maxlength="6" pattern="[0-9]{6}" 
                        title="O RA deve conter exatamente 6 números.">
+            </div>
+        </div>
+
+        <!-- Linha 2: Nome e Data de Nascimento -->
+        <div class="row">
+            <!-- Campo: Nome completo -->
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome Completo</label>
+                <input type="text" name="nome" id="nome" class="form-control" 
+                       value="<?php echo htmlspecialchars($old['nome'] ?? ''); ?>" required>
+            </div>
+            
+            <!-- Campo: Data de nascimento (com validação JS) -->
+            <div class="mb-3">
+                <label for="data_nascimento" class="form-label">Data de Nascimento</label>
+                <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" 
+                       value="<?php echo htmlspecialchars($old['data_nascimento'] ?? ''); ?>" 
+                       required max="">
             </div>
         </div>
 

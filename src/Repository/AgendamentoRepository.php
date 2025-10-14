@@ -267,7 +267,8 @@ class AgendamentoRepository
 
     public function findPendingAgendamentos(): array
     {
-        $sql = "SELECT a.id, a.titulo, a.data_agendamento, a.periodo, u.nome as solicitante,
+        $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo,
+                       a.data_agendamento, a.periodo, u.nome as solicitante,
                        a.foi_editado, a.data_edicao
                 FROM agendamentos a 
                 JOIN usuarios u ON a.usuario_id = u.id
@@ -531,6 +532,23 @@ class AgendamentoRepository
                 WHERE a.status = 'aprovado' 
                 AND a.data_agendamento >= CURDATE()
                 ORDER BY a.data_agendamento ASC, a.periodo ASC";
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function findRejectedAgendamentos(): array
+    {
+        $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo,
+                       a.data_agendamento, a.periodo, u.nome as solicitante,
+                       a.motivo_rejeicao,
+                       CASE 
+                           WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                           WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                           ELSE a.periodo
+                       END as horario_periodo
+                FROM agendamentos a 
+                JOIN usuarios u ON a.usuario_id = u.id
+                WHERE a.status = 'rejeitado' 
+                ORDER BY a.data_agendamento DESC, a.periodo DESC";
         return $this->pdo->query($sql)->fetchAll();
     }
 

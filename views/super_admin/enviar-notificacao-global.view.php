@@ -32,16 +32,6 @@
                         <div class="form-text">Máximo 500 caracteres</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="tipo" class="form-label">Tipo da Notificação</label>
-                        <select class="form-select" id="tipo" name="tipo">
-                            <option value="sistema">Sistema</option>
-                            <option value="manutencao">Manutenção</option>
-                            <option value="aviso">Aviso Geral</option>
-                            <option value="urgente">Urgente</option>
-                        </select>
-                    </div>
-
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
                         <strong>Atenção:</strong> Esta notificação será enviada para todos os usuários ativos da plataforma.

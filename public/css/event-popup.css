@@ -112,6 +112,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    margin-bottom: 0;
 }
 
 .event-info-item {
@@ -142,7 +143,8 @@
     padding: 15px;
     border-radius: 10px;
     border-left: 4px solid #667eea;
-    margin-top: 15px;
+    margin-top: 20px;
+    width: 100%;
 }
 
 .event-info-full label {
@@ -160,6 +162,44 @@
     font-size: 15px;
     line-height: 1.6;
     white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Primeiro elemento full após a grid */
+.event-info-grid + .event-info-full {
+    margin-top: 25px;
+}
+
+/* Elementos full subsequentes */
+.event-info-full + .event-info-full {
+    margin-top: 12px;
+}
+
+/* Divisória visual antes das seções de materiais */
+.event-popup-section .event-info-grid + .event-info-full:before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+    margin-bottom: 25px;
+    margin-top: -5px;
+}
+
+/* Estilo para status de materiais (ícone + texto na mesma linha) */
+.materiais-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.materiais-status i {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.materiais-status span {
+    flex: 1;
 }
 
 .event-status-badge {

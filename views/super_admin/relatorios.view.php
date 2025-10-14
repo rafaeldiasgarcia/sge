@@ -100,9 +100,36 @@
         <?php if ($dados_relatorio['tipo'] === 'evento_especifico'): ?>
             <h5>Detalhes do Evento: <?php echo htmlspecialchars($dados_relatorio['evento']['titulo']); ?></h5>
             <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Tipo:</strong> 
+                    <span class="badge <?php echo $dados_relatorio['evento']['tipo_agendamento'] === 'esportivo' ? 'bg-success' : 'bg-info'; ?>">
+                        <?php echo ucfirst($dados_relatorio['evento']['tipo_agendamento']); ?>
+                        <?php if ($dados_relatorio['evento']['tipo_agendamento'] === 'esportivo' && !empty($dados_relatorio['evento']['esporte_tipo'])): ?>
+                            - <?php echo htmlspecialchars($dados_relatorio['evento']['esporte_tipo']); ?>
+                        <?php endif; ?>
+                    </span>
+                </li>
                 <li class="list-group-item"><strong>Responsável:</strong> <?php echo htmlspecialchars($dados_relatorio['evento']['responsavel']); ?></li>
                 <li class="list-group-item"><strong>Público Estimado:</strong> <?php echo $dados_relatorio['evento']['estimativa_participantes'] ?? 0; ?></li>
                 <li class="list-group-item"><strong>Presenças Confirmadas:</strong> <?php echo $dados_relatorio['evento']['total_presencas']; ?></li>
+                
+                <?php if ($dados_relatorio['evento']['tipo_agendamento'] === 'esportivo' && isset($dados_relatorio['evento']['possui_materiais'])): ?>
+                    <li class="list-group-item">
+                        <strong>Materiais:</strong>
+                        <?php if ($dados_relatorio['evento']['possui_materiais'] == 1): ?>
+                            <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Possui materiais próprios</span>
+                        <?php else: ?>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill"></i> Não possui materiais próprios</span>
+                            <?php if (!empty($dados_relatorio['evento']['materiais_necessarios'])): ?>
+                                <div class="mt-2">
+                                    <strong class="text-danger">Materiais Necessários/Utilizados:</strong>
+                                    <pre class="mt-1 p-2 bg-light border rounded"><?php echo htmlspecialchars($dados_relatorio['evento']['materiais_necessarios']); ?></pre>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </li>
+                <?php endif; ?>
+                
                 <?php if (!empty($dados_relatorio['evento']['participantes_formatados'])): ?>
                     <li class="list-group-item">
                         <strong>Lista de Participantes:</strong>

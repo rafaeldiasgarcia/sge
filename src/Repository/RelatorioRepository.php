@@ -114,7 +114,10 @@ class RelatorioRepository
 
     public function getAgendamentosPorUsuario(int $usuarioId): array
     {
-        $sql = "SELECT id, titulo, data_agendamento, status FROM agendamentos WHERE usuario_id = :id ORDER BY data_agendamento DESC";
+        $sql = "SELECT id, titulo, tipo_agendamento, esporte_tipo, data_agendamento, status 
+                FROM agendamentos 
+                WHERE usuario_id = :id 
+                ORDER BY data_agendamento DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
         $stmt->execute();

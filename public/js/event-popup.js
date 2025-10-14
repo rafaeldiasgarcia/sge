@@ -444,6 +444,7 @@ class EventPopup {
             `;
         }
 
+        // Fechar a grid antes de adicionar elementos full-width
         conteudo += `</div>`;
 
         // Materiais - apenas para admin e superadmin
@@ -454,9 +455,9 @@ class EventPopup {
             conteudo += `
                 <div class="event-info-full">
                     <label>Materiais</label>
-                    <div class="value">
+                    <div class="value materiais-status">
                         <i class="bi bi-${possuiMateriais ? 'check-circle-fill text-success' : 'x-circle-fill text-danger'}"></i>
-                        ${possuiMateriais ? 'Possui materiais próprios' : 'Não possui materiais'}
+                        <span>${possuiMateriais ? 'Possui materiais próprios' : 'Não possui materiais'}</span>
                     </div>
                 </div>
             `;

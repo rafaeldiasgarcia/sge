@@ -2,15 +2,22 @@
 
 /* Dropdown das notificações */
 .notification-dropdown {
+    position: absolute !important;
     width: 380px !important;
+    max-width: calc(100vw - 20px) !important; /* Nunca ultrapassa a largura da tela */
     max-height: 500px;
     overflow-y: auto;
+    overflow-x: hidden;
     border: none;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     border-radius: 12px;
     background: white;
     display: none;
     z-index: 10500;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    will-change: transform; /* Otimização para animações */
 }
 
 /* Item de notificações no menu - SEM interferência com animações */
@@ -78,6 +85,10 @@
     border-bottom: 1px solid #e9ecef;
     cursor: pointer;
     transition: all 0.3s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .notification-item:last-child {
@@ -98,6 +109,10 @@
     margin: 0 0 6px 0;
     font-size: 0.9rem;
     font-weight: 600;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .notification-item.unread h6 {
@@ -109,6 +124,10 @@
     color: #666;
     margin: 0 0 6px 0;
     font-size: 0.8rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .notification-item small {
@@ -131,6 +150,13 @@
     text-align: center;
     padding: 40px 20px;
     color: #6c757d;
+}
+
+/* Lista de notificações - sem overflow horizontal */
+#notification-list {
+    overflow-x: hidden !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Responsividade */

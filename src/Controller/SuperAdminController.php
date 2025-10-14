@@ -78,11 +78,13 @@ class SuperAdminController extends BaseController
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $pendentes = $agendamentoRepo->findPendingAgendamentos();
         $aprovados = $agendamentoRepo->findApprovedAgendamentos();
+        $rejeitados = $agendamentoRepo->findRejectedAgendamentos();
         view('super_admin/gerenciar-agendamentos', [
             'title' => 'Gerenciar Agendamentos',
             'user' => $this->getUserData(),
             'pendentes' => $pendentes,
-            'aprovados' => $aprovados
+            'aprovados' => $aprovados,
+            'rejeitados' => $rejeitados
         ]);
     }
 
@@ -694,7 +696,6 @@ class SuperAdminController extends BaseController
 
         $titulo = trim($_POST['titulo'] ?? '');
         $mensagem = trim($_POST['mensagem'] ?? '');
-        $tipo = $_POST['tipo'] ?? 'sistema';
 
         if (empty($titulo) || empty($mensagem)) {
             $_SESSION['error_message'] = "Título e mensagem são obrigatórios.";
@@ -703,7 +704,8 @@ class SuperAdminController extends BaseController
         }
 
         $notificationRepo = $this->repository('NotificationRepository');
-        $success = $notificationRepo->createGlobalNotification($titulo, $mensagem, $tipo);
+        // Tipo não é mais necessário - usa o padrão 'sistema' do repository
+        $success = $notificationRepo->createGlobalNotification($titulo, $mensagem);
 
         if ($success) {
             $_SESSION['success_message'] = "Notificação enviada com sucesso para todos os usuários!";
