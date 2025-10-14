@@ -1,3 +1,7 @@
+body{
+    animation: fadeInUp 1s ease;
+}
+
 /* DASHBOARD SHORTCUTS - GRID DE ATALHOS */
 .dashboard-shortcuts {
     display: flex;
@@ -46,6 +50,23 @@
     padding-left: 32px;
     padding-right: 32px;
 }
+
+.trofeu-icon{
+    color: var(--blue-color);
+}
+
+.agenda-icon{
+    color: var(--orange-color);
+}
+
+.borda-card{
+    border-color: var(--orange-color) !important;
+}
+
+.borda-card:hover{
+    background: var(--orange-color-opacity) !important;
+}
+
 @media (max-width: 900px) {
     .shortcut-row {
         gap: 16px;
@@ -307,6 +328,7 @@
 
 .card-header{
     background: var(--orange-color);
+    color: white;
 }
 
 .card-events{
@@ -1357,6 +1379,7 @@ img {
     margin-bottom: -2px;
     transition: all 0.2s;
     position: relative;
+    
 }
 
 .profile-tab:hover {
@@ -1374,6 +1397,7 @@ img {
     border-radius: 0 0 12px 12px;
     padding: 30px;
     box-shadow: var(--shadow-light);
+    animation: fadeInUp 0.5s ease;
 }
 
 .profile-tab-content.active {
@@ -1446,6 +1470,7 @@ img {
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s;
+    border: rgba(0, 0, 0, 0.15) solid !important;
 }
 
 .event-card:hover {

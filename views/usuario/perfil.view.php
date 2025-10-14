@@ -46,9 +46,11 @@
  * JAVASCRIPT: Inline (tabs, modal de senha)
  */
 ?>
+
 <head>
     <link rel="stylesheet" href="/css/usuario.css">
 </head>
+<body>
 
 <div class="container mt-4">
     <?php if (isset($_SESSION['success_message'])): ?>
@@ -410,3 +412,4 @@ function ajustarTamanhoNome() {
 document.addEventListener('DOMContentLoaded', ajustarTamanhoNome);
 window.addEventListener('resize', ajustarTamanhoNome);
 </script>
+</body>
