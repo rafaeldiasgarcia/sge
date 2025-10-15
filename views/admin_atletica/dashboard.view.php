@@ -9,7 +9,7 @@
  * 
  * FUNCIONALIDADES:
  * - Link para gerenciar solicitações de entrada na atlética
- * - Link para gerenciar participações em eventos esportivos
+ * - (removido) Link para gerenciar participações em eventos esportivos
  * - Interface simplificada com cards de acesso rápido
  * 
  * ACESSÍVEL POR:
@@ -17,7 +17,7 @@
  * 
  * NAVEGAÇÃO:
  * - /admin/atletica/inscricoes - Gerenciar membros e solicitações
- * - /admin/atletica/eventos - Gerenciar participações em eventos
+ * - (removido) /admin/atletica/eventos - Gerenciar participações em eventos
  * 
  * CONTROLLER: AdminAtleticaController::dashboard()
  * 
@@ -47,16 +47,5 @@
         </div>
     </div>
 
-    <!-- Card: Gerenciar Participações em Eventos -->
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Gerenciar Participações em Eventos</h5>
-                <p class="card-text">
-                    Inscreva membros da sua atlética nos eventos esportivos aprovados.
-                </p>
-                <a href="/admin/atletica/eventos" class="btn btn-primary">Gerenciar Eventos</a>
-            </div>
-        </div>
-    </div>
+    <!-- (removido) Card de eventos esportivos -->
 </div>

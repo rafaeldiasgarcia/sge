@@ -63,17 +63,34 @@ class AdminAtleticaController extends BaseController
         $this->notificationService = new NotificationService();
     }
 
-    public function dashboard()
+    // Helpers comuns para evitar duplicação
+    private function requireAtleticaIdOrRedirect(): int
     {
         Auth::protectAdmin();
         $atleticaId = Auth::get('atletica_id');
-
-        // Verificar se o usuário tem uma atlética associada
         if (!$atleticaId) {
             $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
             redirect('/dashboard');
-            return;
+            exit;
         }
+        return (int)$atleticaId;
+    }
+
+    private function getNomeAtletica(int $atleticaId): string
+    {
+        $adminRepo = $this->repository('AdminAtleticaRepository');
+        $atletica = $adminRepo->getAtleticaById($atleticaId);
+        return $atletica ? $atletica['nome'] : 'Atlética';
+    }
+
+    private function redirectInscricoes(): void
+    {
+        redirect('/admin/atletica/inscricoes');
+    }
+
+    public function dashboard()
+    {
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
@@ -91,18 +108,10 @@ class AdminAtleticaController extends BaseController
 
     public function gerenciarMembros()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
         $pendentes = $adminRepo->findMembrosPendentes($atleticaId);
-
 
         view('admin_atletica/gerenciar-membros', [
             'title' => 'Gerenciar Membros',
@@ -113,49 +122,29 @@ class AdminAtleticaController extends BaseController
 
     public function handleMembroAction()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $alunoId = (int)($_POST['aluno_id'] ?? 0);
         $action = $_POST['acao'] ?? '';
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
-        // Buscar informações da atlética para as notificações
-        $atletica = $adminRepo->getAtleticaById($atleticaId);
-        $nomeAtletica = $atletica ? $atletica['nome'] : 'Atlética';
+        $nomeAtletica = $this->getNomeAtletica($atleticaId);
 
         if ($action === 'aprovar') {
             $adminRepo->aprovarMembro($alunoId, $atleticaId);
             $_SESSION['success_message'] = "Aluno aprovado e adicionado à atlética!";
-            
-            // Enviar notificação de aceite
             $this->notificationService->notifyMembroAceito($alunoId, $nomeAtletica);
         } elseif ($action === 'recusar') {
             $adminRepo->recusarMembro($alunoId);
             $_SESSION['success_message'] = "Solicitação recusada.";
-            
-            // Enviar notificação de recusa
             $this->notificationService->notifyMembroRecusado($alunoId, $nomeAtletica);
         }
-        redirect('/admin/atletica/inscricoes');
+        $this->redirectInscricoes();
     }
 
     public function gerenciarInscricoes()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
         view('admin_atletica/gerenciar-inscricoes', [
@@ -168,7 +157,7 @@ class AdminAtleticaController extends BaseController
 
     public function handleInscricaoAction()
     {
-        Auth::protectAdmin();
+        $this->requireAtleticaIdOrRedirect();
         $inscricaoId = (int)($_POST['inscricao_id'] ?? 0);
         $action = $_POST['acao'] ?? ''; // aprovar, recusar, remover
         $adminRepo = $this->repository('AdminAtleticaRepository');
@@ -183,14 +172,7 @@ class AdminAtleticaController extends BaseController
 
     public function gerenciarEventos()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $eventos = $agendamentoRepo->findFutureEsportivoEvents();
@@ -210,14 +192,7 @@ class AdminAtleticaController extends BaseController
 
     public function inscreverEmEvento()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $alunoId = (int)($_POST['aluno_id'] ?? 0);
         $eventoId = (int)($_POST['evento_id'] ?? 0);
@@ -240,14 +215,7 @@ class AdminAtleticaController extends BaseController
 
     public function gerenciarMembrosAtletica()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
         $membros = $adminRepo->findMembrosAtletica($atleticaId);
@@ -261,30 +229,19 @@ class AdminAtleticaController extends BaseController
 
     public function handleMembroAtleticaAction()
     {
-        Auth::protectAdmin();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (!$atleticaId) {
-            $_SESSION['error_message'] = "Usuário não possui uma atlética associada.";
-            redirect('/dashboard');
-            return;
-        }
+        $atleticaId = $this->requireAtleticaIdOrRedirect();
 
         $membroId = (int)($_POST['membro_id'] ?? 0);
         $action = $_POST['acao'] ?? '';
         $adminRepo = $this->repository('AdminAtleticaRepository');
 
-        // Buscar informações da atlética para as notificações
-        $atletica = $adminRepo->getAtleticaById($atleticaId);
-        $nomeAtletica = $atletica ? $atletica['nome'] : 'Atlética';
+        $nomeAtletica = $this->getNomeAtletica($atleticaId);
 
         switch ($action) {
             case 'promover_admin':
                 $success = $adminRepo->promoverMembroAAdmin($membroId, $atleticaId);
                 if ($success) {
                     $_SESSION['success_message'] = "Membro promovido a Administrador da Atlética com sucesso!";
-                    
-                    // Enviar notificação de promoção
                     $this->notificationService->notifyMembroPromovido($membroId, $nomeAtletica);
                 } else {
                     $_SESSION['error_message'] = "Erro ao promover membro.";
@@ -295,8 +252,6 @@ class AdminAtleticaController extends BaseController
                 $success = $adminRepo->rebaixarAdmin($membroId);
                 if ($success) {
                     $_SESSION['success_message'] = "Administrador rebaixado a membro comum com sucesso!";
-                    
-                    // Enviar notificação de rebaixamento
                     $this->notificationService->notifyAdminRebaixado($membroId, $nomeAtletica);
                 } else {
                     $_SESSION['error_message'] = "Erro ao rebaixar administrador.";
@@ -307,8 +262,6 @@ class AdminAtleticaController extends BaseController
                 $success = $adminRepo->removerMembroAtletica($membroId);
                 if ($success) {
                     $_SESSION['success_message'] = "Membro removido da atlética com sucesso!";
-                    
-                    // Enviar notificação de remoção
                     $this->notificationService->notifyMembroRemovido($membroId, $nomeAtletica);
                 } else {
                     $_SESSION['error_message'] = "Erro ao remover membro da atlética.";
@@ -320,6 +273,6 @@ class AdminAtleticaController extends BaseController
                 break;
         }
 
-        redirect('/admin/atletica/inscricoes');
+        $this->redirectInscricoes();
     }
 }
