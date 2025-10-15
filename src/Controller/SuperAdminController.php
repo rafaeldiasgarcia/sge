@@ -63,9 +63,74 @@ class SuperAdminController extends BaseController
         $this->notificationService = new NotificationService();
     }
 
-    public function dashboard()
+    // ===================================================================
+    // Helpers de Guarda/Validação/Redirect para reduzir duplicação (DRY)
+    // ===================================================================
+
+    /**
+     * Garante que o usuário atual é Super Admin.
+     */
+    private function guardSuperAdmin(): void
     {
         Auth::protectSuperAdmin();
+    }
+
+    /**
+     * Obtém um ID inteiro do POST e redireciona se inválido (<= 0).
+     */
+    private function requirePostIntId(string $paramName, string $redirectPath): int
+    {
+        $id = (int)($_POST[$paramName] ?? 0);
+        if ($id <= 0) {
+            redirect($redirectPath);
+        }
+        return $id;
+    }
+
+    /**
+     * Obtém um ID inteiro do GET e redireciona se inválido (<= 0).
+     */
+    private function requireGetIntId(string $paramName, string $redirectPath): int
+    {
+        $id = (int)($_GET[$paramName] ?? 0);
+        if ($id <= 0) {
+            redirect($redirectPath);
+        }
+        return $id;
+    }
+
+    /**
+     * Garante que um valor (string) não está vazio; caso esteja, define mensagem de erro e redireciona.
+     */
+    private function ensureNonEmptyOrRedirect(string $value, string $errorMessage, string $redirectPath): void
+    {
+        if (empty($value)) {
+            $_SESSION['error_message'] = $errorMessage;
+            redirect($redirectPath);
+        }
+    }
+
+    /**
+     * Define mensagem de erro e redireciona.
+     */
+    private function errorAndRedirect(string $message, string $redirectPath): void
+    {
+        $_SESSION['error_message'] = $message;
+        redirect($redirectPath);
+    }
+
+    /**
+     * Define mensagem de sucesso e redireciona.
+     */
+    private function successAndRedirect(string $message, string $redirectPath): void
+    {
+        $_SESSION['success_message'] = $message;
+        redirect($redirectPath);
+    }
+
+    public function dashboard()
+    {
+        $this->guardSuperAdmin();
         view('super_admin/dashboard', [
             'title' => 'Painel Super Admin',
             'user' => $this->getUserData()
@@ -74,7 +139,7 @@ class SuperAdminController extends BaseController
 
     public function gerenciarAgendamentos()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $pendentes = $agendamentoRepo->findPendingAgendamentos();
         $aprovados = $agendamentoRepo->findApprovedAgendamentos();
@@ -90,17 +155,15 @@ class SuperAdminController extends BaseController
 
     public function aprovarAgendamento()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) redirect('/superadmin/agendamentos');
+        $this->guardSuperAdmin();
+        $id = $this->requirePostIntId('id', '/superadmin/agendamentos');
         
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         
         // Buscar detalhes do agendamento para verificar se é campeonato
         $agendamento = $agendamentoRepo->findById($id);
         if (!$agendamento) {
-            $_SESSION['error_message'] = "Agendamento não encontrado.";
-            redirect('/superadmin/agendamentos');
+            $this->errorAndRedirect("Agendamento não encontrado.", '/superadmin/agendamentos');
         }
         
         $slot = $agendamentoRepo->findSlotById($id);
@@ -154,13 +217,10 @@ class SuperAdminController extends BaseController
 
     public function rejeitarAgendamento()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_POST['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requirePostIntId('id', '/superadmin/agendamentos');
         $motivo = trim($_POST['motivo_rejeicao'] ?? '');
-        if ($id <= 0 || empty($motivo)) {
-            $_SESSION['error_message'] = "O motivo da rejeição é obrigatório.";
-            redirect('/superadmin/agendamentos');
-        }
+        $this->ensureNonEmptyOrRedirect($motivo, "O motivo da rejeição é obrigatório.", '/superadmin/agendamentos');
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $agendamentoRepo->rejectAgendamento($id, $motivo);
         // Enviar notificação de rejeição
@@ -171,14 +231,11 @@ class SuperAdminController extends BaseController
 
     public function cancelarAgendamentoAprovado()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_POST['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requirePostIntId('id', '/superadmin/agendamentos');
         $motivo = trim($_POST['motivo_cancelamento'] ?? '');
 
-        if ($id <= 0 || empty($motivo)) {
-            $_SESSION['error_message'] = "O motivo do cancelamento é obrigatório.";
-            redirect('/superadmin/agendamentos');
-        }
+        $this->ensureNonEmptyOrRedirect($motivo, "O motivo do cancelamento é obrigatório.", '/superadmin/agendamentos');
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         if ($agendamentoRepo->cancelarAgendamentoAprovado($id, $motivo)) {
@@ -192,17 +249,16 @@ class SuperAdminController extends BaseController
 
     public function updateAgendamentoAprovado()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_POST['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requirePostIntId('id', '/superadmin/agendamentos');
         $data = [
             'data_agendamento' => $_POST['data_agendamento'] ?? '',
             'periodo' => $_POST['periodo'] ?? '',
             'observacoes_admin' => trim($_POST['observacoes_admin'] ?? '')
         ];
 
-        if ($id <= 0 || empty($data['data_agendamento']) || empty($data['periodo'])) {
-            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
-            redirect('/superadmin/agendamentos');
+        if (empty($data['data_agendamento']) || empty($data['periodo'])) {
+            $this->errorAndRedirect("Todos os campos são obrigatórios.", '/superadmin/agendamentos');
         }
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
@@ -241,7 +297,7 @@ class SuperAdminController extends BaseController
 
     public function gerenciarUsuarios()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $userRepo = $this->repository('UsuarioRepository');
         $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
         
@@ -260,16 +316,14 @@ class SuperAdminController extends BaseController
 
     public function showEditUserForm()
     {
-        Auth::protectSuperAdmin();
-        $userId = (int)($_GET['id'] ?? 0);
-        if ($userId <= 0) redirect('/superadmin/usuarios');
+        $this->guardSuperAdmin();
+        $userId = $this->requireGetIntId('id', '/superadmin/usuarios');
         $userRepo = $this->repository('UsuarioRepository');
         $cursoRepo = $this->repository('CursoRepository');
         $atleticaRepo = $this->repository('AtleticaRepository');
         $user = $userRepo->findById($userId);
         if (!$user) {
-            $_SESSION['error_message'] = "Usuário não encontrado.";
-            redirect('/superadmin/usuarios');
+            $this->errorAndRedirect("Usuário não encontrado.", '/superadmin/usuarios');
         }
         view('super_admin/editar-usuario', [
             'title' => 'Editar Usuário',
@@ -282,8 +336,8 @@ class SuperAdminController extends BaseController
 
     public function updateUser()
     {
-        Auth::protectSuperAdmin();
-        $userId = (int)($_POST['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $userId = $this->requirePostIntId('id', '/superadmin/usuarios');
         
         // Limpar telefone removendo formatação (parênteses, traços, espaços)
         $telefone = trim($_POST['telefone'] ?? '');
@@ -305,11 +359,39 @@ class SuperAdminController extends BaseController
             'atletica_join_status' => $_POST['atletica_join_status'] ?? 'none'
         ];
 
-        if ($userId <= 0) redirect('/superadmin/usuarios');
-
         $userRepo = $this->repository('UsuarioRepository');
         $cursoRepo = $this->repository('CursoRepository');
         $atleticaIdDoCurso = $data['curso_id'] ? $cursoRepo->findAtleticaIdByCursoId($data['curso_id']) : null;
+
+        // Regras fortes por tipo detalhado
+        $isProfessor = ($data['tipo_usuario_detalhado'] === 'Professor');
+        $isExterno = ($data['tipo_usuario_detalhado'] === 'Comunidade Externa');
+        $isMembroAtleticas = ($data['tipo_usuario_detalhado'] === 'Membro das Atléticas');
+
+        // Comunidade Externa não tem curso/atlética/coordenador e não pode ser admin
+        if ($isExterno) {
+            $data['curso_id'] = null;
+            $data['atletica_id'] = null;
+            $data['atletica_join_status'] = 'none';
+            $data['is_coordenador'] = 0;
+            if ($data['role'] === 'admin') {
+                $data['role'] = 'usuario';
+            }
+        }
+
+        // Se o vínculo detalhado escolhido for explicitamente "Membro das Atléticas",
+        // garantir consistência de atlética e status
+        if ($isMembroAtleticas && !$isProfessor && !$isExterno) {
+            if ($atleticaIdDoCurso) {
+                $data['atletica_id'] = $atleticaIdDoCurso;
+                $data['atletica_join_status'] = 'aprovado';
+            } else {
+                $this->errorAndRedirect(
+                    "Para definir 'Membro das Atléticas', selecione um curso que pertença a uma atlética.",
+                    '/superadmin/usuario/editar?id=' . $userId
+                );
+            }
+        }
 
         // Se o status da atlética for "none" ou "pendente", rebaixar de admin automaticamente
         if ($data['atletica_join_status'] === 'none' || $data['atletica_join_status'] === 'pendente') {
@@ -317,8 +399,10 @@ class SuperAdminController extends BaseController
             if ($data['role'] === 'admin') {
                 $data['role'] = 'usuario';
             }
-            // Sempre resetar para Aluno quando não for membro
-            $data['tipo_usuario_detalhado'] = 'Aluno';
+            // Resetar tipo apenas se não for Professor, Comunidade Externa, nem se o admin selecionou explicitamente Membro
+            if (!$isProfessor && !$isExterno && !$isMembroAtleticas) {
+                $data['tipo_usuario_detalhado'] = 'Aluno';
+            }
             $data['atletica_id'] = null;
         }
         // Lógica para definir atletica_id baseado no role
@@ -326,17 +410,20 @@ class SuperAdminController extends BaseController
             if ($atleticaIdDoCurso) {
                 $data['atletica_id'] = $atleticaIdDoCurso;
                 // Admin sempre deve ser Membro das Atléticas
-                $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
+                if (!$isProfessor && !$isExterno) {
+                    $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
+                }
             } else {
-                $_SESSION['error_message'] = "Não é possível promover a Admin. O curso selecionado não pertence a nenhuma atlética.";
-                redirect('/superadmin/usuario/editar?id=' . $userId);
+                $this->errorAndRedirect("Não é possível promover a Admin. O curso selecionado não pertence a nenhuma atlética.", '/superadmin/usuario/editar?id=' . $userId);
             }
         } else {
             // Para usuários normais, atletica_id é definido apenas se for membro aprovado
             if ($data['atletica_join_status'] === 'aprovado' && $atleticaIdDoCurso) {
                 $data['atletica_id'] = $atleticaIdDoCurso;
                 // Se tornou membro aprovado, automaticamente vira "Membro das Atléticas"
-                $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
+                if (!$isProfessor && !$isExterno) {
+                    $data['tipo_usuario_detalhado'] = 'Membro das Atléticas';
+                }
             } else {
                 $data['atletica_id'] = null;
             }
@@ -349,16 +436,12 @@ class SuperAdminController extends BaseController
 
     public function deleteUser()
     {
-        Auth::protectSuperAdmin();
-        $userId = (int)($_POST['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $userId = $this->requirePostIntId('id', '/superadmin/usuarios');
         $confirmationPassword = $_POST['confirmation_password'] ?? '';
-        if ($userId <= 0 || empty($confirmationPassword)) {
-            $_SESSION['error_message'] = "Requisição inválida.";
-            redirect('/superadmin/usuarios');
-        }
+        $this->ensureNonEmptyOrRedirect($confirmationPassword, "Requisição inválida.", '/superadmin/usuarios');
         if ($userId === Auth::id()) {
-            $_SESSION['error_message'] = "Você não pode excluir sua própria conta.";
-            redirect('/superadmin/usuario/editar?id=' . $userId);
+            $this->errorAndRedirect("Você não pode excluir sua própria conta.", '/superadmin/usuario/editar?id=' . $userId);
         }
         $userRepo = $this->repository('UsuarioRepository');
         $adminPasswordHash = $userRepo->findPasswordHashById(Auth::id());
@@ -367,14 +450,13 @@ class SuperAdminController extends BaseController
             $_SESSION['success_message'] = "Usuário excluído com sucesso!";
             redirect('/superadmin/usuarios');
         } else {
-            $_SESSION['error_message'] = "Senha de confirmação incorreta. A exclusão foi cancelada.";
-            redirect('/superadmin/usuario/editar?id=' . $userId);
+            $this->errorAndRedirect("Senha de confirmação incorreta. A exclusão foi cancelada.", '/superadmin/usuario/editar?id=' . $userId);
         }
     }
 
     public function gerenciarEstrutura()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $cursoRepo = $this->repository('CursoRepository');
         $atleticaRepo = $this->repository('AtleticaRepository');
 
@@ -389,7 +471,7 @@ class SuperAdminController extends BaseController
 
     public function createCurso()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $nome = trim($_POST['nome'] ?? '');
         $atleticaId = !empty($_POST['atletica_id']) ? (int)$_POST['atletica_id'] : null;
         if (!empty($nome)) {
@@ -401,8 +483,8 @@ class SuperAdminController extends BaseController
 
     public function showEditCursoForm()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_GET['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requireGetIntId('id', '/superadmin/estrutura');
         $curso = $this->repository('CursoRepository')->findById($id);
         if (!$curso) redirect('/superadmin/estrutura');
         $atleticas = $this->repository('AtleticaRepository')->findAll();
@@ -416,7 +498,7 @@ class SuperAdminController extends BaseController
 
     public function updateCurso()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         $nome = trim($_POST['nome'] ?? '');
         $atleticaId = !empty($_POST['atletica_id']) ? (int)$_POST['atletica_id'] : null;
@@ -429,7 +511,7 @@ class SuperAdminController extends BaseController
 
     public function deleteCurso()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->repository('UsuarioRepository')->unlinkCurso($id);
@@ -441,7 +523,7 @@ class SuperAdminController extends BaseController
 
     public function createAtletica()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $nome = trim($_POST['nome'] ?? '');
         if (!empty($nome)) {
             $this->repository('AtleticaRepository')->create($nome);
@@ -452,8 +534,8 @@ class SuperAdminController extends BaseController
 
     public function showEditAtleticaForm()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_GET['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requireGetIntId('id', '/superadmin/estrutura');
         $atletica = $this->repository('AtleticaRepository')->findById($id);
         if (!$atletica) redirect('/superadmin/estrutura');
         view('super_admin/editar-atletica', [
@@ -465,7 +547,7 @@ class SuperAdminController extends BaseController
 
     public function updateAtletica()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         $nome = trim($_POST['nome'] ?? '');
         if ($id > 0 && !empty($nome)) {
@@ -477,7 +559,7 @@ class SuperAdminController extends BaseController
 
     public function deleteAtletica()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->repository('CursoRepository')->unlinkAtletica($id);
@@ -489,7 +571,7 @@ class SuperAdminController extends BaseController
 
     public function gerenciarModalidades()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $modalidadeRepo = $this->repository('ModalidadeRepository');
         view('super_admin/gerenciar-modalidades', [
             'title' => 'Gerenciar Modalidades',
@@ -500,7 +582,7 @@ class SuperAdminController extends BaseController
 
     public function createModalidade()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $nome = trim($_POST['nome'] ?? '');
         if (!empty($nome)) {
             $this->repository('ModalidadeRepository')->create($nome);
@@ -511,8 +593,8 @@ class SuperAdminController extends BaseController
 
     public function showEditModalidadeForm()
     {
-        Auth::protectSuperAdmin();
-        $id = (int)($_GET['id'] ?? 0);
+        $this->guardSuperAdmin();
+        $id = $this->requireGetIntId('id', '/superadmin/modalidades');
         $modalidade = $this->repository('ModalidadeRepository')->findById($id);
         if (!$modalidade) redirect('/superadmin/modalidades');
         view('super_admin/editar-modalidade', [
@@ -524,7 +606,7 @@ class SuperAdminController extends BaseController
 
     public function updateModalidade()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         $nome = trim($_POST['nome'] ?? '');
         if ($id > 0 && !empty($nome)) {
@@ -536,7 +618,7 @@ class SuperAdminController extends BaseController
 
     public function deleteModalidade()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->repository('ModalidadeRepository')->delete($id);
@@ -547,7 +629,7 @@ class SuperAdminController extends BaseController
 
     public function gerenciarAdmins()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $userRepo = $this->repository('UsuarioRepository');
         view('super_admin/gerenciar-admins', [
             'title' => 'Gerenciar Admins',
@@ -559,22 +641,17 @@ class SuperAdminController extends BaseController
 
     public function promoteAdmin()
     {
-        Auth::protectSuperAdmin();
-        $userId = (int)($_POST['aluno_id'] ?? 0);
-        if ($userId <= 0) {
-            redirect('/superadmin/admins');
-        }
+        $this->guardSuperAdmin();
+        $userId = $this->requirePostIntId('aluno_id', '/superadmin/admins');
         $userRepo = $this->repository('UsuarioRepository');
         $cursoRepo = $this->repository('CursoRepository');
         $user = $userRepo->findById($userId);
         if (!$user || !$user['curso_id']) {
-            $_SESSION['error_message'] = "Não é possível promover: o usuário não está associado a um curso.";
-            redirect('/superadmin/admins');
+            $this->errorAndRedirect("Não é possível promover: o usuário não está associado a um curso.", '/superadmin/admins');
         }
         $atleticaId = $cursoRepo->findAtleticaIdByCursoId($user['curso_id']);
         if (!$atleticaId) {
-            $_SESSION['error_message'] = "Não é possível promover: o curso do usuário não pertence a uma atlética.";
-            redirect('/superadmin/admins');
+            $this->errorAndRedirect("Não é possível promover: o curso do usuário não pertence a uma atlética.", '/superadmin/admins');
         }
         $success = $userRepo->updateUserRoleAndAtletica($userId, 'admin', $atleticaId);
         if ($success) {
@@ -587,7 +664,7 @@ class SuperAdminController extends BaseController
 
     public function demoteAdmin()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $userId = (int)($_POST['admin_id'] ?? 0);
         if ($userId > 0) {
             $this->repository('UsuarioRepository')->updateUserRole($userId, 'usuario');
@@ -598,7 +675,7 @@ class SuperAdminController extends BaseController
 
     public function showRelatorios()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $userRepo = $this->repository('UsuarioRepository');
 
@@ -613,7 +690,7 @@ class SuperAdminController extends BaseController
 
     public function gerarRelatorio()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $tipo = $_POST['tipo_relatorio'] ?? '';
         $relatorioRepo = $this->repository('RelatorioRepository');
         $dadosRelatorio = null;
@@ -681,7 +758,7 @@ class SuperAdminController extends BaseController
 
     public function imprimirRelatorio()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         $tipo = $_POST['tipo_relatorio'] ?? '';
         $relatorioRepo = $this->repository('RelatorioRepository');
         $dadosRelatorio = null;
@@ -736,7 +813,7 @@ class SuperAdminController extends BaseController
 
     public function enviarNotificacaoGlobal()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
         view('super_admin/enviar-notificacao-global', [
             'title' => 'Enviar Notificação Global',
             'user' => $this->getUserData()
@@ -745,7 +822,7 @@ class SuperAdminController extends BaseController
 
     public function processarNotificacaoGlobal()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
 
         $titulo = trim($_POST['titulo'] ?? '');
         $mensagem = trim($_POST['mensagem'] ?? '');
@@ -775,16 +852,10 @@ class SuperAdminController extends BaseController
 
     public function aprovarTrocaCurso()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
 
         try {
-            $solicitacaoId = (int)($_POST['solicitacao_id'] ?? 0);
-
-            if ($solicitacaoId <= 0) {
-                $_SESSION['error_message'] = "Solicitação inválida.";
-                redirect('/superadmin/usuarios');
-                return;
-            }
+            $solicitacaoId = $this->requirePostIntId('solicitacao_id', '/superadmin/usuarios');
 
             $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
             $userRepo = $this->repository('UsuarioRepository');
@@ -793,8 +864,7 @@ class SuperAdminController extends BaseController
             $solicitacao = $solicitacaoRepo->findById($solicitacaoId);
 
             if (!$solicitacao) {
-                $_SESSION['error_message'] = "Solicitação não encontrada.";
-                redirect('/superadmin/usuarios');
+                $this->errorAndRedirect("Solicitação não encontrada.", '/superadmin/usuarios');
                 return;
             }
 
@@ -802,8 +872,7 @@ class SuperAdminController extends BaseController
             $usuario = $userRepo->findById($solicitacao['usuario_id']);
 
             if (!$usuario) {
-                $_SESSION['error_message'] = "Usuário não encontrado.";
-                redirect('/superadmin/usuarios');
+                $this->errorAndRedirect("Usuário não encontrado.", '/superadmin/usuarios');
                 return;
             }
 
@@ -863,17 +932,13 @@ class SuperAdminController extends BaseController
 
     public function recusarTrocaCurso()
     {
-        Auth::protectSuperAdmin();
+        $this->guardSuperAdmin();
 
         try {
-            $solicitacaoId = (int)($_POST['solicitacao_id'] ?? 0);
+            $solicitacaoId = $this->requirePostIntId('solicitacao_id', '/superadmin/usuarios');
             $motivo = trim($_POST['motivo_recusa'] ?? '');
 
-            if ($solicitacaoId <= 0) {
-                $_SESSION['error_message'] = "Solicitação inválida.";
-                redirect('/superadmin/usuarios');
-                return;
-            }
+            // Solicitação já validada acima; garantir motivo pode ser vazio conforme regras atuais
 
             $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
 
@@ -881,8 +946,7 @@ class SuperAdminController extends BaseController
             $solicitacao = $solicitacaoRepo->findById($solicitacaoId);
 
             if (!$solicitacao) {
-                $_SESSION['error_message'] = "Solicitação não encontrada.";
-                redirect('/superadmin/usuarios');
+                $this->errorAndRedirect("Solicitação não encontrada.", '/superadmin/usuarios');
                 return;
             }
 

@@ -79,14 +79,7 @@ class AgendamentoController extends BaseController
         redirect($redirectPath);
     }
 
-    private function requireFieldsOrRedirect(array $requiredFields, callable $onError): void
-    {
-        foreach ($requiredFields as $field) {
-            if (empty($_POST[$field])) {
-                $onError("Preencha todos os campos obrigatórios.");
-            }
-        }
-    }
+    
 
     private function validateAntecedenciaOrFail(\DateTime $hoje, \DateTime $dataEventoObj, bool $isCampeonato, callable $onError): void
     {
@@ -195,15 +188,7 @@ class AgendamentoController extends BaseController
         ]);
     }
 
-    private function requireValidIdFromPostOrRedirect(string $key, string $redirectPath): int
-    {
-        $id = (int)($_POST[$key] ?? 0);
-        if ($id <= 0) {
-            $_SESSION['error_message'] = "Agendamento inválido.";
-            redirect($redirectPath);
-        }
-        return $id;
-    }
+    
 
     private function _checkSchedulingPermission()
     {
@@ -247,7 +232,9 @@ class AgendamentoController extends BaseController
         };
 
         $requiredFields = ['titulo', 'tipo_agendamento', 'data_agendamento', 'periodo', 'responsavel_evento'];
-        $this->requireFieldsOrRedirect($requiredFields, $saveFormData);
+        $this->requireFieldsOrRedirect($requiredFields, $_POST, function() use ($saveFormData) {
+            $saveFormData("Preencha todos os campos obrigatórios.");
+        });
 
         // Coordenadores só podem criar eventos não esportivos
         if ($this->isCoordinatorAndNotAdmin()) {

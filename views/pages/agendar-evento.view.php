@@ -63,6 +63,8 @@
 <!-- Script para restaurar estado dos campos dinâmicos -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Garante que $formData existe antes do uso no script
+    <?php $formData = $formData ?? ($_SESSION['form_data'] ?? []); ?>
     // Verificar se há dados do formulário salvos na sessão
     const hasFormData = <?php echo !empty($formData) ? 'true' : 'false'; ?>;
     

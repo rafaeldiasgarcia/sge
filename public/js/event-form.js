@@ -75,7 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para mostrar/esconder campos de materiais necessários
     function toggleCamposMateriais() {
-        const naoTemMateriais = document.getElementById('materiais_nao').checked;
+        const naoEl = document.getElementById('materiais_nao');
+        const naoTemMateriais = !!(naoEl && naoEl.checked);
 
         if (camposSemMateriais) {
             camposSemMateriais.style.display = naoTemMateriais ? 'block' : 'none';
@@ -99,9 +100,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listeners para radio buttons de materiais
-    if (possuiMateriais.length > 0) {
+    if (possuiMateriais && typeof possuiMateriais.forEach === 'function' && possuiMateriais.length > 0) {
         possuiMateriais.forEach(function(radio) {
-            radio.addEventListener('change', toggleCamposMateriais);
+            if (radio && radio.addEventListener) {
+                radio.addEventListener('change', toggleCamposMateriais);
+            }
         });
         // Executar na carga inicial
         toggleCamposMateriais();
@@ -357,19 +360,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     const materiasNao = document.getElementById('materiais_nao');
 
                     // Verificar se alguma opção de materiais foi selecionada
-                    if (!materiasSim.checked && !materiasNao.checked) {
+                    if ((materiasSim && !materiasSim.checked) && (materiasNao && !materiasNao.checked)) {
                         console.error('[Agendamento][Submit Blocked] Materiais não selecionados');
                         e.preventDefault();
                         alert('Por favor, informe se você possui materiais esportivos.');
                         window.scrollTo({
-                            top: document.getElementById('materiais_sim').offsetTop - 100,
+                            top: (materiasSim ? materiasSim.offsetTop : 0) - 100,
                             behavior: 'smooth'
                         });
                         return false;
                     }
 
                     // Se não tem materiais, validar os campos relacionados
-                    if (materiaisNao && materiasNao.checked) {
+                    if (materiasNao && materiasNao.checked) {
                         if (!materiaisNecessarios || !materiaisNecessarios.value.trim()) {
                             console.error('[Agendamento][Submit Blocked] Materiais necessários vazio');
                             e.preventDefault();

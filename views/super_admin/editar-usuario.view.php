@@ -6,6 +6,8 @@
  */
 
 $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_editado['atletica_nome']);
+$isProfessor = ($usuario_editado['tipo_usuario_detalhado'] ?? '') === 'Professor';
+$isExterno = ($usuario_editado['tipo_usuario_detalhado'] ?? '') === 'Comunidade Externa';
 ?>
 <h2>Editando Usuário: <?php echo htmlspecialchars($usuario_editado['nome']); ?></h2>
 <a href="/superadmin/usuarios" class="btn btn-secondary mb-3">Voltar para a lista</a>
@@ -24,7 +26,9 @@ $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_edita
             <div class="row">
                 <div class="col-md-6 mb-3"><label class="form-label">Nome</label><input type="text" name="nome" class="form-control" value="<?php echo htmlspecialchars($usuario_editado['nome'] ?? ''); ?>"></div>
                 <div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($usuario_editado['email'] ?? ''); ?>"></div>
+                <?php if (!$isExterno): ?>
                 <div class="col-md-6 mb-3"><label class="form-label">RA/Matrícula</label><input type="text" name="ra" class="form-control" value="<?php echo htmlspecialchars($usuario_editado['ra'] ?? ''); ?>"></div>
+                <?php endif; ?>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Perfil Principal (Role)</label>
                     <select name="role" class="form-select">
@@ -46,6 +50,7 @@ $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_edita
                         <option value="Comunidade Externa" <?php if($usuario_editado['tipo_usuario_detalhado'] == 'Comunidade Externa') echo 'selected'; ?>>Comunidade Externa</option>
                     </select>
                 </div>
+                <?php if (!$isExterno): ?>
                 <div class="col-md-6 mb-3"><label class="form-label">Curso do Aluno</label>
                     <select name="curso_id" class="form-select">
                         <option value="">Nenhum</option>
@@ -54,14 +59,18 @@ $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_edita
                         <?php endforeach; ?>
                     </select>
                 </div>
+                <?php endif; ?>
+                <?php if (!$isProfessor && !$isExterno): ?>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Atlética Associada</label>
                     <input type="text" class="form-control" value="<?php echo htmlspecialchars($usuario_editado['atletica_nome'] ?? 'Nenhuma (via curso)'); ?>" disabled>
                     <div class="form-text">A atlética é definida pelo curso do usuário.</div>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Nova seção: Status na Atlética -->
+            <?php if (!$isProfessor && !$isExterno): ?>
             <?php if (!empty($usuario_editado['curso_id']) && !empty($usuario_editado['atletica_nome'])): ?>
                 <div class="card mb-3">
                     <div class="card-header">
@@ -133,11 +142,14 @@ $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_edita
                     <input type="hidden" name="atletica_join_status" value="none">
                 </div>
             <?php endif; ?>
+            <?php endif; ?>
 
+            <?php if ($isProfessor && !$isExterno): ?>
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" name="is_coordenador" value="1" id="is_coordenador" <?php if($usuario_editado['is_coordenador']) echo 'checked'; ?>>
                 <label class="form-check-label" for="is_coordenador">Marcar como Professor Coordenador</label>
             </div>
+            <?php endif; ?>
             <button type="submit" class="btn btn-success">Salvar Alterações</button>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Excluir Usuário</button>
         </form>
