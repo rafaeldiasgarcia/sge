@@ -105,4 +105,110 @@ abstract class BaseController
             'is_coordenador' => Auth::get('is_coordenador')
         ];
     }
+
+    /**
+     * Helpers compartilhados para evitar duplicação nos controllers
+     * Mantém padrão de mensagens de sessão e redirects
+     */
+
+    /**
+     * Define uma mensagem de erro em sessão e redireciona
+     * Preserva o padrão $_SESSION['error_message']
+     */
+    protected function setErrorAndRedirect(string $message, string $redirectTo): void
+    {
+        $_SESSION['error_message'] = $message;
+        redirect($redirectTo);
+    }
+
+    /**
+     * Define uma mensagem de sucesso em sessão e redireciona
+     * Preserva o padrão $_SESSION['success_message']
+     */
+    protected function setSuccessAndRedirect(string $message, string $redirectTo): void
+    {
+        $_SESSION['success_message'] = $message;
+        redirect($redirectTo);
+    }
+
+    /**
+     * Exige que uma chave exista na sessão, caso contrário redireciona
+     */
+    protected function requireSessionKeyOrRedirect(string $key, string $redirectTo): void
+    {
+        if (!isset($_SESSION[$key])) {
+            redirect($redirectTo);
+        }
+    }
+
+    /**
+     * Exige campos obrigatórios no array informado; em erro, executa callback (ex.: salvar form e redirecionar)
+     */
+    protected function requireFieldsOrRedirect(array $requiredFields, array $source, callable $onError): void
+    {
+        foreach ($requiredFields as $field) {
+            if (!isset($source[$field]) || $source[$field] === '' || $source[$field] === null) {
+                $onError();
+                return;
+            }
+        }
+    }
+
+    /**
+     * Lê um ID inteiro do POST e valida; em erro, define mensagem e redireciona
+     * Retorna o ID válido
+     */
+    protected function requireValidIdFromPostOrRedirect(string $postKey, string $redirectPath, string $errorMessage = 'ID inválido.'): int
+    {
+        $id = (int)($_POST[$postKey] ?? 0);
+        if ($id <= 0) {
+            $_SESSION['error_message'] = $errorMessage;
+            redirect($redirectPath);
+        }
+        return $id;
+    }
+
+    /**
+     * Guardas de autenticação para padronizar chamadas
+     */
+    protected function requireAuth(): void
+    {
+        Auth::protect();
+    }
+
+    protected function requireAdmin(): void
+    {
+        Auth::protectAdmin();
+    }
+
+    protected function requireSuperAdmin(): void
+    {
+        Auth::protectSuperAdmin();
+    }
+
+    /**
+     * Exige que o usuário possua atletica_id; em falta, define erro e redireciona
+     * Retorna o atletica_id válido
+     */
+    protected function requireAtleticaIdOrRedirect(string $redirectPath = '/dashboard', string $errorMessage = 'Usuário não possui uma atlética associada. Entre em contato com o administrador do sistema.'): int
+    {
+        Auth::protectAdmin();
+        $atleticaId = (int)(Auth::get('atletica_id') ?? 0);
+        if ($atleticaId <= 0) {
+            $_SESSION['error_message'] = $errorMessage;
+            redirect($redirectPath);
+        }
+        return $atleticaId;
+    }
+
+    /**
+     * Resposta JSON padronizada e encerramento do fluxo
+     */
+    protected function jsonResponse(array $payload, int $statusCode = 200): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($statusCode);
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
 }

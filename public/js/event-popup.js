@@ -109,16 +109,48 @@ class EventPopup {
         try {
             const response = await fetch(`/agendamento/detalhes?id=${eventId}`);
 
-            const data = await response.json();
-
-            // Tratamento especial para usuário não autenticado (401)
-            if (response.status === 401 && data.error === 'not_authenticated') {
-                this.showLoginPrompt(data.message, data.login_url);
+            // Se for 401, tentar tratar mesmo sem JSON válido (ex.: retorno HTML de login)
+            if (response.status === 401) {
+                let data401 = {};
+                try {
+                    data401 = await response.clone().json();
+                } catch (_) {
+                    // Ignorar erro de parse; usar defaults
+                }
+                if (data401 && data401.error === 'not_authenticated') {
+                    this.showLoginPrompt(data401.message, data401.login_url);
+                } else {
+                    this.showLoginPrompt('Faça login para ver mais detalhes sobre este evento', '/login');
+                }
                 return;
+            }
+
+            // Se o servidor retornou HTML (possível redirecionamento para login), mostrar prompt
+            const contentType = response.headers.get('Content-Type') || '';
+            if (contentType.includes('text/html')) {
+                this.showLoginPrompt('Faça login para ver mais detalhes sobre este evento', '/login');
+                return;
+            }
+
+            // Para outros status, tentar parsear JSON; se falhar, lançar erro
+            let data;
+            try {
+                data = await response.clone().json();
+            } catch (_) {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                throw new Error('Resposta inesperada do servidor');
             }
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Fallback adicional: se a API devolver JSON com erro de autenticação mesmo com 200
+            if (data && data.error === 'not_authenticated') {
+                this.showLoginPrompt(data.message, data.login_url);
+                return;
             }
 
             if (data.error) {

@@ -19,17 +19,19 @@
  * @package Application\Controller
  */
 namespace Application\Controller;
+use Application\Core\Auth;
 
 class HomeController extends BaseController
 {
     public function index()
     {
-        if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+        if (Auth::check()) {
             // Usuários logados vão direto para o dashboard
             redirect('/dashboard');
-        } else {
-            // Usuários não logados veem a agenda pública
-            redirect('/agenda');
+            return;
         }
+
+        // Usuários não logados veem a agenda pública
+        redirect('/agenda');
     }
 }

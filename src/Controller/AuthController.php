@@ -38,8 +38,31 @@
  */
 namespace Application\Controller;
 
+use Application\Core\Auth;
+
 class AuthController extends BaseController
 {
+    private function postString(string $key, string $default = ''): string
+    {
+        // Reaproveita helper global com saneamento básico
+        return \post_string($key, $default);
+    }
+
+    private function generateVerificationCode(): string
+    {
+        return (string) rand(100000, 999999);
+    }
+
+    private function loginCodeExpiresAt(int $minutes = 15): string
+    {
+        return date('Y-m-d H:i:s', strtotime("+{$minutes} minutes"));
+    }
+
+    private function createEmailService(): \Application\Core\EmailService
+    {
+        return new \Application\Core\EmailService();
+    }
+
     /**
      * Exibe o formulário de login
      * 
@@ -76,7 +99,7 @@ class AuthController extends BaseController
     public function login()
     {
         // Coleta credenciais do formulário
-        $email = $_POST['email'] ?? '';
+        $email = $this->postString('email');
         $senha = $_POST['senha'] ?? '';
 
         // Validação básica
@@ -114,9 +137,9 @@ class AuthController extends BaseController
 
             // Para usuários comuns e admins: gerar código 2FA
             // Gera código aleatório de 6 dígitos
-            $code = (string) rand(100000, 999999);
+            $code = $this->generateVerificationCode();
             // Define expiração em 15 minutos
-            $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+            $expires = $this->loginCodeExpiresAt(15);
 
             // Limpa qualquer código anterior do usuário
             $userRepository->clearLoginCode($user['id']);
@@ -131,7 +154,7 @@ class AuthController extends BaseController
             }
 
             // Envia código por e-mail usando EmailService
-            $emailService = new \Application\Core\EmailService();
+            $emailService = $this->createEmailService();
             $emailSent = $emailService->sendVerificationCode($user['email'], $user['nome'], $code);
 
             if (!$emailSent) {
@@ -160,16 +183,14 @@ class AuthController extends BaseController
 
     public function showVerifyForm()
     {
-        if (!isset($_SESSION['login_email'])) {
-            redirect('/login');
-        }
+        $this->requireSessionKeyOrRedirect('login_email', '/login');
         view('auth/login-verify', ['title' => 'Verificação de Acesso - SGE UNIFIO']);
     }
 
     public function verifyCode()
     {
         $email = $_SESSION['login_email'] ?? null;
-        $code = trim($_POST['code'] ?? '');
+        $code = $this->postString('code');
 
         error_log("=== Debug Verificação de Código ===");
         error_log("Email na sessão: " . ($email ?? 'não definido'));
@@ -177,8 +198,7 @@ class AuthController extends BaseController
 
         if (empty($email) || empty($code)) {
             error_log("Email ou código vazios");
-            $_SESSION['error_message'] = "Dados de verificação inválidos. Por favor, faça login novamente.";
-            redirect('/login');
+            $this->setErrorAndRedirect("Dados de verificação inválidos. Por favor, faça login novamente.", '/login');
             return;
         }
 
@@ -188,8 +208,7 @@ class AuthController extends BaseController
 
             if (!$user) {
                 error_log("Usuário não encontrado para o email: $email");
-                $_SESSION['error_message'] = "Usuário não encontrado. Por favor, faça login novamente.";
-                redirect('/login');
+                $this->setErrorAndRedirect("Usuário não encontrado. Por favor, faça login novamente.", '/login');
                 return;
             }
 
@@ -213,14 +232,12 @@ class AuthController extends BaseController
             }
 
             error_log("✗ Código inválido ou expirado para o email: $email");
-            $_SESSION['error_message'] = "Código inválido ou expirado. Tente novamente.";
-            redirect('/login/verify');
+            $this->setErrorAndRedirect("Código inválido ou expirado. Tente novamente.", '/login/verify');
 
         } catch (\Exception $e) {
             error_log("Erro na verificação do código: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
-            $_SESSION['error_message'] = "Ocorreu um erro no sistema. Tente novamente.";
-            redirect('/login');
+            $this->setErrorAndRedirect("Ocorreu um erro no sistema. Tente novamente.", '/login');
         }
     }
 
@@ -249,6 +266,8 @@ class AuthController extends BaseController
 
     public function logout()
     {
+        // Apenas usuários autenticados podem sair
+        Auth::protect();
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -259,8 +278,7 @@ class AuthController extends BaseController
         }
         session_destroy();
         session_start();
-        $_SESSION['success_message'] = "Você saiu com segurança.";
-        redirect('/login');
+        $this->setSuccessAndRedirect("Você saiu com segurança.", '/login');
     }
 
     public function showRegistrationForm()
@@ -286,15 +304,15 @@ class AuthController extends BaseController
     public function register()
     {
         $data = [
-            'nome' => trim($_POST['nome'] ?? ''),
-            'tipo_usuario_detalhado' => trim($_POST['tipo_usuario_detalhado'] ?? ''),
-            'data_nascimento' => trim($_POST['data_nascimento'] ?? ''),
-            'email' => trim($_POST['email'] ?? ''),
-            'telefone' => trim($_POST['telefone'] ?? ''),
+            'nome' => $this->postString('nome'),
+            'tipo_usuario_detalhado' => $this->postString('tipo_usuario_detalhado'),
+            'data_nascimento' => $this->postString('data_nascimento'),
+            'email' => $this->postString('email'),
+            'telefone' => $this->postString('telefone'),
             'senha' => $_POST['senha'] ?? '',
             'confirmar_senha' => $_POST['confirmar_senha'] ?? '',
             'curso_id' => !empty($_POST['curso_id']) ? (int)$_POST['curso_id'] : null,
-            'ra' => !empty(trim($_POST['ra'] ?? '')) ? trim($_POST['ra']) : null
+            'ra' => !empty($this->postString('ra')) ? $this->postString('ra') : null
         ];
 
         $errors = [];
@@ -363,8 +381,7 @@ class AuthController extends BaseController
         try {
             $userRepository = $this->repository('UsuarioRepository');
             $userRepository->createUser($data);
-            $_SESSION['success_message'] = "Cadastro realizado com sucesso! Faça seu login.";
-            redirect('/login');
+            $this->setSuccessAndRedirect("Cadastro realizado com sucesso! Faça seu login.", '/login');
         } catch (\PDOException $e) {
             if ($e->getCode() == '23000') {
                 $_SESSION['error_message'] = "O e-mail ou RA informado já está cadastrado.";
@@ -386,10 +403,9 @@ class AuthController extends BaseController
 
     public function sendRecoveryLink()
     {
-        $email = $_POST['email'] ?? '';
+        $email = $this->postString('email');
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error_message'] = "Por favor, insira um e-mail válido.";
-            redirect('/esqueci-senha');
+            $this->setErrorAndRedirect("Por favor, insira um e-mail válido.", '/esqueci-senha');
         }
 
         $userRepo = $this->repository('UsuarioRepository');
@@ -401,7 +417,7 @@ class AuthController extends BaseController
             $userRepo->updateResetToken($user['id'], $token, $expires);
 
             // Enviar link de recuperação por e-mail usando PHPMailer
-            $emailService = new \Application\Core\EmailService();
+            $emailService = $this->createEmailService();
             $emailSent = $emailService->sendPasswordRecoveryLink($user['email'], $user['nome'], $token);
 
             if (!$emailSent) {
@@ -425,8 +441,7 @@ class AuthController extends BaseController
         $token = $_GET['token'] ?? '';
 
         if (empty($token)) {
-            $_SESSION['error_message'] = "Token de redefinição não fornecido. Por favor, solicite um novo link de recuperação.";
-            redirect('/esqueci-senha');
+            $this->setErrorAndRedirect("Token de redefinição não fornecido. Por favor, solicite um novo link de recuperação.", '/esqueci-senha');
             return;
         }
 
@@ -434,8 +449,7 @@ class AuthController extends BaseController
         $user = $userRepo->findUserByResetToken($token);
 
         if (!$user) {
-            $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
-            redirect('/esqueci-senha');
+            $this->setErrorAndRedirect("Token inválido ou expirado. Por favor, solicite um novo link de recuperação.", '/esqueci-senha');
             return;
         }
 
@@ -452,8 +466,7 @@ class AuthController extends BaseController
         $confirmarNovaSenha = $_POST['confirmar_nova_senha'] ?? '';
 
         if (empty($token)) {
-            $_SESSION['error_message'] = "Token não fornecido. Por favor, solicite um novo link de recuperação.";
-            redirect('/esqueci-senha');
+            $this->setErrorAndRedirect("Token não fornecido. Por favor, solicite um novo link de recuperação.", '/esqueci-senha');
             return;
         }
 
@@ -462,27 +475,23 @@ class AuthController extends BaseController
         $user = $userRepo->findUserByResetToken($token);
 
         if (!$user) {
-            $_SESSION['error_message'] = "Token inválido ou expirado. Por favor, solicite um novo link de recuperação.";
-            redirect('/esqueci-senha');
+            $this->setErrorAndRedirect("Token inválido ou expirado. Por favor, solicite um novo link de recuperação.", '/esqueci-senha');
             return;
         }
 
         // Validações dos campos
         if (empty($novaSenha) || empty($confirmarNovaSenha)) {
-            $_SESSION['error_message'] = "Todos os campos são obrigatórios.";
-            redirect('/redefinir-senha?token=' . urlencode($token));
+            $this->setErrorAndRedirect("Todos os campos são obrigatórios.", '/redefinir-senha?token=' . urlencode($token));
             return;
         }
 
         if (strlen($novaSenha) < 6) {
-            $_SESSION['error_message'] = "A nova senha deve ter no mínimo 6 caracteres.";
-            redirect('/redefinir-senha?token=' . urlencode($token));
+            $this->setErrorAndRedirect("A nova senha deve ter no mínimo 6 caracteres.", '/redefinir-senha?token=' . urlencode($token));
             return;
         }
 
         if ($novaSenha !== $confirmarNovaSenha) {
-            $_SESSION['error_message'] = "As senhas não coincidem.";
-            redirect('/redefinir-senha?token=' . urlencode($token));
+            $this->setErrorAndRedirect("As senhas não coincidem.", '/redefinir-senha?token=' . urlencode($token));
             return;
         }
 
@@ -491,11 +500,9 @@ class AuthController extends BaseController
         $success = $userRepo->updatePasswordAndClearToken($user['id'], $newHashedPassword);
 
         if ($success) {
-            $_SESSION['success_message'] = "Senha redefinida com sucesso! Você já pode fazer o login.";
-            redirect('/login');
+            $this->setSuccessAndRedirect("Senha redefinida com sucesso! Você já pode fazer o login.", '/login');
         } else {
-            $_SESSION['error_message'] = "Ocorreu um erro ao redefinir sua senha. Tente novamente.";
-            redirect('/redefinir-senha?token=' . urlencode($token));
+            $this->setErrorAndRedirect("Ocorreu um erro ao redefinir sua senha. Tente novamente.", '/redefinir-senha?token=' . urlencode($token));
         }
     }
 }
