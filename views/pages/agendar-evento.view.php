@@ -402,6 +402,40 @@ document.addEventListener('DOMContentLoaded', function() {
                             </ul>
                         </div>
 
+                        <!-- Seção de Termos e Políticas -->
+                        <div class="card border-primary mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0 text-primary">
+                                    <i class="bi bi-shield-check"></i> Termos e Políticas
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">Antes de enviar sua solicitação, leia e aceite os seguintes documentos:</p>
+                                
+                                <div class="d-flex flex-wrap gap-3 mb-3">
+                                    <a href="/doc/termo-usuario.pdf" class="btn btn-outline-primary btn-sm" target="_blank" type="application/pdf">
+                                        <i class="bi bi-file-text"></i> Termos de Uso
+                                    </a>
+                                    <a href="/doc/politica-privacidade.pdf" class="btn btn-outline-primary btn-sm" target="_blank" type="application/pdf">
+                                        <i class="bi bi-shield-lock"></i> Política de Privacidade
+                                    </a>
+                                    <a href="/doc/regulamento.pdf" class="btn btn-outline-primary btn-sm" target="_blank" type="application/pdf">
+                                        <i class="bi bi-clipboard-check"></i> Regulamento da Quadra
+                                    </a>
+                                </div>
+                                
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="aceita_termos" id="aceita_termos" value="1" required>
+                                    <label class="form-check-label" for="aceita_termos">
+                                        <strong>Eu li e aceito os Termos de Uso, Política de Privacidade e Regulamento da Quadra *</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text text-muted">
+                                    <small>É obrigatório aceitar os termos para prosseguir com o agendamento.</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-between">
                             <a href="/dashboard" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Voltar
