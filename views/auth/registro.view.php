@@ -20,7 +20,7 @@
  * TIPOS DE USUÁRIO:
  * - Aluno: requer RA + Curso + Email institucional
  * - Membro das Atléticas: requer RA + Curso + Email institucional
- * - Professor: requer Curso + Email institucional (sem RA)
+ * - Professor: requer RA + Curso + Email institucional
  * - Comunidade Externa: não requer RA nem Curso, aceita qualquer email
  * 
  * VALIDAÇÕES JAVASCRIPT:
@@ -84,7 +84,7 @@
                 </select>
             </div>
 
-            <!-- Campo condicional: RA (apenas para Aluno e Membro de Atlética) -->
+            <!-- Campo condicional: RA (para Aluno, Membro de Atlética e Professor) -->
             <div id="campo_ra" class="mb-3" style="display:none;">
                 <label for="ra" class="form-label">Matrícula (RA)</label>
                 <input type="text" name="ra" id="ra" class="form-control" 
@@ -243,22 +243,16 @@
          * Exibe/oculta campos baseado no tipo de usuário selecionado
          * 
          * Lógica:
-         * - Aluno/Membro Atlética: exige RA + Curso + Email institucional
-         * - Professor: exige Curso + Email institucional (sem RA)
+         * - Aluno/Membro Atlética/Professor: exige RA + Curso + Email institucional
          * - Comunidade Externa: não exige RA nem Curso, email livre
          */
         function toggleFields() {
             const tipo = tipoUsuarioSelect.value;
 
-            if (tipo === 'Aluno' || tipo === 'Membro das Atléticas') {
-                // Aluno e Membro: requer RA e Curso
+            if (tipo === 'Aluno' || tipo === 'Membro das Atléticas' || tipo === 'Professor') {
+                // Aluno, Membro e Professor: requer RA e Curso
                 campoRa.style.display = 'block';
                 inputRa.required = true;
-                campoCurso.style.display = 'block';
-            } else if (tipo === 'Professor') {
-                // Professor: requer apenas Curso (sem RA)
-                campoRa.style.display = 'none';
-                inputRa.required = false;
                 campoCurso.style.display = 'block';
             } else {
                 // Comunidade Externa: não requer RA nem Curso

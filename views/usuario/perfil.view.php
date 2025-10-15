@@ -90,7 +90,6 @@
             </div>
         </div>
         <div class="profile-header-buttons">
-            <button class="btn-edit-profile" onclick="">Editar Perfil</button>
             <button class="btn-change-password" onclick="openPasswordModal()">Alterar Senha</button>
         </div>
     </div>
@@ -137,7 +136,8 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Curso:</span>
-                    <span class="info-value"><?php
+                    <span class="info-value">
+                        <?php
                         if (!empty($user['curso_id']) && isset($cursos)) {
                             foreach ($cursos as $curso) {
                                 if ($user['curso_id'] == $curso['id']) {
@@ -148,7 +148,11 @@
                         } else {
                             echo 'N/A';
                         }
-                    ?></span>
+                        ?>
+                        <button onclick="openTrocaCursoModal()" class="btn-trocar-curso" title="Solicitar troca de curso">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </button>
+                    </span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Atlética:</span>
@@ -363,6 +367,69 @@
     </div>
 </div>
 
+<!-- Modal de Solicitar Troca de Curso -->
+<div class="modal fade" id="modalTrocarCurso" tabindex="-1" aria-labelledby="modalTrocarCursoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; border-radius: 12px 12px 0 0;">
+                <h5 class="modal-title" id="modalTrocarCursoLabel"><strong>SOLICITAR TROCA DE CURSO</strong></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 30px;">
+                <form action="/perfil/solicitar-troca-curso" method="post" id="formTrocarCurso">
+                    <div class="alert alert-info" style="border-radius: 8px; margin-bottom: 20px;">
+                        <i class="bi bi-info-circle"></i> Sua solicitação será analisada pelo coordenador (super admin). Você receberá uma notificação com a resposta.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="curso_atual" class="form-label" style="font-weight: 600; color: #333;">Curso Atual</label>
+                        <input type="text" id="curso_atual" class="form-control" value="<?php
+                            if (!empty($user['curso_id']) && isset($cursos)) {
+                                foreach ($cursos as $curso) {
+                                    if ($user['curso_id'] == $curso['id']) {
+                                        echo htmlspecialchars($curso['nome']);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                echo 'N/A';
+                            }
+                        ?>" disabled style="border-radius: 8px; padding: 12px; background: #f5f5f5;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="curso_novo_id" class="form-label" style="font-weight: 600; color: #333;">Novo Curso Desejado <span class="text-danger">*</span></label>
+                        <select name="curso_novo_id" id="curso_novo_id" class="form-control" required style="border-radius: 8px; padding: 12px;">
+                            <option value="">Selecione o curso desejado</option>
+                            <?php if (isset($cursos)): ?>
+                                <?php foreach ($cursos as $curso): ?>
+                                    <?php if ($curso['id'] != $user['curso_id']): ?>
+                                        <option value="<?php echo $curso['id']; ?>"><?php echo htmlspecialchars($curso['nome']); ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="justificativa" class="form-label" style="font-weight: 600; color: #333;">Justificativa <span class="text-danger">*</span></label>
+                        <textarea name="justificativa" id="justificativa" class="form-control" rows="5" placeholder="Explique o motivo da solicitação de troca de curso..." required style="border-radius: 8px; padding: 12px;"></textarea>
+                        <small class="text-muted">Mínimo 50 caracteres</small>
+                    </div>
+                    
+                    <button type="submit" class="btn w-100" style="background: #f97316; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                        Enviar Solicitação
+                    </button>
+                    
+                    <p class="text-center text-muted mt-3 mb-0" style="font-size: 14px;">
+                        O coordenador analisará seu pedido em breve
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/js/event-popup.js"></script>
 <script>
 // JavaScript para controlar as abas
@@ -391,6 +458,32 @@ function openPasswordModal() {
     const modal = new bootstrap.Modal(document.getElementById('modalAlterarSenha'));
     modal.show();
 }
+
+// Função para abrir o modal de trocar curso
+function openTrocaCursoModal() {
+    const modal = new bootstrap.Modal(document.getElementById('modalTrocarCurso'));
+    modal.show();
+}
+
+// Validação do formulário de troca de curso
+document.getElementById('formTrocarCurso')?.addEventListener('submit', function(e) {
+    const justificativa = document.getElementById('justificativa').value.trim();
+    const cursoNovoId = document.getElementById('curso_novo_id').value;
+    
+    if (!cursoNovoId) {
+        e.preventDefault();
+        alert('Por favor, selecione o curso desejado.');
+        return false;
+    }
+    
+    if (justificativa.length < 50) {
+        e.preventDefault();
+        alert('A justificativa deve ter no mínimo 50 caracteres. Você digitou ' + justificativa.length + ' caracteres.');
+        return false;
+    }
+    
+    return confirm('Confirma o envio da solicitação de troca de curso? Você receberá uma resposta do coordenador em breve.');
+});
 
 // Ajustar tamanho do nome dinamicamente para sempre caber
 function ajustarTamanhoNome() {

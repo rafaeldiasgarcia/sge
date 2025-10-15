@@ -43,7 +43,8 @@ class AgendaController extends BaseController
 
     public function index()
     {
-        Auth::protect();
+        // Agenda é pública - não requer autenticação
+        // Apenas verifica se está logado para mostrar/ocultar botões
 
         try {
             $agendamentoRepo = $this->repository('AgendamentoRepository');
@@ -51,7 +52,9 @@ class AgendaController extends BaseController
             // Atualizar eventos aprovados que já passaram para 'finalizado'
             $agendamentoRepo->updatePastEventsToFinalized();
 
-            $eventos = $agendamentoRepo->findAgendaEvents(Auth::id());
+            // Se não estiver logado, passa null como user_id
+            $userId = Auth::check() ? Auth::id() : null;
+            $eventos = $agendamentoRepo->findAgendaEvents($userId);
 
             $data_atual = date('Y-m-d');
 
@@ -66,7 +69,7 @@ class AgendaController extends BaseController
 
             view('pages/agenda', [
                 'title' => 'Agenda da Quadra',
-                'user' => $this->getUserData(),
+                'user' => Auth::check() ? $this->getUserData() : null,
                 'eventos' => $eventos,
                 'eventos_futuros_esportivos' => $eventos_futuros_esportivos,
                 'eventos_futuros_nao_esportivos' => $eventos_futuros_nao_esportivos,
@@ -74,9 +77,10 @@ class AgendaController extends BaseController
                 'eventos_passados_nao_esportivos' => $eventos_passados_nao_esportivos,
                 'eventos_passados' => $eventos_passados,
                 'data_atual' => $data_atual,
-                'role' => Auth::role(),
-                'atletica_id' => Auth::get('atletica_id'),
-                'tipo_usuario_detalhado' => Auth::get('tipo_usuario_detalhado'),
+                'role' => Auth::check() ? Auth::role() : null,
+                'atletica_id' => Auth::check() ? Auth::get('atletica_id') : null,
+                'tipo_usuario_detalhado' => Auth::check() ? Auth::get('tipo_usuario_detalhado') : null,
+                'is_logged_in' => Auth::check(),
                 'additional_styles' => ['/css/usuario.css', '/css/agenda.css']
             ]);
         } catch (\Exception $e) {

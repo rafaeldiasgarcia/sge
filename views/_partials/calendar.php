@@ -21,6 +21,7 @@
  * @var int      $primeiroW    - Dia da semana do primeiro dia (0=domingo)
  * @var string   $prevMes      - String Y-m do mês anterior
  * @var string   $nextMes      - String Y-m do próximo mês
+ * @var bool     $isCampeonato - Se o evento sendo agendado é um campeonato (opcional)
  * 
  * INTEGRAÇÃO:
  * - Usado em: agenda.view.php, editar-evento.view.php
@@ -48,9 +49,19 @@
  * @param bool $busy         - Se o período já está ocupado
  * @param bool $dateInvalid  - Se a data é inválida (passada ou antecedência insuficiente)
  * @param bool $isPastDate   - Se a data já passou
+ * @param bool $isCampeonato - Se é um campeonato (opcional)
  * @return string            - Classes CSS do Bootstrap para o botão
  */
-function slotClassCal(bool $busy, bool $dateInvalid, bool $isPastDate) { 
+function slotClassCal(bool $busy, bool $dateInvalid, bool $isPastDate, bool $isCampeonato = false) { 
+    // Para campeonatos: apenas desabilitar datas passadas
+    if ($isCampeonato) {
+        if ($isPastDate) {
+            return 'btn-outline-secondary disabled';
+        }
+        // Para campeonatos, sempre permitir seleção (mesmo ocupado)
+        return 'btn-success';
+    }
+    
     // Para dias passados ou com antecedência insuficiente, mantém as cores originais mas desabilitados
     if ($dateInvalid) {
         return $busy ? 'btn-outline-secondary disabled' : 'btn-success disabled';
@@ -67,9 +78,18 @@ function slotClassCal(bool $busy, bool $dateInvalid, bool $isPastDate) {
  * @param array  $ocupado                - Array de períodos ocupados
  * @param bool   $isPastDate             - Se a data já passou
  * @param bool   $isInsufficientAdvance  - Se falta antecedência mínima
+ * @param bool   $isCampeonato           - Se é um campeonato (opcional)
  * @return string                        - Classes CSS do badge
  */
-function dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance) {
+function dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance, $isCampeonato = false) {
+    // Para campeonatos: sempre mostrar como disponível (exceto datas passadas)
+    if ($isCampeonato) {
+        if ($isPastDate) {
+            return 'bg-light border text-dark';
+        }
+        return 'bg-success';
+    }
+    
     // Para todos os casos (passados, antecedência insuficiente ou válidos), usa as cores normais
     $p1 = !empty($ocupado[$ymd]['P1']);
     $p2 = !empty($ocupado[$ymd]['P2']);
@@ -97,18 +117,33 @@ function isDateInPast($ymd) {
 }
 
 /**
- * Verifica se uma data tem antecedência insuficiente (menos de 4 dias)
+ * Verifica se uma data tem antecedência insuficiente (menos de 4 dias) ou excede o limite de 1 mês
  * 
- * @param string $ymd  - Data no formato Y-m-d
- * @return bool        - True se faltam menos de 4 dias
+ * @param string $ymd          - Data no formato Y-m-d
+ * @param bool   $isCampeonato - Se é um campeonato (opcional)
+ * @return bool                - True se faltam menos de 4 dias ou excede 1 mês
  */
-function hasInsufficientAdvance($ymd) {
+function hasInsufficientAdvance($ymd, $isCampeonato = false) {
+    // Para campeonatos: SEM restrições de antecedência
+    if ($isCampeonato) {
+        return false;
+    }
+    
     $hoje = new \DateTime();
     $dataEvento = new \DateTime($ymd);
     $diferencaDias = $hoje->diff($dataEvento)->days;
     
     // Se faltam menos de 4 dias (mas não é data passada)
-    return $dataEvento >= $hoje && $diferencaDias < 4;
+    if ($dataEvento >= $hoje && $diferencaDias < 4) {
+        return true;
+    }
+    
+    // Se excede 1 mês (30 dias) de antecedência
+    if ($diferencaDias > 30) {
+        return true;
+    }
+    
+    return false;
 }
 ?>
 
@@ -116,7 +151,11 @@ function hasInsufficientAdvance($ymd) {
      CABEÇALHO DO CALENDÁRIO
      ======================================================================== -->
 <h5 class="mb-3 text-primary border-bottom pb-2">
-    <i class="bi bi-calendar-check"></i> Selecione a Data e o Período com 4 dias de antecedência.
+    <i class="bi bi-calendar-check"></i> Selecione a Data e o Período
+    <span id="regra-antecedencia">(4 dias a 1 mês de antecedência)</span>
+    <span id="regra-campeonato" style="display: none;" class="text-success">
+        <i class="bi bi-trophy"></i> Campeonatos: sem restrições de data!
+    </span>
 </h5>
 
 <!-- Legenda de cores do calendário -->
@@ -173,6 +212,9 @@ function hasInsufficientAdvance($ymd) {
         <?php endfor; ?>
         
         <?php 
+        // Verifica se é campeonato (variável opcional)
+        $isCampeonato = isset($isCampeonato) ? $isCampeonato : false;
+        
         // Loop por cada dia do mês
         for ($dia=1; $dia<=$diasNoMes; $dia++):
             // Formata data no padrão Y-m-d para comparações
@@ -180,19 +222,25 @@ function hasInsufficientAdvance($ymd) {
             
             // Verifica restrições de data
             $isPastDate = isDateInPast($ymd);
-            $isInsufficientAdvance = hasInsufficientAdvance($ymd);
+            $isInsufficientAdvance = hasInsufficientAdvance($ymd, $isCampeonato);
             $dateInvalid = $isPastDate || $isInsufficientAdvance;
             
             // Determina cor do badge de disponibilidade
-            $badge = dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance);
+            $badge = dayBadgeCal($ymd, $ocupado, $isPastDate, $isInsufficientAdvance, $isCampeonato);
             
             // Verifica se cada período está ocupado
             $p1busy = !empty($ocupado[$ymd]['P1']);
             $p2busy = !empty($ocupado[$ymd]['P2']);
             
-            // Desabilita períodos ocupados ou em datas inválidas
-            $p1disabled = $p1busy || $dateInvalid;
-            $p2disabled = $p2busy || $dateInvalid;
+            // Para campeonatos: apenas desabilitar datas passadas
+            // Para outros: desabilitar períodos ocupados ou datas inválidas
+            if ($isCampeonato) {
+                $p1disabled = $isPastDate;
+                $p2disabled = $isPastDate;
+            } else {
+                $p1disabled = $p1busy || $dateInvalid;
+                $p2disabled = $p2busy || $dateInvalid;
+            }
             
             // Adiciona classe CSS especial para datas indisponíveis
             $cellClass = '';
@@ -209,7 +257,7 @@ function hasInsufficientAdvance($ymd) {
                 
                 <!-- Botão do Período 1 (19:15 - 20:55) -->
                 <button type="button" 
-                        class="btn btn-sm slot <?= slotClassCal($p1busy, $dateInvalid, $isPastDate) ?>" 
+                        class="btn btn-sm slot <?= slotClassCal($p1busy, $dateInvalid, $isPastDate, $isCampeonato) ?>" 
                         data-date="<?= $ymd ?>" 
                         data-periodo="P1" 
                         <?= $p1disabled ? 'disabled' : '' ?>>
@@ -218,7 +266,7 @@ function hasInsufficientAdvance($ymd) {
                 
                 <!-- Botão do Período 2 (21:10 - 22:50) -->
                 <button type="button" 
-                        class="btn btn-sm slot <?= slotClassCal($p2busy, $dateInvalid, $isPastDate) ?>" 
+                        class="btn btn-sm slot <?= slotClassCal($p2busy, $dateInvalid, $isPastDate, $isCampeonato) ?>" 
                         data-date="<?= $ymd ?>" 
                         data-periodo="P2" 
                         <?= $p2disabled ? 'disabled' : '' ?>>

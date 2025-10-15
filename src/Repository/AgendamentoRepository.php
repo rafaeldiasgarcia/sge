@@ -19,7 +19,7 @@
  * 
  * Regras de Negócio:
  * - Cada horário/período pode ter apenas 1 agendamento aprovado
- * - Atléticas podem ter no máximo 1 treino por modalidade por semana
+ * - Atléticas podem ter no máximo 1 evento por semana (esportivo ou não esportivo)
  * - Usuários podem agendar no máximo 1 evento esportivo por modalidade por semana
  * - Eventos com status 'aprovado' aparecem no calendário para todos
  * - Presenças só podem ser marcadas em eventos aprovados
@@ -51,8 +51,31 @@ class AgendamentoRepository
         $this->pdo = Connection::getInstance();
     }
 
-    public function findAgendaEvents(int $usuarioId): array
+    public function findAgendaEvents(?int $usuarioId): array
     {
+        // Se usuarioId for null, não verifica presença (usuário não logado)
+        if ($usuarioId === null) {
+            $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
+                           u.nome as responsavel, NULL as presenca_id, a.atletica_confirmada, 
+                           a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
+                           (SELECT COUNT(*) FROM presencas p2 WHERE p2.agendamento_id = a.id) as total_presencas,
+                           CASE 
+                               WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                               WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                               ELSE a.periodo
+                           END as horario_periodo
+                    FROM agendamentos a
+                    JOIN usuarios u ON a.usuario_id = u.id
+                    LEFT JOIN atleticas at ON a.atletica_id_confirmada = at.id
+                    WHERE a.status IN ('aprovado', 'finalizado')
+                    ORDER BY a.data_agendamento ASC, a.periodo ASC";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        }
+        
+        // Se usuário logado, verifica presença dele
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
                        u.nome as responsavel, p.id as presenca_id, a.atletica_confirmada, 
                        a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
@@ -412,7 +435,7 @@ class AgendamentoRepository
         $sql = "SELECT id, data_agendamento, periodo, status 
                 FROM agendamentos 
                 WHERE data_agendamento BETWEEN :ini AND :fim
-                AND status IN ('aprovado', 'pendente')";
+                AND status IN ('aprovado', 'pendente', 'finalizado')";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['ini' => $inicioMes, 'fim' => $fimMes]);
@@ -518,6 +541,37 @@ class AgendamentoRepository
         return $stmt->fetchColumn() > 0;
     }
 
+    /**
+     * Verifica se a atlética já possui um evento agendado na semana
+     * 
+     * @param int $atleticaId ID da atlética
+     * @param string $date Data do evento (formato Y-m-d)
+     * @return bool True se já existe evento da atlética na semana
+     */
+    public function hasAtleticaEventInWeek(int $atleticaId, string $date): bool
+    {
+        // Converte a data do novo agendamento para objeto DateTime
+        $dataNovoAgendamento = new \DateTime($date);
+
+        // Encontra o início (segunda) e fim (domingo) da semana do novo agendamento
+        $inicioSemana = (clone $dataNovoAgendamento)->modify('monday this week')->format('Y-m-d');
+        $fimSemana = (clone $dataNovoAgendamento)->modify('sunday this week')->format('Y-m-d');
+
+        $sql = "SELECT COUNT(*) FROM agendamentos a
+                JOIN usuarios u ON a.usuario_id = u.id
+                WHERE u.atletica_id = :atletica_id 
+                AND DATE(a.data_agendamento) BETWEEN :inicio_semana AND :fim_semana
+                AND a.status IN ('aprovado', 'pendente')";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':atletica_id', $atleticaId, PDO::PARAM_INT);
+        $stmt->bindValue(':inicio_semana', $inicioSemana);
+        $stmt->bindValue(':fim_semana', $fimSemana);
+        $stmt->execute();
+
+        return $stmt->fetchColumn() > 0;
+    }
+
     public function findApprovedAgendamentos(): array
     {
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, 
@@ -596,5 +650,62 @@ class AgendamentoRepository
         $stmt->bindValue(':date', $date);
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Cancela eventos conflitantes quando um campeonato é aprovado
+     * 
+     * @param string $data Data do evento
+     * @param string $periodo Período do evento
+     * @param int $excludeId ID do evento a ser excluído da verificação
+     * @return array Lista de IDs dos eventos cancelados
+     */
+    public function cancelarEventosConflitantes(string $data, string $periodo, int $excludeId = null): array
+    {
+        // Buscar eventos aprovados no mesmo horário
+        $sql = "SELECT id, usuario_id, titulo FROM agendamentos 
+                WHERE data_agendamento = :data 
+                AND periodo = :periodo 
+                AND status = 'aprovado'";
+        
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+        }
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':data', $data);
+        $stmt->bindValue(':periodo', $periodo);
+        
+        if ($excludeId !== null) {
+            $stmt->bindValue(':exclude_id', $excludeId, PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
+        $eventosConflitantes = $stmt->fetchAll();
+        
+        $eventosCancelados = [];
+        
+        // Cancelar cada evento conflitante
+        foreach ($eventosConflitantes as $evento) {
+            $updateSql = "UPDATE agendamentos 
+                         SET status = 'cancelado', 
+                             motivo_rejeicao = 'Evento cancelado devido à aprovação de um campeonato no mesmo horário.',
+                             data_cancelamento = NOW(),
+                             cancelado_por_campeonato = true
+                         WHERE id = :id";
+            
+            $updateStmt = $this->pdo->prepare($updateSql);
+            $updateStmt->bindValue(':id', $evento['id'], PDO::PARAM_INT);
+            
+            if ($updateStmt->execute()) {
+                $eventosCancelados[] = [
+                    'id' => $evento['id'],
+                    'usuario_id' => $evento['usuario_id'],
+                    'titulo' => $evento['titulo']
+                ];
+            }
+        }
+        
+        return $eventosCancelados;
     }
 }

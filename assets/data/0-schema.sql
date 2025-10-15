@@ -106,7 +106,8 @@ CREATE TABLE `agendamentos` (
   `data_ultima_alteracao` datetime DEFAULT NULL COMMENT 'Data da última alteração feita pelo admin',
   `alterado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi alterado por um admin',
   `data_cancelamento` datetime DEFAULT NULL COMMENT 'Data do cancelamento pelo admin',
-  `cancelado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado por um admin'
+  `cancelado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado por um admin',
+  `cancelado_por_campeonato` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado devido à aprovação de um campeonato'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -225,10 +226,29 @@ CREATE TABLE `notificacoes` (
   `usuario_id` int NOT NULL,
   `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','evento_cancelado_campeonato','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `agendamento_id` int DEFAULT NULL,
   `lida` tinyint(1) NOT NULL DEFAULT '0',
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `solicitacoes_troca_curso`
+--
+
+CREATE TABLE `solicitacoes_troca_curso` (
+  `id` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  `curso_atual_id` int DEFAULT NULL,
+  `curso_novo_id` int NOT NULL,
+  `justificativa` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('pendente','aprovada','recusada') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendente',
+  `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_resposta` timestamp NULL DEFAULT NULL,
+  `respondido_por` int DEFAULT NULL COMMENT 'ID do super admin que respondeu',
+  `justificativa_resposta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Justificativa do super admin para recusa'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -309,6 +329,16 @@ ALTER TABLE `notificacoes`
   ADD KEY `agendamento_id` (`agendamento_id`);
 
 --
+-- Índices de tabela `solicitacoes_troca_curso`
+--
+ALTER TABLE `solicitacoes_troca_curso`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `curso_atual_id` (`curso_atual_id`),
+  ADD KEY `curso_novo_id` (`curso_novo_id`),
+  ADD KEY `respondido_por` (`respondido_por`);
+
+--
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
@@ -367,6 +397,12 @@ ALTER TABLE `notificacoes`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `solicitacoes_troca_curso`
+--
+ALTER TABLE `solicitacoes_troca_curso`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- Restrições para tabelas despejadas
 --
 
@@ -420,6 +456,15 @@ ALTER TABLE `usuarios`
 ALTER TABLE `notificacoes`
   ADD CONSTRAINT `notificacoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `notificacoes_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `solicitacoes_troca_curso`
+--
+ALTER TABLE `solicitacoes_troca_curso`
+  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_2` FOREIGN KEY (`curso_atual_id`) REFERENCES `cursos` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_3` FOREIGN KEY (`curso_novo_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_4` FOREIGN KEY (`respondido_por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

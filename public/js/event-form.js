@@ -23,6 +23,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do formulário
     const tipoAgendamento = document.getElementById('tipo_agendamento');
+    const subtipoWrapper = document.getElementById('subtipo_wrapper');
+    const subtipoEvento = document.getElementById('subtipo_evento');
     const camposEsportivos = document.getElementById('campos_esportivos');
     const camposNaoEsportivos = document.getElementById('campos_nao_esportivos');
     const possuiMateriais = document.getElementsByName('possui_materiais');
@@ -97,10 +99,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const estimativaNaoEsp = document.getElementById('estimativa_participantes_nao_esp');
 
             if (this.value === 'esportivo') {
-                camposEsportivos.style.display = 'block';
-                camposNaoEsportivos.style.display = 'none';
+                // Mostrar campo de subtipo para eventos esportivos
+                if (subtipoWrapper) {
+                    subtipoWrapper.style.display = 'block';
+                }
                 if (subtipo1) {
                     subtipo1.required = true;
+                    // Adicionar listener para o subtipo quando ele aparecer
+                    subtipo1.addEventListener('change', function() {
+                        console.log('Subtipo mudou no event-form.js');
+                        // Chamar função do calendar.js se existir
+                        if (typeof window.updateSlotAvailability === 'function') {
+                            window.updateSlotAvailability();
+                        }
+                    });
+                }
+                
+                camposEsportivos.style.display = 'block';
+                camposNaoEsportivos.style.display = 'none';
+                
+                if (subtipo1) {
                     document.getElementById('esporte_tipo').required = true;
                     document.getElementById('lista_participantes').required = true;
                 }
@@ -117,8 +135,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     estimativaNaoEsp.disabled = true;
                 }
             } else if (this.value === 'nao_esportivo') {
+                // Ocultar campo de subtipo para eventos não esportivos
+                if (subtipoWrapper) {
+                    subtipoWrapper.style.display = 'none';
+                }
+                if (subtipo1) {
+                    subtipo1.required = false;
+                }
+                
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'block';
+                
                 if (subtipo2) {
                     subtipo2.required = true;
                     // Verificar se precisa ativar o campo "outro"
@@ -129,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     estimativaNaoEsp.disabled = false;
                 }
                 if (subtipo1) {
-                    subtipo1.required = false;
                     document.getElementById('esporte_tipo').required = false;
                     document.getElementById('lista_participantes').required = false;
                 }
@@ -138,8 +164,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     estimativaEsp.disabled = true;
                 }
             } else {
+                // Nenhum tipo selecionado
+                if (subtipoWrapper) {
+                    subtipoWrapper.style.display = 'none';
+                }
+                if (subtipo1) {
+                    subtipo1.required = false;
+                }
+                
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'none';
+            }
+
+            // Sempre solicitar atualização de disponibilidade do calendário
+            if (typeof window.updateSlotAvailability === 'function') {
+                window.updateSlotAvailability();
             }
         });
 
