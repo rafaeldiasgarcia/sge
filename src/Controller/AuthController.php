@@ -108,7 +108,7 @@ class AuthController extends BaseController
             // Superadmins fazem login direto sem 2FA (para facilitar administração)
             if ($user['role'] === 'superadmin') {
                 $this->createSession($user);
-                redirect('/');
+                redirect('/dashboard');
                 return;
             }
 
@@ -208,7 +208,7 @@ class AuthController extends BaseController
                 $userRepository->clearLoginCode($user['id']);
                 unset($_SESSION['login_email'], $_SESSION['verification_code_debug']);
                 $this->createSession($dbUser);
-                redirect('/');
+                redirect('/dashboard');
                 return;
             }
 
@@ -322,7 +322,7 @@ class AuthController extends BaseController
             $errors[] = "Para este tipo de vínculo, é obrigatório o uso de um e-mail institucional UNIFIO.";
         }
 
-        if (in_array($data['tipo_usuario_detalhado'], ['Aluno', 'Membro das Atléticas'])) {
+        if (in_array($data['tipo_usuario_detalhado'], ['Aluno', 'Membro das Atléticas', 'Professor'])) {
             if (empty($data['ra']) || !preg_match('/^[0-9]{6}$/', $data['ra'])) {
                 $errors[] = "O RA/Matrícula deve conter exatamente 6 números.";
             }

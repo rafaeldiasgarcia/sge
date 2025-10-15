@@ -7,11 +7,14 @@
  * no seu estado de autenticação.
  * 
  * Lógica de Redirecionamento:
- * - Usuários não autenticados → /login
- * - Todos os usuários autenticados → /dashboard (incluindo superadmin)
+ * - Usuários autenticados → /dashboard
+ * - Usuários não autenticados → /agenda (visualização pública)
  * 
  * Este controller implementa o padrão Front Controller, centralizando
  * o ponto de entrada da aplicação e delegando para os controllers específicos.
+ * 
+ * Nota: A rota /agenda também está disponível diretamente e pode ser
+ * acessada por usuários logados que queiram ver a agenda.
  * 
  * @package Application\Controller
  */
@@ -22,10 +25,11 @@ class HomeController extends BaseController
     public function index()
     {
         if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
-            // Todos os usuários, incluindo superadmin, vão para o dashboard comum
+            // Usuários logados vão direto para o dashboard
             redirect('/dashboard');
         } else {
-            redirect('/login');
+            // Usuários não logados veem a agenda pública
+            redirect('/agenda');
         }
     }
 }

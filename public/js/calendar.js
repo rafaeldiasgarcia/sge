@@ -64,9 +64,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     const diffTime = eventDate.getTime() - today.getTime();
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     
-                    if (diffDays < 4) {
-                        return; // Não permite seleção de datas com menos de 4 dias de antecedência
+                    // Verificar se é campeonato para aplicar regras especiais
+                    const tipoAgendamento = document.getElementById('tipo_agendamento');
+                    const subtipoEvento = document.getElementById('subtipo_evento');
+                    const isCampeonato = tipoAgendamento && tipoAgendamento.value === 'esportivo' && 
+                                       subtipoEvento && subtipoEvento.value === 'campeonato';
+                    
+                    // Para campeonatos: SEM NENHUMA restrição de data (exceto datas passadas)
+                    // Para outros eventos: aplicar restrições normais
+                    if (!isCampeonato) {
+                        if (diffDays < 4) {
+                            return; // Não permite seleção de datas com menos de 4 dias de antecedência
+                        }
+                        
+                        if (diffDays > 30) {
+                            return; // Não permite seleção de datas com mais de 1 mês de antecedência
+                        }
                     }
+                    // Se for campeonato, não aplica NENHUMA restrição de data (exceto datas passadas)
                 }
 
                 document.querySelectorAll('.slot.selected').forEach(b => b.classList.remove('selected'));
@@ -83,10 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (salvar) salvar.disabled = false;
 
-                // REQUISITO 3: Rolar a página para baixo até o formulário
-                if (formFields) {
-                    formFields.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                // Scroll removido - usuário não quer que a página role automaticamente
             });
         });
 
@@ -96,9 +108,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const mes = btn.dataset.mes;
                 calendarContainer.style.opacity = '0.5'; // Feedback visual de carregamento
 
+                // Verificar se é campeonato para passar o parâmetro correto
+                const tipoField = document.getElementById('tipo_agendamento');
+                const subtipoField = document.getElementById('subtipo_evento');
+                const isCampeonato = tipoField && tipoField.value === 'esportivo' && 
+                                   subtipoField && subtipoField.value === 'campeonato';
+
                 try {
                     // O caminho da requisição AJAX agora é absoluto, sem subpastas.
-                    const response = await fetch(`/calendario-partial?mes=${mes}`);
+                    const response = await fetch(`/calendario-partial?mes=${mes}&is_campeonato=${isCampeonato}`);
                     const html = await response.text();
                     calendarContainer.innerHTML = html;
                 } catch (e) {
@@ -114,4 +132,262 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Chama a função pela primeira vez para a carga inicial da página
     initializeCalendarLogic();
+    
+    // Adicionar listener para atualizar disponibilidade quando tipo de evento mudar
+    const tipoAgendamento = document.getElementById('tipo_agendamento');
+    let subtipoEvento = document.getElementById('subtipo_evento');
+    
+    function updateSlotAvailability() {
+        
+        // Re-buscar os campos caso tenham sido criados dinamicamente
+        const tipoField = document.getElementById('tipo_agendamento');
+        const subtipoField = document.getElementById('subtipo_evento');
+        
+        const isCampeonato = tipoField && tipoField.value === 'esportivo' && 
+                           subtipoField && subtipoField.value === 'campeonato';
+        
+        
+        if (isCampeonato) {
+            // Para campeonatos: aplicar regras especiais diretamente no calendário atual
+            setTimeout(() => {
+                aplicarRegrasCampeonato();
+            }, 100); // Pequeno delay para garantir que o DOM foi atualizado
+        } else {
+            // Para outros tipos, restaurar comportamento normal
+            restaurarRegrasNormais();
+        }
+    }
+    
+    function recarregarCalendarioNormal() {
+        const calendarContainer = document.getElementById('calendar-wrapper');
+        if (!calendarContainer) return;
+        
+        // Obter mês atual do calendário
+        const mesAtual = document.querySelector('.fw-semibold')?.textContent;
+        if (!mesAtual) return;
+        
+        // Extrair mês e ano (assumindo formato "janeiro de 2024")
+        const partes = mesAtual.split(' de ');
+        if (partes.length !== 2) return;
+        
+        const meses = {
+            'janeiro': '01', 'fevereiro': '02', 'março': '03', 'abril': '04',
+            'maio': '05', 'junho': '06', 'julho': '07', 'agosto': '08',
+            'setembro': '09', 'outubro': '10', 'novembro': '11', 'dezembro': '12'
+        };
+        
+        const mesNome = partes[0].toLowerCase();
+        const ano = partes[1];
+        const mesNumero = meses[mesNome];
+        
+        if (!mesNumero) return;
+        
+        const mesParam = `${ano}-${mesNumero}`;
+        
+        // Recarregar calendário via AJAX
+        calendarContainer.style.opacity = '0.5';
+        
+        fetch(`/calendario-partial?mes=${mesParam}&is_campeonato=false`)
+            .then(response => response.text())
+            .then(html => {
+                calendarContainer.innerHTML = html;
+                calendarContainer.style.opacity = '1';
+                
+                // Re-inicializar a lógica para o novo HTML
+                initializeCalendarLogic();
+            })
+            .catch(e => {
+                calendarContainer.innerHTML = '<div class="alert alert-danger">Erro ao carregar o calendário.</div>';
+                calendarContainer.style.opacity = '1';
+            });
+    }
+    
+    function recarregarCalendarioParaCampeonato() {
+        const calendarContainer = document.getElementById('calendar-wrapper');
+        if (!calendarContainer) return;
+        
+        // Obter mês atual do calendário
+        const mesAtual = document.querySelector('.fw-semibold')?.textContent;
+        if (!mesAtual) return;
+        
+        // Extrair mês e ano (assumindo formato "janeiro de 2024")
+        const partes = mesAtual.split(' de ');
+        if (partes.length !== 2) return;
+        
+        const meses = {
+            'janeiro': '01', 'fevereiro': '02', 'março': '03', 'abril': '04',
+            'maio': '05', 'junho': '06', 'julho': '07', 'agosto': '08',
+            'setembro': '09', 'outubro': '10', 'novembro': '11', 'dezembro': '12'
+        };
+        
+        const mesNome = partes[0].toLowerCase();
+        const ano = partes[1];
+        const mesNumero = meses[mesNome];
+        
+        if (!mesNumero) return;
+        
+        const mesParam = `${ano}-${mesNumero}`;
+        
+        // Recarregar calendário via AJAX
+        calendarContainer.style.opacity = '0.5';
+        
+        fetch(`/calendario-partial?mes=${mesParam}&is_campeonato=true`)
+            .then(response => response.text())
+            .then(html => {
+                calendarContainer.innerHTML = html;
+                calendarContainer.style.opacity = '1';
+                
+                // Aplicar regras especiais de campeonato após carregar
+                aplicarRegrasCampeonato();
+                
+                // Re-inicializar a lógica para o novo HTML
+                initializeCalendarLogic();
+            })
+            .catch(e => {
+                calendarContainer.innerHTML = '<div class="alert alert-danger">Erro ao carregar o calendário.</div>';
+                calendarContainer.style.opacity = '1';
+            });
+    }
+    
+    function aplicarRegrasCampeonato() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Atualizar mensagem do cabeçalho
+        const regraAntecedencia = document.getElementById('regra-antecedencia');
+        const regraCampeonato = document.getElementById('regra-campeonato');
+        
+        if (regraAntecedencia) regraAntecedencia.style.display = 'none';
+        if (regraCampeonato) regraCampeonato.style.display = 'inline';
+        
+        // Aplicar regras para todos os slots
+        document.querySelectorAll('.slot').forEach(btn => {
+            const dateStr = btn.dataset.date;
+            if (dateStr) {
+                const eventDate = new Date(dateStr);
+                eventDate.setHours(0, 0, 0, 0);
+                
+                if (eventDate < today) {
+                    // Para datas passadas: manter cores originais mas desabilitar
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                    // Manter as classes originais (btn-success ou btn-outline-secondary)
+                    // mas adicionar overlay cinza
+                    btn.style.opacity = '0.5';
+                } else {
+                    // Para datas futuras: sempre permitir seleção (mesmo ocupado)
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-success');
+                    // Forçar cor verde para campeonatos
+                    btn.style.backgroundColor = '#198754';
+                    btn.style.color = 'white';
+                    btn.style.opacity = '1';
+                    // Remover atributo disabled se existir
+                    btn.removeAttribute('disabled');
+                    // Forçar remoção de qualquer classe que impeça clique
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.cursor = 'pointer';
+                }
+            }
+        });
+        
+        // Atualizar badges de disponibilidade - manter cores originais para datas passadas
+        document.querySelectorAll('.calendar-cell').forEach(cell => {
+            const dateStr = cell.querySelector('.slot')?.dataset.date;
+            if (dateStr) {
+                const eventDate = new Date(dateStr);
+                eventDate.setHours(0, 0, 0, 0);
+                
+                const badge = cell.querySelector('.badge');
+                if (badge) {
+                    if (eventDate < today) {
+                        // Para datas passadas, manter cores originais mas com overlay
+                        badge.style.opacity = '0.5';
+                    } else {
+                        // Para datas futuras, sempre verde para campeonatos
+                        badge.className = 'badge bg-success';
+                        badge.style.opacity = '1';
+                    }
+                }
+                
+                // Remover classe past-date para datas futuras em campeonatos
+                if (eventDate >= today) {
+                    cell.classList.remove('past-date');
+                    // Limpar estilos CSS que podem estar aplicados
+                    cell.style.opacity = '';
+                    cell.style.filter = '';
+                    cell.style.pointerEvents = '';
+                }
+            }
+        });
+        
+    }
+    
+    function restaurarRegrasNormais() {
+        // Restaurar mensagem do cabeçalho
+        const regraAntecedencia = document.getElementById('regra-antecedencia');
+        const regraCampeonato = document.getElementById('regra-campeonato');
+        
+        if (regraAntecedencia) regraAntecedencia.style.display = 'inline';
+        if (regraCampeonato) regraCampeonato.style.display = 'none';
+        
+        // Limpar estilos aplicados pelos campeonatos
+        document.querySelectorAll('.slot').forEach(btn => {
+            btn.style.opacity = '';
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.style.pointerEvents = '';
+            btn.style.cursor = '';
+            // Não remover o disabled aqui, pois pode ser necessário para slots ocupados
+        });
+        
+        document.querySelectorAll('.badge').forEach(badge => {
+            badge.style.opacity = '';
+        });
+        
+        // Recarregar o calendário para restaurar o comportamento normal
+        recarregarCalendarioNormal();
+    }
+    
+    if (tipoAgendamento) {
+        tipoAgendamento.addEventListener('change', function() {
+            // Aguardar um pouco para o campo subtipo aparecer
+            setTimeout(() => {
+                updateSlotAvailability();
+            }, 100);
+        });
+    } else {
+    }
+    
+    // Usar MutationObserver para detectar quando o campo subtipo aparece
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                const target = mutation.target;
+                if (target.id === 'subtipo_wrapper' && target.style.display !== 'none') {
+                    const subtipoField = document.getElementById('subtipo_evento');
+                    if (subtipoField) {
+                        subtipoField.addEventListener('change', function() {
+                            updateSlotAvailability();
+                        });
+                    }
+                }
+            }
+        });
+    });
+    
+    // Observar mudanças no wrapper do subtipo
+    const subtipoWrapper = document.getElementById('subtipo_wrapper');
+    if (subtipoWrapper) {
+        observer.observe(subtipoWrapper, { attributes: true });
+    }
+    
+    // Executar na carga inicial para aplicar regras corretas
+    updateSlotAvailability();
+    
+    // Tornar a função global para ser chamada de outros scripts
+    window.updateSlotAvailability = updateSlotAvailability;
+    
 });

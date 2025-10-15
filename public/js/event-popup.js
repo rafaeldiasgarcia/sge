@@ -109,11 +109,17 @@ class EventPopup {
         try {
             const response = await fetch(`/agendamento/detalhes?id=${eventId}`);
 
+            const data = await response.json();
+
+            // Tratamento especial para usuário não autenticado (401)
+            if (response.status === 401 && data.error === 'not_authenticated') {
+                this.showLoginPrompt(data.message, data.login_url);
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const data = await response.json();
 
             if (data.error) {
                 this.showError(data.error);
@@ -162,6 +168,26 @@ class EventPopup {
         `;
     }
 
+    showLoginPrompt(message, loginUrl) {
+        this.container.innerHTML = `
+            <div class="event-login-prompt">
+                <div class="login-prompt-icon">
+                    <i class="bi bi-lock-fill"></i>
+                </div>
+                <h3>Faça login para ver os detalhes</h3>
+                <p>${message || 'Para visualizar informações completas sobre este evento, você precisa estar logado no sistema.'}</p>
+                <div class="login-prompt-buttons">
+                    <a href="${loginUrl || '/login'}" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right"></i> Fazer Login
+                    </a>
+                    <button class="btn btn-secondary" onclick="eventPopup.close()">
+                        Voltar
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
     renderEventDetails(evento) {
         const tipoEventoTexto = evento.tipo_agendamento === 'esportivo' ? 'Esportivo' : 'Não Esportivo';
         const statusClass = `status-${evento.status}`;
@@ -170,9 +196,14 @@ class EventPopup {
         const periodoTexto = this.getPeriodoTexto(evento.periodo);
         const dataFormatada = this.formatarData(evento.data_agendamento);
 
-        // Verificar o tipo de usuário
-        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
-        const isSuperAdmin = window.userRole === 'superadmin';
+        // Usar permissões do backend
+        // user_permission_level: 'full' = Superadmin ou Professor coordenador
+        // user_permission_level: 'limited' = Admin de atlética ou usuário comum
+        const hasFullAccess = evento.user_permission_level === 'full';
+        const isSuperAdmin = evento.user_role === 'superadmin';
+        
+        // Para compatibilidade com código antigo
+        const isAdminUser = hasFullAccess;
 
         let conteudo = `
             <div class="event-popup-header">
@@ -447,10 +478,10 @@ class EventPopup {
         // Fechar a grid antes de adicionar elementos full-width
         conteudo += `</div>`;
 
-        // Materiais - apenas para admin e superadmin
-        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
+        // Materiais - apenas para quem tem acesso total (superadmin ou professor coordenador)
+        const hasFullAccess = evento.user_permission_level === 'full';
 
-        if (isAdminUser && evento.possui_materiais !== null) {
+        if (hasFullAccess && evento.possui_materiais !== null) {
             const possuiMateriais = parseInt(evento.possui_materiais) === 1;
             conteudo += `
                 <div class="event-info-full">
@@ -472,8 +503,8 @@ class EventPopup {
             }
         }
 
-        // Lista de participantes - apenas para admin e superadmin
-        if (isAdminUser && evento.lista_participantes) {
+        // Lista de participantes - apenas para quem tem acesso total
+        if (hasFullAccess && evento.lista_participantes) {
             conteudo += `
                 <div class="event-info-full">
                     <label>Lista de Participantes (RAs)</label>
@@ -506,8 +537,8 @@ class EventPopup {
                 <div class="event-info-grid">
         `;
 
-        // Verificar se o usuário é admin ou superadmin
-        const isAdminUser = window.userRole === 'admin' || window.userRole === 'superadmin';
+        // Verificar nível de permissão do usuário
+        const hasFullAccess = evento.user_permission_level === 'full';
 
         // Mostrar total de presenças confirmadas ao invés de estimativa
         if (evento.total_presencas !== undefined) {
@@ -519,8 +550,8 @@ class EventPopup {
             `;
         }
 
-        // Mostrar estimativa apenas para admin e superadmin
-        if (isAdminUser && evento.estimativa_participantes) {
+        // Mostrar estimativa apenas para quem tem acesso total
+        if (hasFullAccess && evento.estimativa_participantes) {
             conteudo += `
                 <div class="event-info-item">
                     <label>Estimativa de Participantes</label>

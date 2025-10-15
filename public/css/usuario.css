@@ -1459,6 +1459,38 @@ img {
 .info-value {
     color: #64748b;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Botão discreto de troca de curso */
+.btn-trocar-curso {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    padding: 0;
+}
+
+.btn-trocar-curso:hover {
+    background: #f97316;
+    color: white;
+    border-color: #f97316;
+    transform: scale(1.05);
+}
+
+.btn-trocar-curso:active {
+    transform: scale(0.95);
 }
 
 /* Aba Meus Eventos */

@@ -318,4 +318,106 @@ class UsuarioController extends BaseController
 
         redirect('/perfil');
     }
+
+    public function solicitarTrocaCurso()
+    {
+        Auth::protect();
+
+        try {
+            $userId = Auth::id();
+            $cursoNovoId = (int)($_POST['curso_novo_id'] ?? 0);
+            $justificativa = trim($_POST['justificativa'] ?? '');
+
+            // Validações
+            if ($cursoNovoId <= 0) {
+                $_SESSION['error_message'] = "Por favor, selecione um curso válido.";
+                redirect('/perfil');
+                return;
+            }
+
+            if (strlen($justificativa) < 50) {
+                $_SESSION['error_message'] = "A justificativa deve ter no mínimo 50 caracteres.";
+                redirect('/perfil');
+                return;
+            }
+
+            $userRepository = $this->repository('UsuarioRepository');
+            $solicitacaoRepository = $this->repository('SolicitacaoTrocaCursoRepository');
+
+            // Verificar se já tem solicitação pendente
+            if ($solicitacaoRepository->hasSolicitacaoPendente($userId)) {
+                $_SESSION['error_message'] = "Você já possui uma solicitação de troca de curso pendente. Aguarde a resposta do coordenador.";
+                redirect('/perfil');
+                return;
+            }
+
+            // Buscar curso atual do usuário
+            $user = $userRepository->findById($userId);
+            $cursoAtualId = $user['curso_id'] ?? null;
+
+            // Verificar se o curso novo é diferente do atual
+            if ($cursoAtualId && $cursoAtualId == $cursoNovoId) {
+                $_SESSION['error_message'] = "O curso selecionado é o mesmo que seu curso atual.";
+                redirect('/perfil');
+                return;
+            }
+
+            // Criar a solicitação
+            $success = $solicitacaoRepository->create($userId, $cursoAtualId, $cursoNovoId, $justificativa);
+
+            if ($success) {
+                $_SESSION['success_message'] = "Solicitação enviada com sucesso! O coordenador analisará seu pedido e você receberá uma notificação com a resposta.";
+                
+                // Notificar todos os super admins sobre a nova solicitação
+                $this->notificarSuperAdminsNovaSolicitacao($userId);
+            } else {
+                $_SESSION['error_message'] = "Erro ao enviar solicitação. Tente novamente.";
+            }
+        } catch (\Exception $e) {
+            error_log("Erro em solicitarTrocaCurso: " . $e->getMessage());
+            $_SESSION['error_message'] = "Ocorreu um erro ao processar sua solicitação.";
+        }
+
+        redirect('/perfil');
+    }
+
+    /**
+     * Notifica todos os super admins sobre uma nova solicitação de troca de curso
+     * 
+     * @param int $usuarioId ID do usuário que solicitou a troca
+     * @return void
+     */
+    private function notificarSuperAdminsNovaSolicitacao(int $usuarioId): void
+    {
+        try {
+            $userRepository = $this->repository('UsuarioRepository');
+            $notificationRepository = $this->repository('NotificationRepository');
+
+            // Buscar informações do usuário solicitante
+            $usuario = $userRepository->findById($usuarioId);
+            
+            if (!$usuario) {
+                return;
+            }
+
+            // Buscar todos os super admins
+            $superAdmins = $userRepository->findSuperAdmins();
+
+            // Criar notificação para cada super admin
+            $titulo = '🔔 Nova Solicitação de Troca de Curso';
+            $mensagem = "O aluno " . $usuario['nome'] . " (RA: " . ($usuario['ra'] ?? 'N/A') . ") solicitou uma troca de curso. Acesse 'Gerenciar Usuários' para analisar o pedido.";
+
+            foreach ($superAdmins as $admin) {
+                $notificationRepository->create(
+                    $admin['id'],
+                    $titulo,
+                    $mensagem,
+                    'sistema'
+                );
+            }
+        } catch (\Exception $e) {
+            error_log("Erro ao notificar super admins: " . $e->getMessage());
+            // Não interrompe o fluxo principal se falhar a notificação
+        }
+    }
 }

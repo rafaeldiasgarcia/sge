@@ -93,16 +93,62 @@ class SuperAdminController extends BaseController
         Auth::protectSuperAdmin();
         $id = (int)($_POST['id'] ?? 0);
         if ($id <= 0) redirect('/superadmin/agendamentos');
+        
         $agendamentoRepo = $this->repository('AgendamentoRepository');
+        
+        // Buscar detalhes do agendamento para verificar se é campeonato
+        $agendamento = $agendamentoRepo->findById($id);
+        if (!$agendamento) {
+            $_SESSION['error_message'] = "Agendamento não encontrado.";
+            redirect('/superadmin/agendamentos');
+        }
+        
         $slot = $agendamentoRepo->findSlotById($id);
+        $isCampeonato = ($agendamento['tipo_agendamento'] === 'esportivo' && 
+                         $agendamento['subtipo_evento'] === 'campeonato');
+        
+        // Verificar se o slot está ocupado
         if ($slot && $agendamentoRepo->isSlotOccupied($slot['data_agendamento'], $slot['periodo'])) {
-            $_SESSION['error_message'] = "Falha na Aprovação! Já existe um evento aprovado para esta data e período.";
+            if ($isCampeonato) {
+                // Para campeonatos, cancelar eventos conflitantes
+                $eventosCancelados = $agendamentoRepo->cancelarEventosConflitantes(
+                    $slot['data_agendamento'], 
+                    $slot['periodo'], 
+                    $id
+                );
+                
+                // Aprovar o campeonato
+                $agendamentoRepo->approveAgendamento($id);
+                
+                // Enviar notificações de cancelamento para usuários afetados
+                foreach ($eventosCancelados as $eventoCancelado) {
+                    $this->notificationService->notifyEventoCanceladoPorCampeonato(
+                        $eventoCancelado['usuario_id'], 
+                        $eventoCancelado['titulo'],
+                        $slot['data_agendamento'],
+                        $slot['periodo']
+                    );
+                }
+                
+                // Enviar notificação de aprovação do campeonato
+                $this->notificationService->notifyAgendamentoAprovado($id);
+                
+                $mensagem = "Campeonato aprovado com sucesso!";
+                if (!empty($eventosCancelados)) {
+                    $mensagem .= " " . count($eventosCancelados) . " evento(s) conflitante(s) foi(ram) cancelado(s) automaticamente.";
+                }
+                $_SESSION['success_message'] = $mensagem;
+            } else {
+                $_SESSION['error_message'] = "Falha na Aprovação! Já existe um evento aprovado para esta data e período.";
+            }
         } else {
+            // Slot livre, aprovar normalmente
             $agendamentoRepo->approveAgendamento($id);
             // Enviar notificação de aprovação
             $this->notificationService->notifyAgendamentoAprovado($id);
             $_SESSION['success_message'] = "Agendamento aprovado com sucesso!";
         }
+        
         redirect('/superadmin/agendamentos');
     }
 
@@ -197,11 +243,18 @@ class SuperAdminController extends BaseController
     {
         Auth::protectSuperAdmin();
         $userRepo = $this->repository('UsuarioRepository');
+        $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
+        
         $usuarios = $userRepo->findAllExcept(Auth::id());
+        $solicitacoesPendentes = $solicitacaoRepo->findPendentes();
+        $solicitacoesProcessadas = $solicitacaoRepo->findProcessadas();
+        
         view('super_admin/gerenciar-usuarios', [
             'title' => 'Gerenciar Usuários',
             'user' => $this->getUserData(),
-            'usuarios' => $usuarios
+            'usuarios' => $usuarios,
+            'solicitacoes_pendentes' => $solicitacoesPendentes,
+            'solicitacoes_processadas' => $solicitacoesProcessadas
         ]);
     }
 
@@ -714,5 +767,149 @@ class SuperAdminController extends BaseController
         }
 
         redirect('/superadmin/dashboard');
+    }
+
+    // ===================================================================
+    // GERENCIAMENTO DE SOLICITAÇÕES DE TROCA DE CURSO
+    // ===================================================================
+
+    public function aprovarTrocaCurso()
+    {
+        Auth::protectSuperAdmin();
+
+        try {
+            $solicitacaoId = (int)($_POST['solicitacao_id'] ?? 0);
+
+            if ($solicitacaoId <= 0) {
+                $_SESSION['error_message'] = "Solicitação inválida.";
+                redirect('/superadmin/usuarios');
+                return;
+            }
+
+            $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
+            $userRepo = $this->repository('UsuarioRepository');
+
+            // Buscar dados da solicitação
+            $solicitacao = $solicitacaoRepo->findById($solicitacaoId);
+
+            if (!$solicitacao) {
+                $_SESSION['error_message'] = "Solicitação não encontrada.";
+                redirect('/superadmin/usuarios');
+                return;
+            }
+
+            // Buscar dados do usuário
+            $usuario = $userRepo->findById($solicitacao['usuario_id']);
+
+            if (!$usuario) {
+                $_SESSION['error_message'] = "Usuário não encontrado.";
+                redirect('/superadmin/usuarios');
+                return;
+            }
+
+            // REGRA IMPORTANTE: Se o usuário for membro de uma atlética, 
+            // ao trocar de curso ele deve voltar a ser aluno padrão
+            $eraMembroAtletica = false;
+            if ($usuario['atletica_id'] && $usuario['atletica_join_status'] === 'aprovado') {
+                $eraMembroAtletica = true;
+            }
+
+            // Atualizar curso do usuário
+            $updateData = [
+                'curso_id' => $solicitacao['curso_novo_id']
+            ];
+
+            // Se era membro de atlética, resetar para aluno padrão
+            if ($eraMembroAtletica) {
+                $updateData['atletica_id'] = null;
+                $updateData['atletica_join_status'] = 'none';
+                $updateData['tipo_usuario_detalhado'] = 'Aluno';
+                
+                // Se era admin da atlética, rebaixar para usuário comum
+                if ($usuario['role'] === 'admin') {
+                    $updateData['role'] = 'usuario';
+                }
+            }
+
+            // Atualizar perfil do usuário
+            $userRepo->updateProfileData($solicitacao['usuario_id'], $updateData);
+
+            // Aprovar a solicitação
+            $solicitacaoRepo->aprovar($solicitacaoId, Auth::id());
+
+            // Enviar notificação ao usuário
+            $notificationRepo = $this->repository('NotificationRepository');
+            $mensagem = "Sua solicitação de troca de curso foi APROVADA! Seu curso foi alterado para: " . $solicitacao['curso_novo_nome'] . ".";
+            
+            if ($eraMembroAtletica) {
+                $mensagem .= " Como você era membro de uma atlética, seu status foi alterado para 'Aluno'. Você pode solicitar entrada na nova atlética do seu curso.";
+            }
+            
+            $notificationRepo->create(
+                $solicitacao['usuario_id'],
+                'Troca de Curso Aprovada ✅',
+                $mensagem,
+                'info'
+            );
+
+            $_SESSION['success_message'] = "Solicitação aprovada com sucesso! O curso do aluno foi alterado.";
+        } catch (\Exception $e) {
+            error_log("Erro ao aprovar troca de curso: " . $e->getMessage());
+            $_SESSION['error_message'] = "Erro ao processar a solicitação.";
+        }
+
+        redirect('/superadmin/usuarios');
+    }
+
+    public function recusarTrocaCurso()
+    {
+        Auth::protectSuperAdmin();
+
+        try {
+            $solicitacaoId = (int)($_POST['solicitacao_id'] ?? 0);
+            $motivo = trim($_POST['motivo_recusa'] ?? '');
+
+            if ($solicitacaoId <= 0) {
+                $_SESSION['error_message'] = "Solicitação inválida.";
+                redirect('/superadmin/usuarios');
+                return;
+            }
+
+            $solicitacaoRepo = $this->repository('SolicitacaoTrocaCursoRepository');
+
+            // Buscar dados da solicitação
+            $solicitacao = $solicitacaoRepo->findById($solicitacaoId);
+
+            if (!$solicitacao) {
+                $_SESSION['error_message'] = "Solicitação não encontrada.";
+                redirect('/superadmin/usuarios');
+                return;
+            }
+
+            // Recusar a solicitação
+            $solicitacaoRepo->recusar($solicitacaoId, Auth::id(), $motivo);
+
+            // Enviar notificação ao usuário
+            $notificationRepo = $this->repository('NotificationRepository');
+            $mensagem = "Sua solicitação de troca de curso foi RECUSADA.";
+            
+            if (!empty($motivo)) {
+                $mensagem .= " Motivo: " . $motivo;
+            }
+            
+            $notificationRepo->create(
+                $solicitacao['usuario_id'],
+                'Troca de Curso Recusada ❌',
+                $mensagem,
+                'aviso'
+            );
+
+            $_SESSION['success_message'] = "Solicitação recusada. O aluno foi notificado.";
+        } catch (\Exception $e) {
+            error_log("Erro ao recusar troca de curso: " . $e->getMessage());
+            $_SESSION['error_message'] = "Erro ao processar a solicitação.";
+        }
+
+        redirect('/superadmin/usuarios');
     }
 }

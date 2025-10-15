@@ -4,12 +4,12 @@
  * VIEW: AGENDA PÚBLICA DA QUADRA
  * ============================================================================
  * 
- * Exibe todos os eventos aprovados (futuros e passados) com opção de
- * confirmação de presença.
+ * Exibe todos os eventos aprovados (futuros e passados). A agenda é PÚBLICA
+ * (não requer login), mas para marcar presença é necessário estar autenticado.
  * 
  * FUNCIONALIDADES:
- * - Visualizar eventos esportivos e não esportivos separadamente
- * - Marcar/desmarcar presença em eventos futuros via AJAX
+ * - Visualizar eventos esportivos e não esportivos separadamente (PÚBLICO)
+ * - Marcar/desmarcar presença em eventos futuros via AJAX (REQUER LOGIN)
  * - Ver contador de presenças confirmadas em tempo real
  * - Expandir seção de eventos passados
  * - Popup com detalhes do evento ao clicar
@@ -21,6 +21,7 @@
  * @var array $eventos_passados_esportivos    - Eventos esportivos passados
  * @var array $eventos_passados_nao_esportivos- Eventos não esportivos passados
  * @var array $eventos_passados               - Todos os eventos passados
+ * @var bool  $is_logged_in                   - Se o usuário está autenticado
  * 
  * ESTRUTURA DE EVENTOS:
  * - id, titulo, data_agendamento, horario_periodo, periodo
@@ -29,12 +30,13 @@
  * - total_presencas, presenca_id (se user marcou presença)
  * 
  * FEATURES:
- * - Atualização AJAX de presenças sem reload
+ * - Atualização AJAX de presenças sem reload (apenas para logados)
  * - Contadores dinâmicos
  * - Toggle entre eventos esportivos/não esportivos
  * - Seção colapsável de eventos passados
+ * - Link para login quando usuário não autenticado tenta interagir
  * 
- * CONTROLLER: AgendaController::agenda()
+ * CONTROLLER: AgendaController::index()
  * JAVASCRIPT: Inline (marcação de presença AJAX, toggles)
  * CSS: agenda.css, calendar.css
  */
@@ -103,18 +105,24 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn"
-                                            data-agendamento-id="<?php echo $evento['id']; ?>"
-                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                        <?php if ($evento['presenca_id']): ?>
-                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                        <?php else: ?>
-                                            <i class="bi bi-check-circle"></i> Marcar Presença
-                                        <?php endif; ?>
-                                    </button>
-                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
-                                    </div>
+                                    <?php if ($is_logged_in): ?>
+                                        <button type="button" class="btn btn-sm presenca-btn"
+                                                data-agendamento-id="<?php echo $evento['id']; ?>"
+                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                            <?php if ($evento['presenca_id']): ?>
+                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                            <?php else: ?>
+                                                <i class="bi bi-check-circle"></i> Marcar Presença
+                                            <?php endif; ?>
+                                        </button>
+                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                            <span class="visually-hidden">Carregando...</span>
+                                        </div>
+                                    <?php else: ?>
+                                        <a href="/login" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-box-arrow-in-right"></i> Faça login para marcar presença
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -162,18 +170,24 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-sm presenca-btn"
-                                            data-agendamento-id="<?php echo $evento['id']; ?>"
-                                            data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
-                                        <?php if ($evento['presenca_id']): ?>
-                                            <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
-                                        <?php else: ?>
-                                            <i class="bi bi-check-circle"></i> Marcar Presença
-                                        <?php endif; ?>
-                                    </button>
-                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
-                                    </div>
+                                    <?php if ($is_logged_in): ?>
+                                        <button type="button" class="btn btn-sm presenca-btn"
+                                                data-agendamento-id="<?php echo $evento['id']; ?>"
+                                                data-action="<?php echo $evento['presenca_id'] ? 'desmarcar' : 'marcar'; ?>">
+                                            <?php if ($evento['presenca_id']): ?>
+                                                <i class="bi bi-x-circle-fill"></i> Desmarcar Presença
+                                            <?php else: ?>
+                                                <i class="bi bi-check-circle"></i> Marcar Presença
+                                            <?php endif; ?>
+                                        </button>
+                                        <div class="spinner-border spinner-border-sm d-none ms-2" role="status">
+                                            <span class="visually-hidden">Carregando...</span>
+                                        </div>
+                                    <?php else: ?>
+                                        <a href="/login" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-box-arrow-in-right"></i> Faça login para marcar presença
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>

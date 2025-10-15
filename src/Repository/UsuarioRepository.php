@@ -312,6 +312,26 @@ class UsuarioRepository
             $params[':telefone'] = $data['telefone'];
         }
         
+        if (isset($data['atletica_id'])) {
+            $fields[] = "atletica_id = :atletica_id";
+            $params[':atletica_id'] = $data['atletica_id'];
+        }
+        
+        if (isset($data['atletica_join_status'])) {
+            $fields[] = "atletica_join_status = :atletica_join_status";
+            $params[':atletica_join_status'] = $data['atletica_join_status'];
+        }
+        
+        if (isset($data['tipo_usuario_detalhado'])) {
+            $fields[] = "tipo_usuario_detalhado = :tipo_usuario_detalhado";
+            $params[':tipo_usuario_detalhado'] = $data['tipo_usuario_detalhado'];
+        }
+        
+        if (isset($data['role'])) {
+            $fields[] = "role = :role";
+            $params[':role'] = $data['role'];
+        }
+        
         // Se não há campos para atualizar, retorna sucesso
         if (empty($fields)) {
             return true;
@@ -323,7 +343,7 @@ class UsuarioRepository
         
         // Bind dos parâmetros com os tipos corretos
         foreach ($params as $key => $value) {
-            if ($key === ':id' || $key === ':curso_id') {
+            if ($key === ':id' || $key === ':curso_id' || $key === ':atletica_id') {
                 // IDs são inteiros
                 $stmt->bindValue($key, $value, PDO::PARAM_INT);
             } else {

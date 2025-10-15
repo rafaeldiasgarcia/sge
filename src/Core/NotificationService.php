@@ -187,6 +187,26 @@ class NotificationService
     }
 
     /**
+     * Notifica quando um evento é cancelado devido à aprovação de um campeonato
+     */
+    public function notifyEventoCanceladoPorCampeonato(int $usuarioId, string $tituloEvento, string $data, string $periodo): bool
+    {
+        $horario = ($periodo === 'primeiro') ? '19:15 - 20:55' : '21:10 - 22:50';
+        $dataFormatada = date('d/m/Y', strtotime($data));
+        
+        $titulo = "Evento Cancelado por Campeonato 🏆";
+        $mensagem = "Seu evento '{$tituloEvento}' agendado para {$dataFormatada} ({$horario}) foi cancelado automaticamente devido à aprovação de um campeonato no mesmo horário. Pedimos desculpas pelo inconveniente.";
+
+        return $this->notificationRepo->create(
+            $usuarioId,
+            $titulo,
+            $mensagem,
+            'evento_cancelado_campeonato',
+            null
+        );
+    }
+
+    /**
      * Notifica quando um agendamento é editado
      */
     public function notifyAgendamentoEditado(int $agendamentoId, string $statusAnterior): bool

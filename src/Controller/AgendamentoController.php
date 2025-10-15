@@ -19,7 +19,8 @@
  * Regras de Negócio implementadas:
  * - Apenas 1 agendamento aprovado por horário/data
  * - Usuários podem agendar no máximo 1 evento esportivo por modalidade por semana
- * - Atléticas podem ter no máximo 1 treino por modalidade por semana
+ * - Atléticas podem ter no máximo 1 evento por semana (esportivo ou não esportivo)
+ * - Super Admin é imune a todas as restrições de agendamento
  * - Agendamentos editados retornam para status 'pendente'
  * - Super Admin deve aprovar todos os agendamentos
  * 
@@ -82,7 +83,8 @@ class AgendamentoController extends BaseController
             'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
             'ocupado' => $ocupado,
             'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
-            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m')
+            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m'),
+            'isCampeonato' => false // Será atualizado via JavaScript
         ]);
     }
 
@@ -91,11 +93,17 @@ class AgendamentoController extends BaseController
         Auth::protect();
         $this->_checkSchedulingPermission();
 
+        // Função auxiliar para salvar dados do formulário em sessão
+        $saveFormData = function($errorMessage) {
+            $_SESSION['form_data'] = $_POST;
+            $_SESSION['error_message'] = $errorMessage;
+            redirect('/agendar-evento');
+        };
+
         $requiredFields = ['titulo', 'tipo_agendamento', 'data_agendamento', 'periodo', 'responsavel_evento'];
         foreach ($requiredFields as $field) {
             if (empty($_POST[$field])) {
-                $_SESSION['error_message'] = "Preencha todos os campos obrigatórios.";
-                redirect('/agendar-evento');
+                $saveFormData("Preencha todos os campos obrigatórios.");
             }
         }
 
@@ -104,8 +112,7 @@ class AgendamentoController extends BaseController
         $is_coordenador = Auth::get('is_coordenador');
         if ($is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin') {
             if ($_POST['tipo_agendamento'] === 'esportivo') {
-                $_SESSION['error_message'] = "Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.";
-                redirect('/agendar-evento');
+                $saveFormData("Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.");
             }
         }
 
@@ -115,36 +122,68 @@ class AgendamentoController extends BaseController
         
         // Verifica se a data já passou
         if ($dataEventoObj < $hoje) {
-            $_SESSION['error_message'] = "Não é possível agendar eventos em datas que já passaram.";
-            redirect('/agendar-evento');
+            $saveFormData("Não é possível agendar eventos em datas que já passaram.");
         }
         
         $diferencaDias = $hoje->diff($dataEventoObj)->days;
 
         $subtipo = $_POST['subtipo_evento'] ?? '';
-        if ($subtipo !== 'campeonato' && $diferencaDias < 4) {
-            $_SESSION['error_message'] = "A data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).";
-            redirect('/agendar-evento');
+        $isCampeonato = ($_POST['tipo_agendamento'] === 'esportivo' && $subtipo === 'campeonato');
+        
+        // Para campeonatos: SEM NENHUMA restrição de data
+        // Para outros eventos: aplicar restrições normais
+        if (!$isCampeonato) {
+            if ($diferencaDias < 4) {
+                $saveFormData("A data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).");
+            }
+            if ($diferencaDias > 30) {
+                $saveFormData("A data não pode ser agendada com mais de 1 mês de antecedência.");
+            }
         }
+        // Se for campeonato, não aplica NENHUMA restrição de data
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
 
-        if ($agendamentoRepo->isSlotOccupied($dataEvento, $_POST['periodo'])) {
-            $_SESSION['error_message'] = "Este horário já está reservado!";
-            redirect('/agendar-evento');
+        // Para campeonatos: pode ocupar qualquer horário (mesmo ocupado)
+        // Para outros eventos: verificar se o slot está livre
+        if (!$isCampeonato && $agendamentoRepo->isSlotOccupied($dataEvento, $_POST['periodo'])) {
+            $saveFormData("Este horário já está reservado!");
         }
+        // Se for campeonato, pode ocupar qualquer horário
 
-        // Verifica limite semanal para eventos esportivos
-        if ($_POST['tipo_agendamento'] === 'esportivo') {
-            $userId = Auth::id();
-            $esporteTipo = $_POST['esporte_tipo'] ?? '';
-            if (empty($esporteTipo)) {
-                $_SESSION['error_message'] = "O tipo de esporte é obrigatório para eventos esportivos.";
-                redirect('/agendar-evento');
+        // Super Admin é imune a todas as restrições de agendamento
+        $isSuperAdmin = Auth::role() === 'superadmin';
+        
+        if (!$isSuperAdmin) {
+            // Verifica limite semanal por atlética (todos os tipos de evento)
+            $atleticaId = Auth::get('atletica_id');
+            if ($atleticaId) {
+                if ($agendamentoRepo->hasAtleticaEventInWeek($atleticaId, $dataEvento)) {
+                    $saveFormData("Sua atlética já possui um evento agendado nesta semana. Limite de 1 evento por semana por atlética.");
+                }
             }
-            if ($agendamentoRepo->hasUserSportEventInWeek($userId, $dataEvento, $esporteTipo)) {
-                $_SESSION['error_message'] = "Você já possui um evento de {$esporteTipo} agendado nesta semana. Limite de 1 evento por semana para cada tipo de esporte.";
-                redirect('/agendar-evento');
+
+            // Verifica limite semanal para eventos esportivos (por modalidade)
+            if ($_POST['tipo_agendamento'] === 'esportivo') {
+                $userId = Auth::id();
+                $esporteTipo = $_POST['esporte_tipo'] ?? '';
+                
+                if (empty($esporteTipo)) {
+                    $saveFormData("O tipo de esporte é obrigatório para eventos esportivos.");
+                }
+                
+                // Verifica se o usuário já tem um evento do mesmo tipo de esporte na semana
+                if ($agendamentoRepo->hasUserSportEventInWeek($userId, $dataEvento, $esporteTipo)) {
+                    $saveFormData("Você já possui um evento de {$esporteTipo} agendado nesta semana. Limite de 1 evento por semana para cada tipo de esporte.");
+                }
+            }
+        } else {
+            // Para Super Admin, apenas valida se o tipo de esporte é obrigatório
+            if ($_POST['tipo_agendamento'] === 'esportivo') {
+                $esporteTipo = $_POST['esporte_tipo'] ?? '';
+                if (empty($esporteTipo)) {
+                    $saveFormData("O tipo de esporte é obrigatório para eventos esportivos.");
+                }
             }
         }
 
@@ -170,8 +209,7 @@ class AgendamentoController extends BaseController
             ]);
 
             if (empty($_POST['esporte_tipo']) || empty($_POST['lista_participantes'])) {
-                $_SESSION['error_message'] = "Preencha todos os campos obrigatórios para eventos esportivos.";
-                redirect('/agendar-evento');
+                $saveFormData("Preencha todos os campos obrigatórios para eventos esportivos.");
             }
 
             $listaRAs = array_filter(array_map('trim', explode("\n", $_POST['lista_participantes'])));
@@ -180,15 +218,13 @@ class AgendamentoController extends BaseController
                 $rasInexistentes = $userRepo->findRAsInexistentes($listaRAs);
 
                 if (!empty($rasInexistentes)) {
-                    $_SESSION['error_message'] = "Os seguintes RAs não foram encontrados no sistema: " . implode(', ', $rasInexistentes);
-                    redirect('/agendar-evento');
+                    $saveFormData("Os seguintes RAs não foram encontrados no sistema: " . implode(', ', $rasInexistentes));
                 }
             }
 
             if (isset($_POST['possui_materiais']) && $_POST['possui_materiais'] === '0') {
                 if (empty($_POST['materiais_necessarios']) || !isset($_POST['responsabiliza_devolucao'])) {
-                    $_SESSION['error_message'] = "Quando não possui materiais, é obrigatório descrever os materiais necessários e aceitar a responsabilização.";
-                    redirect('/agendar-evento');
+                    $saveFormData("Quando não possui materiais, é obrigatório descrever os materiais necessários e aceitar a responsabilização.");
                 }
             }
         } else {
@@ -200,17 +236,17 @@ class AgendamentoController extends BaseController
             ]);
 
             if (empty($_POST['estimativa_participantes']) || $_POST['estimativa_participantes'] <= 0) {
-                $_SESSION['error_message'] = "Informe uma estimativa válida de participantes.";
-                redirect('/agendar-evento');
+                $saveFormData("Informe uma estimativa válida de participantes.");
             }
         }
 
         if ($agendamentoRepo->createAgendamento($data)) {
+            // Limpar dados do formulário da sessão em caso de sucesso
+            unset($_SESSION['form_data']);
             $_SESSION['success_message'] = "Solicitação enviada com sucesso! Aguarde aprovação do Coordenador de Educação Física.";
             redirect('/meus-agendamentos');
         } else {
-            $_SESSION['error_message'] = "Erro ao processar a solicitação. Tente novamente.";
-            redirect('/agendar-evento');
+            $saveFormData("Erro ao processar a solicitação. Tente novamente.");
         }
     }
 
@@ -362,19 +398,43 @@ class AgendamentoController extends BaseController
 
         // Só valida os 4 dias se a data foi alterada
         if ($data['data_agendamento'] !== $agendamentoAtual['data_agendamento']) {
-            if ($subtipo !== 'campeonato' && $diferencaDias < 4) {
-                $_SESSION['error_message'] = "A nova data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).";
-                redirect("/agendamento/editar/$id");
+            // Para campeonatos: SEM NENHUMA restrição de data
+            // Para outros eventos: aplicar restrições normais
+            if ($subtipo !== 'campeonato') {
+                if ($diferencaDias < 4) {
+                    $_SESSION['error_message'] = "A nova data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).";
+                    redirect("/agendamento/editar/$id");
+                }
+                if ($diferencaDias > 30) {
+                    $_SESSION['error_message'] = "A nova data não pode ser agendada com mais de 1 mês de antecedência.";
+                    redirect("/agendamento/editar/$id");
+                }
             }
+            // Se for campeonato, não aplica NENHUMA restrição de data
         }
 
-        // Se for evento esportivo, verifica a limitação semanal
-        if ($data['tipo_agendamento'] === 'esportivo') {
-            $userId = Auth::id();
-            $novaData = $data['data_agendamento'];
+        // Super Admin é imune a todas as restrições de agendamento
+        $isSuperAdmin = Auth::role() === 'superadmin';
+        $novaData = $data['data_agendamento'];
 
-            // Só verifica se a data está sendo alterada
-            if ($novaData !== $agendamentoAtual['data_agendamento']) {
+        // Só verifica se a data está sendo alterada e se não for Super Admin
+        if ($novaData !== $agendamentoAtual['data_agendamento'] && !$isSuperAdmin) {
+            // Verifica limitação semanal por atlética (todos os tipos de evento)
+            $atleticaId = Auth::get('atletica_id');
+            
+            // Verifica se a atlética já tem um evento na semana
+            if ($atleticaId) {
+                if ($agendamentoRepo->hasAtleticaEventInWeek($atleticaId, $novaData)) {
+                    $_SESSION['error_message'] = "Sua atlética já possui um evento agendado nesta semana. Limite de 1 evento por semana por atlética.";
+                    redirect("/agendamento/editar/$id");
+                }
+            }
+            
+            // Se for evento esportivo, verifica a limitação por modalidade
+            if ($data['tipo_agendamento'] === 'esportivo') {
+                $userId = Auth::id();
+                
+                // Verifica se o usuário já tem um evento do mesmo tipo de esporte na semana
                 if ($agendamentoRepo->hasUserSportEventInWeek($userId, $novaData, $data['esporte_tipo'])) {
                     $_SESSION['error_message'] = "Você já possui um evento de {$data['esporte_tipo']} agendado nesta semana. Escolha outra data.";
                     redirect("/agendamento/editar/$id");
@@ -411,6 +471,8 @@ class AgendamentoController extends BaseController
     public function getCalendarPartial()
     {
         $mesParam = $_GET['mes'] ?? date('Y-m');
+        $isCampeonato = isset($_GET['is_campeonato']) && $_GET['is_campeonato'] === 'true';
+        
         try {
             $inicio = new \DateTime($mesParam . '-01');
         } catch (\Throwable $e) {
@@ -433,7 +495,8 @@ class AgendamentoController extends BaseController
             'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
             'ocupado' => $ocupado,
             'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
-            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m')
+            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m'),
+            'isCampeonato' => $isCampeonato
         ];
 
         extract($data);
@@ -478,11 +541,15 @@ class AgendamentoController extends BaseController
         // Iniciar novo buffer
         ob_start();
 
-        // Verificar autenticação sem redirecionamento
+        // Verificar se usuário está logado para mensagem customizada
         if (!Auth::check()) {
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(401);
-            echo json_encode(['error' => 'Não autenticado']);
+            echo json_encode([
+                'error' => 'not_authenticated',
+                'message' => 'Faça login para ver mais detalhes sobre este evento',
+                'login_url' => '/login'
+            ]);
             ob_end_flush();
             exit;
         }
@@ -509,14 +576,48 @@ class AgendamentoController extends BaseController
                 exit;
             }
 
-            // Buscar lista de presenças
-            try {
-                $presencas = $agendamentoRepo->getPresencasByAgendamento($id);
-                $evento['presencas'] = is_array($presencas) ? $presencas : [];
-            } catch (\Exception $e) {
-                // Se houver erro ao buscar presenças, continuar sem elas
+            // Determinar nível de acesso do usuário
+            $role = Auth::role();
+            $isCoordenador = Auth::get('is_coordenador') == 1;
+            $tipoUsuario = Auth::get('tipo_usuario_detalhado');
+            
+            // Permissão total: Superadmin ou Professor coordenador
+            $hasFullAccess = ($role === 'superadmin') || 
+                           ($tipoUsuario === 'Professor' && $isCoordenador);
+            
+            // Permissão limitada: Admin de atlética ou usuário comum
+            $hasLimitedAccess = ($role === 'admin') || ($role === 'usuario');
+
+            // Buscar lista de presenças APENAS para quem tem acesso total
+            if ($hasFullAccess) {
+                try {
+                    $presencas = $agendamentoRepo->getPresencasByAgendamento($id);
+                    $evento['presencas'] = is_array($presencas) ? $presencas : [];
+                } catch (\Exception $e) {
+                    $evento['presencas'] = [];
+                }
+            } else {
+                // Admin de atlética e usuário comum NÃO veem lista de presenças
                 $evento['presencas'] = [];
             }
+
+            // Filtrar campos sensíveis para usuários com acesso limitado
+            if ($hasLimitedAccess && !$hasFullAccess) {
+                // Remover dados sensíveis do solicitante
+                unset($evento['criador_telefone']);
+                unset($evento['criador_email']);
+                unset($evento['criador_tipo']);
+                
+                // Remover informações administrativas
+                unset($evento['lista_participantes']);
+                unset($evento['estimativa_participantes']);
+                unset($evento['materiais_necessarios']);
+                unset($evento['possui_materiais']);
+            }
+
+            // Adicionar informação de permissão ao retorno
+            $evento['user_permission_level'] = $hasFullAccess ? 'full' : 'limited';
+            $evento['user_role'] = $role;
 
             http_response_code(200);
             echo json_encode($evento, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

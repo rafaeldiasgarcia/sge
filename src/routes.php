@@ -45,7 +45,7 @@ use Application\Core\Router;
 // =============================================================================
 // Rotas que não requerem autenticação prévia. Acessíveis a qualquer visitante.
 
-// Página inicial - Redireciona para dashboard ou login conforme autenticação
+// Página inicial - Redireciona conforme autenticação (dashboard se logado, agenda se não)
 Router::get('/', 'HomeController@index');
 
 // Fluxo de Login (2 etapas: senha + código por e-mail)
@@ -82,6 +82,9 @@ Router::post('/perfil', 'UsuarioController@updatePerfil');       // Atualiza dad
 // Gerenciamento de Atlética
 Router::post('/perfil/solicitar-atletica', 'UsuarioController@solicitarEntradaAtletica'); // Solicitar entrada
 Router::post('/perfil/sair-atletica', 'UsuarioController@sairAtletica');                  // Sair da atlética
+
+// Solicitação de Troca de Curso
+Router::post('/perfil/solicitar-troca-curso', 'UsuarioController@solicitarTrocaCurso');   // Solicitar troca de curso
 
 // Inscrições em Modalidades Esportivas
 Router::get('/inscricoes', 'UsuarioController@showInscricoes');          // Lista modalidades e inscrições
@@ -194,6 +197,10 @@ Router::post('/superadmin/relatorios/imprimir', 'SuperAdminController@imprimirRe
 // Notificação Global
 Router::get('/superadmin/notificacao-global', 'SuperAdminController@enviarNotificacaoGlobal');
 Router::post('/superadmin/notificacao-global/enviar', 'SuperAdminController@processarNotificacaoGlobal');
+
+// Gerenciamento de Solicitações de Troca de Curso
+Router::post('/superadmin/solicitacao-troca-curso/aprovar', 'SuperAdminController@aprovarTrocaCurso');
+Router::post('/superadmin/solicitacao-troca-curso/recusar', 'SuperAdminController@recusarTrocaCurso');
 
 // =============================================================================
 // ROTAS DA API JSON

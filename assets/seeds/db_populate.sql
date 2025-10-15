@@ -755,11 +755,38 @@ INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendam
 (4, 'Promoção a Administrador! 🚀', 'Parabéns! Você foi promovido a Administrador da A.A.A. RAPOSADA. Agora você tem permissões especiais para gerenciar membros, eventos e inscrições.', 'info', NULL, 1, '2025-08-05 11:00:00'),
 (17, 'Solicitação Não Aprovada 😔', 'Sua solicitação para se juntar à A.A.A. TOURADA não foi aprovada desta vez. Você pode fazer uma nova solicitação no futuro.', 'aviso', NULL, 1, '2025-09-10 15:30:00');
 
+-- ===================================================================
+-- SOLICITAÇÕES DE TROCA DE CURSO
+-- ===================================================================
+-- Tabela: solicitacoes_troca_curso
+-- Descrição: Pedidos de alunos para trocar de curso
+-- ===================================================================
+
+INSERT INTO `solicitacoes_troca_curso` (`id`, `usuario_id`, `curso_atual_id`, `curso_novo_id`, `justificativa`, `status`, `data_solicitacao`, `data_resposta`, `respondido_por`, `justificativa_resposta`) VALUES
+-- Solicitação 1: Pedro Silva (id: 6) quer trocar de Enfermagem para Fisioterapia
+(1, 6, 3, 2, 'Descobri que tenho mais afinidade com a área de reabilitação física. Durante meu estágio no hospital, tive contato com fisioterapeutas e me identifiquei muito com o trabalho. Acredito que esta mudança me permitirá desenvolver melhor minhas habilidades na área que realmente quero atuar.', 'pendente', '2025-10-08 10:30:00', NULL, NULL, NULL),
+
+-- Solicitação 2: Juliana Costa (id: 8) quer trocar de Farmácia para Biomedicina (RECUSADA)
+(2, 8, 5, 4, 'Após cursar algumas disciplinas, percebi que meu interesse maior está na área de análises clínicas e pesquisa laboratorial, que são o foco da Biomedicina. Gostaria de poder trabalhar mais diretamente com diagnósticos e pesquisas científicas.', 'recusada', '2025-10-10 14:15:00', '2025-10-12 09:30:00', 1, 'A solicitação foi recusada pois o aluno está no 6º semestre e a mudança de curso neste momento prejudicaria significativamente seu progresso acadêmico. Recomendamos aguardar a conclusão do curso atual ou considerar a possibilidade de pós-graduação na área desejada.'),
+
+-- Solicitação 3: Ana Santos (id: 9) quer trocar de Administração para Psicologia (APROVADA)
+(3, 9, 1, 3, 'Tenho interesse em trabalhar na área de saúde mental e acredito que a Psicologia me dará uma base mais sólida para atuar com pacientes que precisam de apoio psicológico.', 'aprovada', '2025-10-15 16:45:00', '2025-10-16 10:20:00', 1, NULL);
+
 -- Comitando as alterações
 COMMIT;
 
 -- Reativa a verificação de chaves estrangeiras
 SET FOREIGN_KEY_CHECKS=1;
+
+-- ===================================================================
+-- ATUALIZAÇÕES DE SCHEMA
+-- ===================================================================
+
+-- Adicionar novo tipo de notificação para eventos cancelados por campeonato
+-- (A coluna cancelado_por_campeonato já está no schema principal)
+ALTER TABLE `notificacoes` 
+MODIFY COLUMN `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','evento_cancelado_campeonato','info','aviso','sistema') 
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 
 -- ===================================================================
 -- FIM DO SCRIPT DE POPULAÇÃO
