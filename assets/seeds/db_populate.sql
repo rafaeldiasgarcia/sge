@@ -270,6 +270,51 @@ INSERT INTO `agendamentos` (`usuario_id`, `titulo`, `tipo_agendamento`, `esporte
 (14, 'Campeonato Basquete 3x3', 'esportivo', 'Basquetebol', '2025-10-19', 'primeiro', 'Torneio aberto.', 'rejeitado', 'Fernanda Oliveira', 60),
 (15, 'Palestra com Influencer', 'nao_esportivo', NULL, '2025-10-21', 'primeiro', 'Palestra motivacional.', 'rejeitado', 'Gabriel Pereira', 150);
 
+-- Normalizações:
+-- A) NÃO ESPORTIVOS: esporte_tipo deve ficar NULL e subtipo_evento deve refletir o tipo (palestra/workshop/...) existente na aplicação
+UPDATE `agendamentos` SET `esporte_tipo` = NULL WHERE `tipo_agendamento` = 'nao_esportivo';
+
+-- Mapear subtipo por padrão pelo título
+UPDATE `agendamentos` SET `subtipo_evento` = 'palestra'   WHERE `tipo_agendamento` = 'nao_esportivo' AND (`titulo` LIKE 'Palestra:%' OR `titulo` LIKE 'Palestra %');
+UPDATE `agendamentos` SET `subtipo_evento` = 'workshop'   WHERE `tipo_agendamento` = 'nao_esportivo' AND (`titulo` LIKE 'Workshop:%' OR `titulo` LIKE 'Workshop %');
+UPDATE `agendamentos` SET `subtipo_evento` = 'seminario'  WHERE `tipo_agendamento` = 'nao_esportivo' AND (`titulo` LIKE 'Seminário:%' OR `titulo` LIKE 'Seminário %' OR `titulo` LIKE 'Simpósio:%' OR `titulo` LIKE 'Simpósio %');
+UPDATE `agendamentos` SET `subtipo_evento` = 'conferencia' WHERE `tipo_agendamento` = 'nao_esportivo' AND (`titulo` LIKE 'Conferência:%' OR `titulo` LIKE 'Conferência %' OR `titulo` LIKE 'Semana da Engenharia%' OR `titulo` LIKE 'Evento de Networking%');
+-- Demais eventos não esportivos viram 'outro'
+UPDATE `agendamentos` SET `subtipo_evento` = 'outro' WHERE `tipo_agendamento` = 'nao_esportivo' AND (`subtipo_evento` IS NULL OR `subtipo_evento` = '');
+
+-- B) ESPORTIVOS: garantir que esporte_tipo pertença às modalidades existentes
+-- Valorant → League of Legends
+UPDATE `agendamentos` SET `esporte_tipo` = 'League of Legends' WHERE `titulo` LIKE '%Valorant%' AND `tipo_agendamento` = 'esportivo';
+-- Rugby/Skate/Parkour/Crossfit/Yoga → usar 'Atletismo' como modalidade genérica existente
+UPDATE `agendamentos` SET `esporte_tipo` = 'Atletismo' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Rugby%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Atletismo' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Skate%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Atletismo' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Parkour%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Atletismo' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Crossfit%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Atletismo' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Yoga%';
+-- Polo Aquático → Natação
+UPDATE `agendamentos` SET `esporte_tipo` = 'Natação' WHERE `tipo_agendamento` = 'esportivo' AND `titulo` LIKE '%Polo Aquático%';
+-- Fallback: se ainda houver esportivo sem tipo, atribuir uma modalidade válida aleatória (Basquetebol)
+UPDATE `agendamentos` SET `esporte_tipo` = 'Basquetebol' WHERE `tipo_agendamento` = 'esportivo' AND (`esporte_tipo` IS NULL OR `esporte_tipo` = '');
+
+-- C) NÃO ESPORTIVOS com subtipo 'outro': preencha o texto livre em esporte_tipo
+UPDATE `agendamentos` SET `esporte_tipo` = 'Reunião de Diretoria'       WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Planejamento de Eventos MAGNA%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Ação Social'                WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Ação Social%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Reunião Administrativa'     WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Reunião Geral - Admin Atlética%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Manutenção de Equipamentos' WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Manutenção do E-Sports%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Cine Debate'                WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Cine Debate%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Reunião de Atlética'        WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Reunião da Atlética%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Manutenção da Quadra'       WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Manutenção da Quadra%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Hackathon'                  WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Hackathon Universitário%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Networking'                 WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Evento de Networking%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Júri Simulado'              WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Júri Simulado%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Feira de Profissões'        WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Feira de Profissões%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Confraternização'           WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Confraternização%';
+UPDATE `agendamentos` SET `esporte_tipo` = 'Reunião de Coordenadores'   WHERE `tipo_agendamento` = 'nao_esportivo' AND `titulo` LIKE 'Reunião de Coordenadores%';
+
+-- Demais não esportivos com subtipo 'outro' que permanecerem sem texto
+UPDATE `agendamentos` SET `esporte_tipo` = 'Outro' 
+WHERE `tipo_agendamento` = 'nao_esportivo' AND `subtipo_evento` = 'outro' AND (esporte_tipo IS NULL OR esporte_tipo = '');
+
 -- Atualizar motivos de rejeição
 UPDATE `agendamentos` SET `motivo_rejeicao` = 'Horário reservado para treinos oficiais das atléticas.' WHERE `titulo` = 'Uso da quadra para Lazer';
 UPDATE `agendamentos` SET `motivo_rejeicao` = 'Quadra destinada exclusivamente para atividades esportivas e acadêmicas.' WHERE `titulo` = 'Festa de Aniversário na Quadra';
