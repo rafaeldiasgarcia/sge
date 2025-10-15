@@ -175,6 +175,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'none';
             }
+
+            // Sempre solicitar atualização de disponibilidade do calendário
+            if (typeof window.updateSlotAvailability === 'function') {
+                window.updateSlotAvailability();
+            }
         });
 
         // Trigger inicial para mostrar os campos corretos

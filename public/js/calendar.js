@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Chama a função pela primeira vez para a carga inicial da página
     initializeCalendarLogic();
     
-    // Adicionar listener para atualizar disponibilidade quando tipo de evento mudar
+    // Adicionar listeners para atualizar disponibilidade quando tipo/subtipo mudarem
     const tipoAgendamento = document.getElementById('tipo_agendamento');
     let subtipoEvento = document.getElementById('subtipo_evento');
     
@@ -162,8 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const calendarContainer = document.getElementById('calendar-wrapper');
         if (!calendarContainer) return;
         
-        // Obter mês atual do calendário
-        const mesAtual = document.querySelector('.fw-semibold')?.textContent;
+        // Obter mês atual do calendário (escopado ao container do calendário)
+        const mesAtual = calendarContainer.querySelector('.fw-semibold')?.textContent;
         if (!mesAtual) return;
         
         // Extrair mês e ano (assumindo formato "janeiro de 2024")
@@ -206,8 +206,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const calendarContainer = document.getElementById('calendar-wrapper');
         if (!calendarContainer) return;
         
-        // Obter mês atual do calendário
-        const mesAtual = document.querySelector('.fw-semibold')?.textContent;
+        // Obter mês atual do calendário (escopado ao container do calendário)
+        const mesAtual = calendarContainer.querySelector('.fw-semibold')?.textContent;
         if (!mesAtual) return;
         
         // Extrair mês e ano (assumindo formato "janeiro de 2024")
@@ -271,18 +271,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Para datas passadas: manter cores originais mas desabilitar
                     btn.disabled = true;
                     btn.classList.add('disabled');
-                    // Manter as classes originais (btn-success ou btn-outline-secondary)
-                    // mas adicionar overlay cinza
                     btn.style.opacity = '0.5';
                 } else {
                     // Para datas futuras: sempre permitir seleção (mesmo ocupado)
                     btn.disabled = false;
                     btn.classList.remove('disabled');
-                    btn.classList.remove('btn-outline-secondary');
-                    btn.classList.add('btn-success');
-                    // Forçar cor verde para campeonatos
+                    // Forçar visual verde para campeonatos sem alterar classes originais
+                    btn.classList.add('campeonato-forced');
                     btn.style.backgroundColor = '#198754';
-                    btn.style.color = 'white';
+                    btn.style.color = '#fff';
                     btn.style.opacity = '1';
                     // Remover atributo disabled se existir
                     btn.removeAttribute('disabled');
@@ -293,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
         
-        // Atualizar badges de disponibilidade - manter cores originais para datas passadas
+        // Atualizar badges de disponibilidade - não substituir classes definitivas
         document.querySelectorAll('.calendar-cell').forEach(cell => {
             const dateStr = cell.querySelector('.slot')?.dataset.date;
             if (dateStr) {
@@ -306,8 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         // Para datas passadas, manter cores originais mas com overlay
                         badge.style.opacity = '0.5';
                     } else {
-                        // Para datas futuras, sempre verde para campeonatos
-                        badge.className = 'badge bg-success';
+                        // Para datas futuras, forçar visual verde temporário
+                        badge.classList.add('campeonato-forced');
+                        badge.style.backgroundColor = '#198754';
+                        badge.style.color = '#fff';
                         badge.style.opacity = '1';
                     }
                 }
@@ -333,19 +332,53 @@ document.addEventListener("DOMContentLoaded", () => {
         if (regraAntecedencia) regraAntecedencia.style.display = 'inline';
         if (regraCampeonato) regraCampeonato.style.display = 'none';
         
-        // Limpar estilos aplicados pelos campeonatos
+        // Limpar estilos e classes temporárias aplicadas pelos campeonatos
         document.querySelectorAll('.slot').forEach(btn => {
             btn.style.opacity = '';
             btn.style.backgroundColor = '';
             btn.style.color = '';
             btn.style.pointerEvents = '';
             btn.style.cursor = '';
+            btn.classList.remove('campeonato-forced');
             // Não remover o disabled aqui, pois pode ser necessário para slots ocupados
         });
         
         document.querySelectorAll('.badge').forEach(badge => {
             badge.style.opacity = '';
+            badge.style.backgroundColor = '';
+            badge.style.color = '';
+            badge.classList.remove('campeonato-forced');
         });
+
+        // Aplicar imediatamente a regra visual de antecedência padrão (fallback instantâneo)
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            document.querySelectorAll('.calendar-cell').forEach(cell => {
+                const slot = cell.querySelector('.slot');
+                const badge = cell.querySelector('.badge');
+                const dateStr = slot?.dataset.date;
+                if (!dateStr) return;
+                const eventDate = new Date(dateStr);
+                eventDate.setHours(0, 0, 0, 0);
+
+                const diffTime = eventDate.getTime() - today.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const isPast = eventDate < today;
+                const insufficientAdvance = (!isPast && (diffDays < 4 || diffDays > 30));
+
+                if (isPast || insufficientAdvance) {
+                    cell.classList.add('past-date');
+                    if (badge) badge.style.opacity = '0.5';
+                    cell.querySelectorAll('.slot').forEach(b => {
+                        b.setAttribute('disabled', 'disabled');
+                        b.classList.add('disabled');
+                        b.style.backgroundColor = ''; // deixa classes do servidor determinarem a cor
+                        b.style.color = '';
+                    });
+                }
+            });
+        } catch (_) {}
         
         // Recarregar o calendário para restaurar o comportamento normal
         recarregarCalendarioNormal();
@@ -358,7 +391,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateSlotAvailability();
             }, 100);
         });
-    } else {
+    }
+
+    // Listener imediato para o subtipo se já estiver presente no DOM
+    if (subtipoEvento) {
+        subtipoEvento.addEventListener('change', function() {
+            updateSlotAvailability();
+        });
     }
     
     // Usar MutationObserver para detectar quando o campo subtipo aparece
