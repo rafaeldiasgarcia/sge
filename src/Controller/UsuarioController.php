@@ -41,9 +41,25 @@ use Application\Core\Auth;
 
 class UsuarioController extends BaseController
 {
-    public function dashboard()
+    /**
+     * Guarda local: exige que o usuário seja membro de atlética
+     * Retorna o atletica_id válido ou redireciona com mensagem
+     */
+    private function requireMembroAtleticaOrRedirect(string $redirectPath = '/dashboard'): int
     {
         Auth::protect();
+        $atleticaId = (int)(Auth::get('atletica_id') ?? 0);
+        $tipoDetalhado = Auth::get('tipo_usuario_detalhado');
+        if ($tipoDetalhado !== 'Membro das Atléticas' || $atleticaId <= 0) {
+            $_SESSION['error_message'] = "Você precisa ser membro de uma atlética para se inscrever em modalidades.";
+            redirect($redirectPath);
+        }
+        return $atleticaId;
+    }
+
+    public function dashboard()
+    {
+        $this->requireAuth();
 
         $userData = [
             'nome' => Auth::name(),
@@ -64,7 +80,7 @@ class UsuarioController extends BaseController
 
     public function perfil()
     {
-        Auth::protect();
+        $this->requireAuth();
 
         try {
             $userId = Auth::id();
@@ -97,14 +113,13 @@ class UsuarioController extends BaseController
                 'meus_eventos' => $meusEventos
             ]);
         } catch (\Exception $e) {
-            $_SESSION['error_message'] = "Ocorreu um erro ao carregar seu perfil.";
-            redirect('/dashboard');
+            $this->setErrorAndRedirect("Ocorreu um erro ao carregar seu perfil.", '/dashboard');
         }
     }
 
     public function updatePerfil()
     {
-        Auth::protect();
+        $this->requireAuth();
         $formType = $_POST['form_type'] ?? null;
 
         if ($formType === 'dados_pessoais') {
@@ -119,8 +134,7 @@ class UsuarioController extends BaseController
     private function handleUpdateProfileData()
     {
         if (empty($_POST['nome'])) {
-            $_SESSION['error_message'] = "O nome é obrigatório.";
-            redirect('/perfil');
+            $this->setErrorAndRedirect("O nome é obrigatório.", '/perfil');
         }
 
         $data = [
@@ -152,16 +166,13 @@ class UsuarioController extends BaseController
         $confirmarNovaSenha = $_POST['confirmar_nova_senha'] ?? '';
 
         if (empty($senhaAtual) || empty($novaSenha) || empty($confirmarNovaSenha)) {
-            $_SESSION['error_message'] = "Todos os campos de senha são obrigatórios.";
-            redirect('/perfil');
+            $this->setErrorAndRedirect("Todos os campos de senha são obrigatórios.", '/perfil');
         }
         if (strlen($novaSenha) < 6) {
-            $_SESSION['error_message'] = "A nova senha deve ter no mínimo 6 caracteres.";
-            redirect('/perfil');
+            $this->setErrorAndRedirect("A nova senha deve ter no mínimo 6 caracteres.", '/perfil');
         }
         if ($novaSenha !== $confirmarNovaSenha) {
-            $_SESSION['error_message'] = "A nova senha e a confirmação não coincidem.";
-            redirect('/perfil');
+            $this->setErrorAndRedirect("A nova senha e a confirmação não coincidem.", '/perfil');
         }
 
         try {
@@ -169,8 +180,7 @@ class UsuarioController extends BaseController
             $currentHashedPassword = $userRepository->findPasswordHashById(Auth::id());
 
             if (!$currentHashedPassword || !password_verify($senhaAtual, $currentHashedPassword)) {
-                $_SESSION['error_message'] = "A senha atual está incorreta.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("A senha atual está incorreta.", '/perfil');
             }
 
             $newHashedPassword = password_hash($novaSenha, PASSWORD_DEFAULT);
@@ -190,14 +200,9 @@ class UsuarioController extends BaseController
 
     public function showInscricoes()
     {
-        Auth::protect();
+        $this->requireAuth();
         $userId = Auth::id();
-        $atleticaId = Auth::get('atletica_id');
-
-        if (Auth::get('tipo_usuario_detalhado') !== 'Membro das Atléticas' || !$atleticaId) {
-            $_SESSION['error_message'] = "Você precisa ser membro de uma atlética para se inscrever em modalidades.";
-            redirect('/dashboard');
-        }
+        $atleticaId = $this->requireMembroAtleticaOrRedirect('/dashboard');
 
         $userRepo = $this->repository('UsuarioRepository');
         $modalidadeRepo = $this->repository('ModalidadeRepository');
@@ -219,9 +224,9 @@ class UsuarioController extends BaseController
 
     public function inscreverEmModalidade()
     {
-        Auth::protect();
+        $this->requireAuth();
         $modalidadeId = (int)($_POST['modalidade_id'] ?? 0);
-        $atleticaId = Auth::get('atletica_id');
+        $atleticaId = $this->requireMembroAtleticaOrRedirect('/inscricoes');
 
         if ($modalidadeId > 0 && $atleticaId) {
             $userRepo = $this->repository('UsuarioRepository');
@@ -233,7 +238,7 @@ class UsuarioController extends BaseController
 
     public function cancelarInscricao()
     {
-        Auth::protect();
+        $this->requireAuth();
         $inscricaoId = (int)($_POST['inscricao_id'] ?? 0);
         if ($inscricaoId > 0) {
             $userRepo = $this->repository('UsuarioRepository');
@@ -245,7 +250,7 @@ class UsuarioController extends BaseController
 
     public function solicitarEntradaAtletica()
     {
-        Auth::protect();
+        $this->requireAuth();
 
         try {
             $userId = Auth::id();
@@ -268,7 +273,7 @@ class UsuarioController extends BaseController
 
     public function sairAtletica()
     {
-        Auth::protect();
+        $this->requireAuth();
 
         try {
             $userId = Auth::id();
@@ -278,22 +283,19 @@ class UsuarioController extends BaseController
             $user = $userRepository->findById($userId);
 
             if (!$user) {
-                $_SESSION['error_message'] = "Usuário não encontrado.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("Usuário não encontrado.", '/perfil');
                 return;
             }
 
             // Verificar se é admin da atlética
             if ($user['role'] === 'admin') {
-                $_SESSION['error_message'] = "Administradores não podem sair da atlética. Entre em contato com um super administrador.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("Administradores não podem sair da atlética. Entre em contato com um super administrador.", '/perfil');
                 return;
             }
 
             // Verificar se está aprovado na atlética
             if ($user['atletica_join_status'] !== 'aprovado') {
-                $_SESSION['error_message'] = "Você não é membro ativo de uma atlética.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("Você não é membro ativo de uma atlética.", '/perfil');
                 return;
             }
 
@@ -321,7 +323,7 @@ class UsuarioController extends BaseController
 
     public function solicitarTrocaCurso()
     {
-        Auth::protect();
+        $this->requireAuth();
 
         try {
             $userId = Auth::id();
@@ -330,14 +332,12 @@ class UsuarioController extends BaseController
 
             // Validações
             if ($cursoNovoId <= 0) {
-                $_SESSION['error_message'] = "Por favor, selecione um curso válido.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("Por favor, selecione um curso válido.", '/perfil');
                 return;
             }
 
             if (strlen($justificativa) < 50) {
-                $_SESSION['error_message'] = "A justificativa deve ter no mínimo 50 caracteres.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("A justificativa deve ter no mínimo 50 caracteres.", '/perfil');
                 return;
             }
 
@@ -346,8 +346,7 @@ class UsuarioController extends BaseController
 
             // Verificar se já tem solicitação pendente
             if ($solicitacaoRepository->hasSolicitacaoPendente($userId)) {
-                $_SESSION['error_message'] = "Você já possui uma solicitação de troca de curso pendente. Aguarde a resposta do coordenador.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("Você já possui uma solicitação de troca de curso pendente. Aguarde a resposta do coordenador.", '/perfil');
                 return;
             }
 
@@ -357,8 +356,7 @@ class UsuarioController extends BaseController
 
             // Verificar se o curso novo é diferente do atual
             if ($cursoAtualId && $cursoAtualId == $cursoNovoId) {
-                $_SESSION['error_message'] = "O curso selecionado é o mesmo que seu curso atual.";
-                redirect('/perfil');
+                $this->setErrorAndRedirect("O curso selecionado é o mesmo que seu curso atual.", '/perfil');
                 return;
             }
 
