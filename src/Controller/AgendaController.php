@@ -26,6 +26,7 @@ namespace Application\Controller;
 
 use Application\Core\Auth;
 use Application\Core\NotificationService;
+use \Exception;
 
 class AgendaController extends BaseController
 {
@@ -61,11 +62,17 @@ class AgendaController extends BaseController
             $eventos_futuros = array_filter($eventos, fn($e) => $e['data_agendamento'] >= $data_atual);
             $eventos_passados = array_filter($eventos, fn($e) => $e['data_agendamento'] < $data_atual);
 
-            $eventos_futuros_esportivos = array_filter($eventos_futuros, fn($e) => $e['tipo_agendamento'] === 'esportivo');
-            $eventos_futuros_nao_esportivos = array_filter($eventos_futuros, fn($e) => $e['tipo_agendamento'] === 'nao_esportivo');
+            // Helpers para filtros por tipo
+            $filterByTipo = function(array $lista, string $tipo) {
+                return array_filter($lista, function($e) use ($tipo) {
+                    return isset($e['tipo_agendamento']) && $e['tipo_agendamento'] === $tipo;
+                });
+            };
 
-            $eventos_passados_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'esportivo');
-            $eventos_passados_nao_esportivos = array_filter($eventos_passados, fn($e) => $e['tipo_agendamento'] === 'nao_esportivo');
+            $eventos_futuros_esportivos = $filterByTipo($eventos_futuros, 'esportivo');
+            $eventos_futuros_nao_esportivos = $filterByTipo($eventos_futuros, 'nao_esportivo');
+            $eventos_passados_esportivos = $filterByTipo($eventos_passados, 'esportivo');
+            $eventos_passados_nao_esportivos = $filterByTipo($eventos_passados, 'nao_esportivo');
 
             view('pages/agenda', [
                 'title' => 'Agenda da Quadra',
@@ -94,12 +101,11 @@ class AgendaController extends BaseController
 
 
         // Verificar se é uma requisição AJAX
-        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                  strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        $isAjax = is_ajax_request();
 
         // Processar dados do $_POST (funciona tanto para AJAX com FormData quanto para formulários normais)
-        $agendamentoId = (int)($_POST['agendamento_id'] ?? 0);
-        $action = $_POST['action'] ?? '';
+        $agendamentoId = post_int('agendamento_id', 0);
+        $action = post_string('action', '');
 
         if ($agendamentoId > 0 && in_array($action, ['marcar', 'desmarcar'])) {
             try {
@@ -122,8 +128,7 @@ class AgendaController extends BaseController
 
                 // Resposta para AJAX
                 if ($isAjax) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => true, 'action' => $action]);
+                    json_success(['action' => $action]);
                     return;
                 }
 
@@ -136,8 +141,7 @@ class AgendaController extends BaseController
                 
                 // Resposta para AJAX em caso de erro
                 if ($isAjax) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => false, 'message' => 'Erro ao processar solicitação']);
+                    json_error('Erro ao processar solicitação', 500);
                     return;
                 }
 
@@ -146,8 +150,7 @@ class AgendaController extends BaseController
         } else {
             // Resposta para AJAX em caso de dados inválidos
             if ($isAjax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => 'Dados inválidos']);
+                json_error('Dados inválidos', 400);
                 return;
             }
 
@@ -156,13 +159,7 @@ class AgendaController extends BaseController
 
         // Redirect apenas para requisições não-AJAX
         if (!$isAjax) {
-            // Verificar se há um redirect_to especificado, senão usar referer ou agenda
-            $redirectTo = $_POST['redirect_to'] ?? null;
-            if (!$redirectTo) {
-                $referer = $_SERVER['HTTP_REFERER'] ?? '/agenda';
-                $redirectTo = (strpos($referer, '/perfil') !== false) ? '/perfil' : '/agenda';
-            }
-            redirect($redirectTo);
+            redirect(resolve_post_redirect('/agenda'));
         }
     }
 }

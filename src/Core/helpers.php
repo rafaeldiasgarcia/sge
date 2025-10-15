@@ -143,3 +143,97 @@ function formatarTelefone(?string $telefone): string
     // substr($telefone, 7, 4) -> Segunda parte do número (últimos 4 dígitos)
     return '(' . substr($telefone, 0, 2) . ') ' . substr($telefone, 2, 5) . '-' . substr($telefone, 7, 4);
 }
+
+/**
+ * Verifica se a requisição é AJAX
+ *
+ * @return bool
+ */
+function is_ajax_request(): bool
+{
+    return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+}
+
+/**
+ * Obtém um valor inteiro do POST com default seguro
+ *
+ * @param string $key
+ * @param int $default
+ * @return int
+ */
+function post_int(string $key, int $default = 0): int
+{
+    return isset($_POST[$key]) ? (int)$_POST[$key] : $default;
+}
+
+/**
+ * Obtém uma string do POST com saneamento básico
+ *
+ * @param string $key
+ * @param string $default
+ * @return string
+ */
+function post_string(string $key, string $default = ''): string
+{
+    if (!isset($_POST[$key])) {
+        return $default;
+    }
+    $value = is_string($_POST[$key]) ? $_POST[$key] : $default;
+    return trim($value);
+}
+
+/**
+ * Envia resposta JSON com cabeçalho adequado
+ *
+ * @param array $payload
+ * @param int $statusCode
+ * @return void
+ */
+function json_response(array $payload, int $statusCode = 200): void
+{
+    http_response_code($statusCode);
+    header('Content-Type: application/json');
+    echo json_encode($payload);
+}
+
+/**
+ * Envia resposta JSON de sucesso padrão
+ *
+ * @param array $extra
+ * @return void
+ */
+function json_success(array $extra = []): void
+{
+    json_response(array_merge(['success' => true], $extra));
+}
+
+/**
+ * Envia resposta JSON de erro padrão
+ *
+ * @param string $message
+ * @param int $statusCode
+ * @param array $extra
+ * @return void
+ */
+function json_error(string $message = 'Erro ao processar solicitação', int $statusCode = 400, array $extra = []): void
+{
+    json_response(array_merge(['success' => false, 'message' => $message], $extra), $statusCode);
+}
+
+/**
+ * Resolve URL de redirecionamento após POST não-AJAX
+ * Prioriza 'redirect_to' do POST, depois Referer com fallback seguro
+ *
+ * @param string $default
+ * @return string
+ */
+function resolve_post_redirect(string $default = '/agenda'): string
+{
+    $redirectTo = $_POST['redirect_to'] ?? null;
+    if ($redirectTo) {
+        return $redirectTo;
+    }
+    $referer = $_SERVER['HTTP_REFERER'] ?? $default;
+    // Normaliza fallback entre /perfil e /agenda
+    return (strpos($referer, '/perfil') !== false) ? '/perfil' : $default;
+}
