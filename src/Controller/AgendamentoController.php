@@ -45,6 +45,166 @@ class AgendamentoController extends BaseController
         $this->notificationService = new NotificationService();
     }
 
+    /**
+     * Helpers/Guards privados para reduzir duplicação e padronizar validações
+     */
+    private function requireAuthAndSchedulingPermission(): void
+    {
+        Auth::protect();
+        $this->_checkSchedulingPermission();
+    }
+
+    private function isSuperAdmin(): bool
+    {
+        return Auth::role() === 'superadmin';
+    }
+
+    private function isCoordinatorAndNotAdmin(): bool
+    {
+        $role = Auth::role();
+        $is_coordenador = Auth::get('is_coordenador');
+        return $is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin';
+    }
+
+    private function saveFormAndRedirect(string $errorMessage, string $redirectPath): void
+    {
+        $_SESSION['form_data'] = $_POST;
+        $_SESSION['error_message'] = $errorMessage;
+        redirect($redirectPath);
+    }
+
+    private function redirectWithError(string $errorMessage, string $redirectPath): void
+    {
+        $_SESSION['error_message'] = $errorMessage;
+        redirect($redirectPath);
+    }
+
+    private function requireFieldsOrRedirect(array $requiredFields, callable $onError): void
+    {
+        foreach ($requiredFields as $field) {
+            if (empty($_POST[$field])) {
+                $onError("Preencha todos os campos obrigatórios.");
+            }
+        }
+    }
+
+    private function validateAntecedenciaOrFail(\DateTime $hoje, \DateTime $dataEventoObj, bool $isCampeonato, callable $onError): void
+    {
+        if ($dataEventoObj < $hoje) {
+            $onError("Não é possível agendar eventos em datas que já passaram.");
+        }
+        if ($isCampeonato) {
+            return; // Sem restrições de antecedência para campeonatos
+        }
+        $diferencaDias = $hoje->diff($dataEventoObj)->days;
+        if ($diferencaDias < 4) {
+            $onError("A data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).");
+        }
+        if ($diferencaDias > 30) {
+            $onError("A data não pode ser agendada com mais de 1 mês de antecedência.");
+        }
+    }
+
+    private function mapOcupacaoCalendario(array $rows, ?int $excludeId = null): array
+    {
+        $ocupado = [];
+        foreach ($rows as $r) {
+            if ($excludeId !== null && isset($r['id']) && $r['id'] == $excludeId) {
+                continue;
+            }
+            $periodoCalendario = ($r['periodo'] === 'primeiro') ? 'P1' : 'P2';
+            $ocupado[$r['data_agendamento']][$periodoCalendario] = true;
+        }
+        return $ocupado;
+    }
+
+    private function parseMesParamOrDefault(string $mesParam = null): \DateTime
+    {
+        try {
+            return new \DateTime(($mesParam ?: date('Y-m')) . '-01');
+        } catch (\Throwable $e) {
+            return new \DateTime('first day of this month');
+        }
+    }
+
+    /**
+     * Retorna o array de dados padrão exigido pelas views do calendário.
+     */
+    private function buildCalendarData(\DateTime $inicio, array $ocupado, bool $isCampeonato = false): array
+    {
+        return [
+            'inicio' => $inicio,
+            'diasNoMes' => (int)$inicio->format('t'),
+            'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
+            'ocupado' => $ocupado,
+            'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
+            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m'),
+            'isCampeonato' => $isCampeonato
+        ];
+    }
+
+    /**
+     * Normaliza o array de evento para garantir as chaves usadas pela view.
+     */
+    private function normalizeEventoArray(array $evento): array
+    {
+        if (($evento['tipo_agendamento'] ?? '') === 'nao_esportivo') {
+            if (empty($evento['subtipo_evento_nao_esp'])) {
+                $evento['subtipo_evento_nao_esp'] = $evento['subtipo_evento'] ?? '';
+            }
+        } else if (($evento['tipo_agendamento'] ?? '') === 'esportivo') {
+            $evento['subtipo_evento'] = $evento['subtipo_evento'] ?? '';
+        }
+        return $evento;
+    }
+
+    /**
+     * Monta os dados específicos de evento ESPORTIVO preservando contratos com a view.
+     */
+    private function mergeEsportivoData(array $base, array $post): array
+    {
+        return array_merge($base, [
+            'subtipo_evento' => $post['subtipo_evento'] ?? null,
+            'esporte_tipo' => $post['esporte_tipo'] ?? null,
+            'possui_materiais' => isset($post['possui_materiais']) ? (int)$post['possui_materiais'] : null,
+            'materiais_necessarios' => trim($post['materiais_necessarios'] ?? ''),
+            'responsabiliza_devolucao' => isset($post['responsabiliza_devolucao']) ? 1 : 0,
+            'lista_participantes' => trim($post['lista_participantes'] ?? ''),
+            'arbitro_partida' => trim($post['arbitro_partida'] ?? '')
+        ]);
+    }
+
+    /**
+     * Monta os dados específicos de evento NÃO ESPORTIVO preservando contratos.
+     * Quando subtipo for 'outro', o texto livre é persistido em esporte_tipo.
+     */
+    private function mergeNaoEsportivoData(array $base, array $post): array
+    {
+        $subtipoNaoEsp = $post['subtipo_evento_nao_esp'] ?? null;
+        $textoOutro = ($subtipoNaoEsp === 'outro') ? trim($post['outro_tipo_evento'] ?? '') : null;
+
+        return array_merge($base, [
+            'subtipo_evento_nao_esp' => $subtipoNaoEsp,
+            'subtipo_evento' => $subtipoNaoEsp,
+            'esporte_tipo' => $textoOutro,
+            'outro_tipo_evento' => $textoOutro,
+            'estimativa_participantes' => (int)($post['estimativa_participantes'] ?? 0),
+            'evento_aberto_publico' => isset($post['evento_aberto_publico']) ? (int)$post['evento_aberto_publico'] : null,
+            'descricao_publico_alvo' => trim($post['descricao_publico_alvo'] ?? ''),
+            'infraestrutura_adicional' => trim($post['infraestrutura_adicional'] ?? '')
+        ]);
+    }
+
+    private function requireValidIdFromPostOrRedirect(string $key, string $redirectPath): int
+    {
+        $id = (int)($_POST[$key] ?? 0);
+        if ($id <= 0) {
+            $_SESSION['error_message'] = "Agendamento inválido.";
+            redirect($redirectPath);
+        }
+        return $id;
+    }
+
     private function _checkSchedulingPermission()
     {
         $role = Auth::role();
@@ -58,8 +218,7 @@ class AgendamentoController extends BaseController
 
     public function showForm()
     {
-        Auth::protect();
-        $this->_checkSchedulingPermission();
+        $this->requireAuthAndSchedulingPermission();
         $modalidadeRepo = $this->repository('ModalidadeRepository');
 
         // Lógica para carregar os dados do calendário para a view principal
@@ -68,49 +227,30 @@ class AgendamentoController extends BaseController
         $fim = (clone $inicio)->modify('last day of this month');
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $rows = $agendamentoRepo->findOcupacaoPorMes($inicio->format('Y-m-d'), $fim->format('Y-m-d'));
-        $ocupado = [];
-        foreach ($rows as $r) {
-            $periodoCalendario = ($r['periodo'] === 'primeiro') ? 'P1' : 'P2';
-            $ocupado[$r['data_agendamento']][$periodoCalendario] = true;
-        }
+        $ocupado = $this->mapOcupacaoCalendario($rows);
 
-        view('pages/agendar-evento', [
+        $calendarData = $this->buildCalendarData($inicio, $ocupado, false);
+        view('pages/agendar-evento', array_merge([
             'title' => 'Agendar Evento na Quadra',
             'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll(),
-            'inicio' => $inicio,
-            'diasNoMes' => (int)$inicio->format('t'),
-            'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
-            'ocupado' => $ocupado,
-            'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
-            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m'),
-            'isCampeonato' => false // Será atualizado via JavaScript
-        ]);
+        ], $calendarData));
     }
 
     public function create()
     {
-        Auth::protect();
-        $this->_checkSchedulingPermission();
+        $this->requireAuthAndSchedulingPermission();
 
-        // Função auxiliar para salvar dados do formulário em sessão
+        // Função auxiliar local mantendo contrato de sessão e redirecionamento
         $saveFormData = function($errorMessage) {
-            $_SESSION['form_data'] = $_POST;
-            $_SESSION['error_message'] = $errorMessage;
-            redirect('/agendar-evento');
+            $this->saveFormAndRedirect($errorMessage, '/agendar-evento');
         };
 
         $requiredFields = ['titulo', 'tipo_agendamento', 'data_agendamento', 'periodo', 'responsavel_evento'];
-        foreach ($requiredFields as $field) {
-            if (empty($_POST[$field])) {
-                $saveFormData("Preencha todos os campos obrigatórios.");
-            }
-        }
+        $this->requireFieldsOrRedirect($requiredFields, $saveFormData);
 
         // Coordenadores só podem criar eventos não esportivos
-        $role = Auth::role();
-        $is_coordenador = Auth::get('is_coordenador');
-        if ($is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin') {
+        if ($this->isCoordinatorAndNotAdmin()) {
             if ($_POST['tipo_agendamento'] === 'esportivo') {
                 $saveFormData("Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.");
             }
@@ -120,27 +260,11 @@ class AgendamentoController extends BaseController
         $hoje = new \DateTime();
         $dataEventoObj = new \DateTime($dataEvento);
         
-        // Verifica se a data já passou
-        if ($dataEventoObj < $hoje) {
-            $saveFormData("Não é possível agendar eventos em datas que já passaram.");
-        }
-        
-        $diferencaDias = $hoje->diff($dataEventoObj)->days;
-
         $subtipo = $_POST['subtipo_evento'] ?? '';
         $isCampeonato = ($_POST['tipo_agendamento'] === 'esportivo' && $subtipo === 'campeonato');
         
-        // Para campeonatos: SEM NENHUMA restrição de data
-        // Para outros eventos: aplicar restrições normais
-        if (!$isCampeonato) {
-            if ($diferencaDias < 4) {
-                $saveFormData("A data deve ser com pelo menos 4 dias de antecedência (exceto campeonatos).");
-            }
-            if ($diferencaDias > 30) {
-                $saveFormData("A data não pode ser agendada com mais de 1 mês de antecedência.");
-            }
-        }
-        // Se for campeonato, não aplica NENHUMA restrição de data
+        // Valida regras de antecedência e data passada
+        $this->validateAntecedenciaOrFail($hoje, $dataEventoObj, $isCampeonato, $saveFormData);
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
 
@@ -152,7 +276,7 @@ class AgendamentoController extends BaseController
         // Se for campeonato, pode ocupar qualquer horário
 
         // Super Admin é imune a todas as restrições de agendamento
-        $isSuperAdmin = Auth::role() === 'superadmin';
+        $isSuperAdmin = $this->isSuperAdmin();
         
         if (!$isSuperAdmin) {
             // Verifica limite semanal por atlética (todos os tipos de evento)
@@ -199,14 +323,7 @@ class AgendamentoController extends BaseController
         ];
 
         if ($_POST['tipo_agendamento'] === 'esportivo') {
-            $data = array_merge($dados, [
-                'esporte_tipo' => $_POST['esporte_tipo'],
-                'possui_materiais' => isset($_POST['possui_materiais']) ? (int)$_POST['possui_materiais'] : null,
-                'materiais_necessarios' => trim($_POST['materiais_necessarios'] ?? ''),
-                'responsabiliza_devolucao' => isset($_POST['responsabiliza_devolucao']) ? 1 : 0,
-                'lista_participantes' => trim($_POST['lista_participantes'] ?? ''),
-                'arbitro_partida' => trim($_POST['arbitro_partida'] ?? '')
-            ]);
+            $data = $this->mergeEsportivoData($dados, $_POST);
 
             if (empty($_POST['esporte_tipo']) || empty($_POST['lista_participantes'])) {
                 $saveFormData("Preencha todos os campos obrigatórios para eventos esportivos.");
@@ -228,12 +345,7 @@ class AgendamentoController extends BaseController
                 }
             }
         } else {
-            $data = array_merge($dados, [
-                'estimativa_participantes' => (int)($_POST['estimativa_participantes'] ?? 0),
-                'evento_aberto_publico' => isset($_POST['evento_aberto_publico']) ? (int)$_POST['evento_aberto_publico'] : null,
-                'descricao_publico_alvo' => trim($_POST['descricao_publico_alvo'] ?? ''),
-                'infraestrutura_adicional' => trim($_POST['infraestrutura_adicional'] ?? '')
-            ]);
+            $data = $this->mergeNaoEsportivoData($dados, $_POST);
 
             if (empty($_POST['estimativa_participantes']) || $_POST['estimativa_participantes'] <= 0) {
                 $saveFormData("Informe uma estimativa válida de participantes.");
@@ -252,8 +364,7 @@ class AgendamentoController extends BaseController
 
     public function showMeusAgendamentos()
     {
-        Auth::protect();
-        $this->_checkSchedulingPermission();
+        $this->requireAuthAndSchedulingPermission();
         $agendamentoRepo = $this->repository('AgendamentoRepository');
 
         // Atualizar eventos aprovados que já passaram para 'finalizado'
@@ -269,8 +380,7 @@ class AgendamentoController extends BaseController
 
     public function showEditForm($id)
     {
-        Auth::protect();
-        $this->_checkSchedulingPermission();
+        $this->requireAuthAndSchedulingPermission();
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $modalidadeRepo = $this->repository('ModalidadeRepository');
@@ -297,12 +407,11 @@ class AgendamentoController extends BaseController
         $inicio = new \DateTime($mesParam . '-01');
         $fim = (clone $inicio)->modify('last day of this month');
         $rows = $agendamentoRepo->findOcupacaoPorMes($inicio->format('Y-m-d'), $fim->format('Y-m-d'));
-        $ocupado = [];
-        foreach ($rows as $r) {
-            if (isset($r['id']) && $r['id'] != $id) {
-                $periodoCalendario = ($r['periodo'] === 'primeiro') ? 'P1' : 'P2';
-                $ocupado[$r['data_agendamento']][$periodoCalendario] = true;
-            }
+        $ocupado = $this->mapOcupacaoCalendario($rows, (int)$id);
+
+        // Normalização de campos para preenchimento correto na view
+        if (is_array($evento)) {
+            $evento = $this->normalizeEventoArray($evento);
         }
 
         // Mensagem diferente dependendo se é aprovado ou pendente
@@ -312,24 +421,18 @@ class AgendamentoController extends BaseController
             $_SESSION['warning_message'] = "Atenção: Ao editar o evento, ele voltará para análise e precisará ser aprovado novamente pelo Coordenador.";
         }
 
-        view('pages/editar-evento', [
+        $calendarData = $this->buildCalendarData($inicio, $ocupado, false);
+        view('pages/editar-evento', array_merge([
             'title' => 'Editar Evento',
             'user' => $this->getUserData(),
             'evento' => $evento,
             'modalidades' => $modalidadeRepo->findAll(),
-            'inicio' => $inicio,
-            'diasNoMes' => (int)$inicio->format('t'),
-            'primeiroW' => (int)(clone $inicio)->modify('first day of this month')->format('w'),
-            'ocupado' => $ocupado,
-            'prevMes' => (clone $inicio)->modify('-1 month')->format('Y-m'),
-            'nextMes' => (clone $inicio)->modify('+1 month')->format('Y-m')
-        ]);
+        ], $calendarData));
     }
 
     public function update($id)
     {
-        Auth::protect();
-        $this->_checkSchedulingPermission();
+        $this->requireAuthAndSchedulingPermission();
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $agendamentoAtual = $agendamentoRepo->findByIdAndUserId($id, Auth::id());
@@ -355,9 +458,7 @@ class AgendamentoController extends BaseController
         }
 
         // Coordenadores só podem criar eventos não esportivos
-        $role = Auth::role();
-        $is_coordenador = Auth::get('is_coordenador');
-        if ($is_coordenador == 1 && $role !== 'superadmin' && $role !== 'admin') {
+        if ($this->isCoordinatorAndNotAdmin()) {
             if ($data['tipo_agendamento'] === 'esportivo') {
                 $_SESSION['error_message'] = "Coordenadores só podem criar eventos NÃO ESPORTIVOS (Palestras, Workshops, etc). Para eventos esportivos, entre em contato com a administração.";
                 redirect("/agendamento/editar/$id");
@@ -366,24 +467,9 @@ class AgendamentoController extends BaseController
 
         // Dados específicos por tipo de evento
         if ($data['tipo_agendamento'] === 'esportivo') {
-            $data = array_merge($data, [
-                'subtipo_evento' => $_POST['subtipo_evento'] ?? null,
-                'esporte_tipo' => $_POST['esporte_tipo'] ?? null,
-                'possui_materiais' => isset($_POST['possui_materiais']) ? (int)$_POST['possui_materiais'] : null,
-                'materiais_necessarios' => trim($_POST['materiais_necessarios'] ?? ''),
-                'responsabiliza_devolucao' => isset($_POST['responsabiliza_devolucao']) ? 1 : 0,
-                'lista_participantes' => trim($_POST['lista_participantes'] ?? ''),
-                'arbitro_partida' => trim($_POST['arbitro_partida'] ?? '')
-            ]);
+            $data = $this->mergeEsportivoData($data, $_POST);
         } else {
-            $data = array_merge($data, [
-                'subtipo_evento_nao_esp' => $_POST['subtipo_evento_nao_esp'] ?? null,
-                'outro_tipo_evento' => $_POST['subtipo_evento_nao_esp'] === 'outro' ? trim($_POST['outro_tipo_evento'] ?? '') : null,
-                'estimativa_participantes' => (int)($_POST['estimativa_participantes'] ?? 0),
-                'evento_aberto_publico' => isset($_POST['evento_aberto_publico']) ? (int)$_POST['evento_aberto_publico'] : null,
-                'descricao_publico_alvo' => trim($_POST['descricao_publico_alvo'] ?? ''),
-                'infraestrutura_adicional' => trim($_POST['infraestrutura_adicional'] ?? '')
-            ]);
+            $data = $this->mergeNaoEsportivoData($data, $_POST);
         }
 
         // Validação da data (mínimo 4 dias de antecedência) - MAS permite se for a mesma data
@@ -414,7 +500,7 @@ class AgendamentoController extends BaseController
         }
 
         // Super Admin é imune a todas as restrições de agendamento
-        $isSuperAdmin = Auth::role() === 'superadmin';
+        $isSuperAdmin = $this->isSuperAdmin();
         $novaData = $data['data_agendamento'];
 
         // Só verifica se a data está sendo alterada e se não for Super Admin
@@ -473,21 +559,12 @@ class AgendamentoController extends BaseController
         $mesParam = $_GET['mes'] ?? date('Y-m');
         $isCampeonato = isset($_GET['is_campeonato']) && $_GET['is_campeonato'] === 'true';
         
-        try {
-            $inicio = new \DateTime($mesParam . '-01');
-        } catch (\Throwable $e) {
-            $inicio = new \DateTime('first day of this month');
-        }
+        $inicio = $this->parseMesParamOrDefault($mesParam);
 
         $fim = (clone $inicio)->modify('last day of this month');
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $rows = $agendamentoRepo->findOcupacaoPorMes($inicio->format('Y-m-d'), $fim->format('Y-m-d'));
-
-        $ocupado = [];
-        foreach ($rows as $r) {
-            $periodoCalendario = ($r['periodo'] === 'primeiro') ? 'P1' : 'P2';
-            $ocupado[$r['data_agendamento']][$periodoCalendario] = true;
-        }
+        $ocupado = $this->mapOcupacaoCalendario($rows);
 
         $data = [
             'inicio' => $inicio,
@@ -506,11 +583,7 @@ class AgendamentoController extends BaseController
     public function cancel()
     {
         Auth::protect();
-        $id = (int)($_POST['agendamento_id'] ?? 0);
-        if ($id <= 0) {
-            $_SESSION['error_message'] = "Agendamento inválido.";
-            redirect('/meus-agendamentos');
-        }
+        $id = $this->requireValidIdFromPostOrRedirect('agendamento_id', '/meus-agendamentos');
 
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $agendamento = $agendamentoRepo->findByIdAndUserId($id, Auth::id());

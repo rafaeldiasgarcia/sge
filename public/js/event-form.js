@@ -37,6 +37,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const campoOutroTipo = document.getElementById('campo_outro_tipo');
     const outroTipoInput = document.getElementById('outro_tipo_evento');
 
+    // Utilitário: habilita/desabilita todos os campos dentro de um container
+    function setDisabledForContainer(containerEl, disabled) {
+        if (!containerEl) return;
+        containerEl.querySelectorAll('input, select, textarea').forEach(function(el) {
+            el.disabled = !!disabled;
+        });
+    }
+
+    // Detectar se estamos na página de edição (hidden input id presente)
+    const isEditMode = !!document.querySelector('#agendamentoForm input[name="id"]');
+
+    // Travar campo e ainda submeter valor (espelha em hidden)
+    function lockAndMirrorField(fieldEl) {
+        if (!fieldEl || fieldEl.dataset.locked === '1') return;
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = fieldEl.name;
+        // Se o select estiver sem valor, tenta usar a option marcada como selected no HTML
+        if ((fieldEl.tagName === 'SELECT') && (!fieldEl.value || fieldEl.value === '')) {
+            const optSelected = fieldEl.querySelector('option[selected]');
+            if (optSelected && optSelected.value) {
+                fieldEl.value = optSelected.value;
+            }
+        }
+        // usa o valor atual ou o valor da opção selecionada
+        hidden.value = fieldEl.value || (fieldEl.selectedOptions && fieldEl.selectedOptions[0] ? fieldEl.selectedOptions[0].value : '');
+        fieldEl.parentNode.insertBefore(hidden, fieldEl.nextSibling);
+        fieldEl.disabled = true;
+        fieldEl.dataset.locked = '1';
+        fieldEl.title = 'Campo bloqueado na edição';
+        const observer = new MutationObserver(function() {
+            hidden.value = fieldEl.value || (fieldEl.selectedOptions && fieldEl.selectedOptions[0] ? fieldEl.selectedOptions[0].value : '');
+        });
+        observer.observe(fieldEl, { attributes: true, attributeFilter: ['value'] });
+    }
+
     // Função para mostrar/esconder campos de materiais necessários
     function toggleCamposMateriais() {
         const naoTemMateriais = document.getElementById('materiais_nao').checked;
@@ -46,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (materiaisNecessarios) {
                 materiaisNecessarios.required = naoTemMateriais;
+                materiaisNecessarios.disabled = !naoTemMateriais; // evita required em campo oculto
                 if (!naoTemMateriais) {
                     materiaisNecessarios.value = '';
                 }
@@ -53,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (responsabilizaDevolucao) {
                 responsabilizaDevolucao.required = naoTemMateriais;
+                responsabilizaDevolucao.disabled = !naoTemMateriais; // evita required em campo oculto
                 if (!naoTemMateriais) {
                     responsabilizaDevolucao.checked = false;
                 }
@@ -117,10 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 camposEsportivos.style.display = 'block';
                 camposNaoEsportivos.style.display = 'none';
+                setDisabledForContainer(camposEsportivos, false);
+                setDisabledForContainer(camposNaoEsportivos, true);
                 
                 if (subtipo1) {
-                    document.getElementById('esporte_tipo').required = true;
-                    document.getElementById('lista_participantes').required = true;
+                    const esporteTipoEl = document.getElementById('esporte_tipo');
+                    const listaEl = document.getElementById('lista_participantes');
+                    if (esporteTipoEl) { esporteTipoEl.required = true; esporteTipoEl.disabled = false; }
+                    if (listaEl) { listaEl.required = true; listaEl.disabled = false; }
                 }
                 if (estimativaEsp) {
                     estimativaEsp.required = true;
@@ -145,6 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'block';
+                setDisabledForContainer(camposEsportivos, true);
+                setDisabledForContainer(camposNaoEsportivos, false);
                 
                 if (subtipo2) {
                     subtipo2.required = true;
@@ -156,8 +200,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     estimativaNaoEsp.disabled = false;
                 }
                 if (subtipo1) {
-                    document.getElementById('esporte_tipo').required = false;
-                    document.getElementById('lista_participantes').required = false;
+                    const esporteTipoEl = document.getElementById('esporte_tipo');
+                    const listaEl = document.getElementById('lista_participantes');
+                    if (esporteTipoEl) { esporteTipoEl.required = false; esporteTipoEl.disabled = true; }
+                    if (listaEl) { listaEl.required = false; listaEl.disabled = true; }
                 }
                 if (estimativaEsp) {
                     estimativaEsp.required = false;
@@ -174,6 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 camposEsportivos.style.display = 'none';
                 camposNaoEsportivos.style.display = 'none';
+                setDisabledForContainer(camposEsportivos, true);
+                setDisabledForContainer(camposNaoEsportivos, true);
             }
 
             // Sempre solicitar atualização de disponibilidade do calendário
@@ -210,74 +258,163 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Aplicar regras de bloqueio para EDIÇÃO (UI)
+    if (isEditMode) {
+        const tipoAtual = tipoAgendamento ? tipoAgendamento.value : '';
+        if (tipoAtual === 'nao_esportivo') {
+            // Bloquear categoria e tipo não esportivo
+            lockAndMirrorField(tipoAgendamento);
+            const tipoNaoEsp = document.getElementById('subtipo_evento_nao_esp');
+            lockAndMirrorField(tipoNaoEsp);
+            // Se o subtipo for 'outro', bloquear também a descrição
+            if (tipoNaoEsp && tipoNaoEsp.value === 'outro') {
+                lockAndMirrorField(outroTipoInput);
+            }
+        } else if (tipoAtual === 'esportivo') {
+            // Bloquear categoria, subtipo esportivo e esporte
+            lockAndMirrorField(tipoAgendamento);
+            const subtipoEsp = document.getElementById('subtipo_evento');
+            const esporteTipo = document.getElementById('esporte_tipo');
+            lockAndMirrorField(subtipoEsp);
+            lockAndMirrorField(esporteTipo);
+        }
+    }
+
     // Event listener para o formulário
     const form = document.getElementById('agendamentoForm');
     if (form) {
         form.addEventListener('submit', function(e) {
-            const tipoSelecionado = tipoAgendamento ? tipoAgendamento.value : '';
-            const dataAgendamento = document.getElementById('data_agendamento');
-            const periodo = document.getElementById('periodo');
+            try {
+                const tipoSelecionado = tipoAgendamento ? tipoAgendamento.value : '';
+                const dataAgendamento = document.getElementById('data_agendamento');
+                const periodo = document.getElementById('periodo');
+                const titulo = document.getElementById('titulo');
+                const esporteTipoEl = document.getElementById('esporte_tipo');
 
-            // VALIDAÇÃO 1: Verificar se data e período foram selecionados
-            if (!dataAgendamento || !dataAgendamento.value || !periodo || !periodo.value) {
-                e.preventDefault();
-                alert('⚠️ Por favor, selecione uma data e horário no calendário antes de enviar a solicitação.\n\nRole a página para o topo e clique em um horário disponível no calendário.');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return false;
-            }
-
-            // VALIDAÇÃO 2: Validar campo outro tipo quando necessário
-            if (tipoSelecionado === 'nao_esportivo' &&
-                subtipoEventoNaoEsp && subtipoEventoNaoEsp.value === 'outro' &&
-                outroTipoInput && !outroTipoInput.value.trim()) {
-                e.preventDefault();
-                alert('Por favor, especifique qual será o tipo do evento.');
-                outroTipoInput.focus();
-                return false;
-            }
-
-            // VALIDAÇÃO 3: Validar materiais necessários quando não possui materiais
-            if (tipoSelecionado === 'esportivo') {
-                const materiasSim = document.getElementById('materiais_sim');
-                const materiasNao = document.getElementById('materiais_nao');
-
-                // Verificar se alguma opção de materiais foi selecionada
-                if (!materiasSim.checked && !materiaisNao.checked) {
-                    e.preventDefault();
-                    alert('Por favor, informe se você possui materiais esportivos.');
-                    window.scrollTo({
-                        top: document.getElementById('materiais_sim').offsetTop - 100,
-                        behavior: 'smooth'
+                // VALIDAÇÃO 1: Verificar se data e período foram selecionados
+                if (!dataAgendamento || !dataAgendamento.value || !periodo || !periodo.value) {
+                    console.error('[Agendamento][Submit Blocked] Data/Período ausentes', {
+                        hasDataField: !!dataAgendamento,
+                        dataValue: dataAgendamento && dataAgendamento.value,
+                        hasPeriodoField: !!periodo,
+                        periodoValue: periodo && periodo.value
                     });
+                    e.preventDefault();
+                    alert('⚠️ Por favor, selecione uma data e horário no calendário antes de enviar a solicitação.\n\nRole a página para o topo e clique em um horário disponível no calendário.');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                     return false;
                 }
 
-                // Se não tem materiais, validar os campos relacionados
-                if (materiaisNao && materiaisNao.checked) {
-                    if (!materiaisNecessarios || !materiaisNecessarios.value.trim()) {
+                // VALIDAÇÃO 1.1: Campos básicos
+                if (!titulo || !titulo.value.trim()) {
+                    console.error('[Agendamento][Submit Blocked] Título vazio');
+                    e.preventDefault();
+                    alert('Por favor, informe o título do evento.');
+                    if (titulo) titulo.focus();
+                    return false;
+                }
+                if (!tipoSelecionado) {
+                    console.error('[Agendamento][Submit Blocked] Tipo de agendamento não selecionado');
+                    e.preventDefault();
+                    alert('Por favor, selecione a categoria do evento (Esportivo ou Não Esportivo).');
+                    if (tipoAgendamento) tipoAgendamento.focus();
+                    return false;
+                }
+
+                // VALIDAÇÃO 2: Validar campo outro tipo quando necessário
+                if (tipoSelecionado === 'nao_esportivo' &&
+                    subtipoEventoNaoEsp && subtipoEventoNaoEsp.value === 'outro' &&
+                    outroTipoInput && !outroTipoInput.value.trim()) {
+                    console.error('[Agendamento][Submit Blocked] Tipo "Outro" sem descrição', {
+                        tipoSelecionado,
+                        subtipo: subtipoEventoNaoEsp && subtipoEventoNaoEsp.value
+                    });
+                    e.preventDefault();
+                    alert('Por favor, especifique qual será o tipo do evento.');
+                    outroTipoInput.focus();
+                    return false;
+                }
+
+                // VALIDAÇÃO 3: Validar materiais necessários quando não possui materiais
+                if (tipoSelecionado === 'esportivo') {
+                    // Regras específicas de esportivo
+                    if (subtipoEvento && !subtipoEvento.disabled && !subtipoEvento.value) {
+                        console.error('[Agendamento][Submit Blocked] Subtipo esportivo não selecionado');
                         e.preventDefault();
-                        alert('Por favor, descreva os materiais que serão necessários.');
-                        if (materiaisNecessarios) {
-                            materiaisNecessarios.focus();
-                            materiaisNecessarios.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
+                        alert('Por favor, selecione o tipo do evento esportivo (Treino/Campeonato).');
+                        subtipoEvento.focus();
+                        return false;
+                    }
+                    if (esporteTipoEl && !esporteTipoEl.disabled && !esporteTipoEl.value) {
+                        console.error('[Agendamento][Submit Blocked] Esporte não selecionado');
+                        e.preventDefault();
+                        alert('Por favor, selecione o esporte.');
+                        esporteTipoEl.focus();
                         return false;
                     }
 
-                    if (!responsabilizaDevolucao || !responsabilizaDevolucao.checked) {
+                    const materiasSim = document.getElementById('materiais_sim');
+                    const materiasNao = document.getElementById('materiais_nao');
+
+                    // Verificar se alguma opção de materiais foi selecionada
+                    if (!materiasSim.checked && !materiasNao.checked) {
+                        console.error('[Agendamento][Submit Blocked] Materiais não selecionados');
                         e.preventDefault();
-                        alert('Você precisa se responsabilizar pela devolução dos materiais.');
-                        if (responsabilizaDevolucao) {
-                            responsabilizaDevolucao.focus();
-                            responsabilizaDevolucao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        alert('Por favor, informe se você possui materiais esportivos.');
+                        window.scrollTo({
+                            top: document.getElementById('materiais_sim').offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                        return false;
+                    }
+
+                    // Se não tem materiais, validar os campos relacionados
+                    if (materiaisNao && materiasNao.checked) {
+                        if (!materiaisNecessarios || !materiaisNecessarios.value.trim()) {
+                            console.error('[Agendamento][Submit Blocked] Materiais necessários vazio');
+                            e.preventDefault();
+                            alert('Por favor, descreva os materiais que serão necessários.');
+                            if (materiaisNecessarios) {
+                                materiaisNecessarios.focus();
+                                materiaisNecessarios.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            return false;
                         }
+
+                        if (!responsabilizaDevolucao || !responsabilizaDevolucao.checked) {
+                            console.error('[Agendamento][Submit Blocked] Termo de responsabilização não marcado');
+                            e.preventDefault();
+                            alert('Você precisa se responsabilizar pela devolução dos materiais.');
+                            if (responsabilizaDevolucao) {
+                                responsabilizaDevolucao.focus();
+                                responsabilizaDevolucao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            return false;
+                        }
+                    }
+                } else if (tipoSelecionado === 'nao_esportivo') {
+                    if (subtipoEventoNaoEsp && !subtipoEventoNaoEsp.disabled && !subtipoEventoNaoEsp.value) {
+                        console.error('[Agendamento][Submit Blocked] Subtipo não esportivo não selecionado');
+                        e.preventDefault();
+                        alert('Por favor, selecione o tipo do evento não esportivo.');
+                        subtipoEventoNaoEsp.focus();
                         return false;
                     }
                 }
-            }
 
-            // Se chegou aqui, todas validações passaram - permitir envio
-            return true;
+                // Se chegou aqui, todas validações passaram - permitir envio
+                console.log('[Agendamento][Submit] Enviando formulário de edição', {
+                    tipoSelecionado,
+                    data: dataAgendamento && dataAgendamento.value,
+                    periodo: periodo && periodo.value
+                });
+                return true;
+            } catch (err) {
+                console.error('[Agendamento][Submit Error] Erro inesperado ao tentar enviar', err);
+                e.preventDefault();
+                alert('Ocorreu um erro inesperado ao validar o formulário. Tente novamente.');
+                return false;
+            }
         });
     }
 });

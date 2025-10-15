@@ -242,6 +242,7 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label for="subtipo_evento_nao_esp" class="form-label">Tipo de Evento *</label>
+                                    <?php $subtipoSelecionado = $evento['subtipo_evento_nao_esp'] ?? ''; ?>
                                     <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select">
                                         <option value="">-- Selecione --</option>
                                         <?php
@@ -256,7 +257,7 @@
 
                                         foreach ($tipos_evento as $valor => $label): ?>
                                             <option value="<?php echo $valor; ?>"
-                                                <?php echo ($evento['subtipo_evento_nao_esp'] ?? '') === $valor ? 'selected' : ''; ?>>
+                                                <?php echo $subtipoSelecionado === $valor ? 'selected' : ''; ?>>
                                                 <?php echo $label; ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -264,10 +265,11 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3" id="campo_outro_tipo"
-                                     style="display: <?php echo ($evento['subtipo_evento_nao_esp'] ?? '') === 'outro' ? 'block' : 'none'; ?>;">
+                                     style="display: <?php echo ($subtipoSelecionado === 'outro') ? 'block' : 'none'; ?>;">
                                     <label for="outro_tipo_evento" class="form-label">Qual o tipo do evento? *</label>
+                                    <?php $outroValor = $evento['outro_tipo_evento'] ?? ($evento['esporte_tipo'] ?? ''); ?>
                                     <input type="text" name="outro_tipo_evento" id="outro_tipo_evento" class="form-control"
-                                           value="<?php echo htmlspecialchars($evento['outro_tipo_evento'] ?? ''); ?>"
+                                           value="<?php echo htmlspecialchars($outroValor); ?>"
                                            placeholder="Ex: Apresentação de TCC">
                                 </div>
 
