@@ -12,6 +12,7 @@
 ## 📋 Índice
 
 - [Visão Geral](#-visão-geral)
+- [Novidades](#-novidades)
 - [Funcionalidades](#-funcionalidades)
 - [Arquitetura](#-arquitetura)
 - [Tecnologias](#-tecnologias)
@@ -56,6 +57,19 @@ O SGE resolve todos esses problemas com uma plataforma centralizada, automatizad
 
 ---
 
+## 🆕 Novidades
+
+Esta seção consolida atualizações recentes anteriormente descritas em documentos auxiliares. Qualquer conteúdo que existia em `NOVOREADME.md` foi integrado e organizado abaixo.
+
+### Destaques
+
+- ✅ Pop-ups de eventos agora exibem prompts de login para usuários não autenticados.
+- ✅ Lógica de agendamento aprimorada para campeonatos (validando cenários específicos e comunicando melhor restrições).
+- ✅ Nova seção de Termos e Políticas na página de agendamento, com links para documentos em `public/doc/` e um checkbox obrigatório de aceite.
+- ✅ Novo esquema de banco de dados para Solicitações de Troca de Curso.
+- ✅ Tipos de notificação expandidos para cobrir novos fluxos (troca de curso, termos e campeonatos).
+- ✅ Melhorias de UI/UX em componentes de formulário, pop-ups e feedback visual.
+
 ## 🚀 Funcionalidades
 
 ### 🔐 Sistema de Autenticação e Autorização
@@ -85,6 +99,10 @@ O SGE resolve todos esses problemas com uma plataforma centralizada, automatizad
 - Cores diferenciadas por status (aprovado, pendente, rejeitado)
 - Modal de detalhes ao clicar em qualquer evento
 
+#### Pop-up de Evento com Prompt de Login
+- Se o usuário não estiver autenticado, o pop-up orienta a realizar login antes de interagir (marcar presença, visualizar detalhes avançados ou iniciar agendamento a partir do evento).
+- CTA direto para `login` com retorno à tela atual após autenticação.
+
 #### Períodos de Agendamento
 O sistema trabalha com **2 períodos fixos por dia**:
 - **Primeiro Período**: 19:15 - 20:55 (1h40min)
@@ -110,6 +128,7 @@ O sistema trabalha com **2 períodos fixos por dia**:
 - ✅ Bloqueio de datas passadas
 - ✅ Limite de 1 agendamento por esporte por semana (por usuário)
 - ✅ Validação de responsável e participantes
+ - ✅ Regras específicas para campeonatos (mensagens claras, prevenção de conflitos e instruções de cadastro)
 
 #### Workflow de Aprovação
 ```
@@ -126,6 +145,14 @@ Usuário Solicita → Pendente → Super Admin Analisa → Aprovado/Rejeitado
 - **Eventos Esportivos**: Árbitro, modalidade, atlética adversária
 - **Eventos Não Esportivos**: Público-alvo, infraestrutura adicional
 - **Observações**: Informações complementares
+
+#### Termos e Políticas (Obrigatório)
+- Nova seção no final do formulário de agendamento com links para:
+  - Regulamento de Uso da Quadra (`public/doc/regulamento.pdf`)
+  - Política de Privacidade (`public/doc/politica-privacidade.pdf`)
+  - Termos do Usuário (`public/doc/termo-usuario.pdf`)
+- Checkbox de aceite obrigatório para prosseguir com a criação/edição do agendamento.
+- Mensagens de erro amigáveis quando o aceite não for marcado.
 
 ### 🏃 Sistema de Confirmação de Presença
 
@@ -158,6 +185,14 @@ Usuário Solicita → Pendente → Super Admin Analisa → Aprovado/Rejeitado
 - **Lembrete de Evento**: 1 dia antes do evento (via script diário)
 - **Notificações do Sistema**: Avisos importantes
 - **Notificações Globais**: Enviadas pelo Super Admin
+
+##### Novos tipos
+- `solicitacao_troca_curso_criada`
+- `solicitacao_troca_curso_aprovada`
+- `solicitacao_troca_curso_rejeitada`
+- `termos_aceitos`
+- `campeonato_agendado`
+- `campeonato_atualizado`
 
 #### Interface em Tempo Real
 - **Contador**: Badge com número de notificações não lidas
@@ -651,6 +686,14 @@ public/js/
 └── notifications.js     # Sistema de notificações
 ```
 
+**Documentos Públicos:**
+```
+public/doc/
+├── regulamento.pdf
+├── politica-privacidade.pdf
+└── termo-usuario.pdf
+```
+
 ### DevOps e Infraestrutura
 
 #### Docker + Docker Compose
@@ -1028,6 +1071,7 @@ O SGE utiliza MySQL 9.4 com charset **UTF8MB4** (suporte completo a acentos, emo
 | `inscricoes_modalidade` | Inscrições em esportes | aluno_id, modalidade_id, status, atletica_id |
 | `inscricoes_eventos` | Participação em eventos | aluno_id, evento_id, atletica_id |
 | `notificacoes` | Sistema de notificações | usuario_id, titulo, mensagem, tipo, lida |
+| `solicitacoes_troca_curso` | Solicitações de mudança de curso | aluno_id, curso_atual_id, curso_destino_id, status |
 
 #### Diagrama de Relacionamentos
 
@@ -1137,6 +1181,21 @@ O SGE utiliza MySQL 9.4 com charset **UTF8MB4** (suporte completo a acentos, emo
 - agendamento_id: INT (FK → agendamentos, nullable)
 - lida: TINYINT(1) DEFAULT 0
 - data_criacao: TIMESTAMP
+```
+
+#### Tabela `solicitacoes_troca_curso`
+
+**Campos Principais:**
+
+```sql
+- id: INT (PK, AUTO_INCREMENT)
+- aluno_id: INT (FK → usuarios)
+- curso_atual_id: INT (FK → cursos)
+- curso_destino_id: INT (FK → cursos)
+- justificativa: TEXT
+- status: ENUM('pendente', 'aprovada', 'rejeitada')
+- data_solicitacao: TIMESTAMP
+- data_decisao: TIMESTAMP NULL
 ```
 
 #### Tabela `presencas`
@@ -1256,10 +1315,14 @@ sge/
 │   │   ├── event-popup.js
 │   │   ├── header.js
 │   │   └── notifications.js
-│   └── 📂 img/                  # Imagens e logos
+│   ├── 📂 img/                  # Imagens e logos
 │       ├── logo-unifio-azul.webp
 │       ├── logo-unifio-branco.webp
 │       └── ...
+│   └── 📂 doc/                  # Documentos públicos (Termos e Políticas)
+│       ├── regulamento.pdf
+│       ├── politica-privacidade.pdf
+│       └── termo-usuario.pdf
 │
 ├── 📂 src/                       # Código da aplicação
 │   ├── 📄 routes.php            # Definição de todas as rotas
