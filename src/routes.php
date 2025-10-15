@@ -135,10 +135,7 @@ Router::post('/admin/atletica/gerenciar-membros/acao', 'AdminAtleticaController@
 Router::get('/admin/atletica/inscricoes', 'AdminAtleticaController@gerenciarInscricoes');  // Lista inscrições
 Router::post('/admin/atletica/inscricoes/acao', 'AdminAtleticaController@handleInscricaoAction'); // Aprovar/rejeitar
 
-// Gerenciamento de Eventos Esportivos
-Router::get('/admin/atletica/eventos', 'AdminAtleticaController@gerenciarEventos');              // Lista eventos
-Router::post('/admin/atletica/eventos/inscrever', 'AdminAtleticaController@inscreverEmEvento');  // Inscrever atleta
-Router::post('/admin/atletica/eventos/remover', 'AdminAtleticaController@removerDeEvento');      // Remover atleta
+// (Removido) Gerenciamento de Eventos Esportivos – funcionalidade desativada
 
 // =============================================================================
 // ROTAS DO PAINEL DO SUPER ADMINISTRADOR
