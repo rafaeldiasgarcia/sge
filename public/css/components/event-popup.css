@@ -596,3 +596,44 @@
     }
 }
 
+.event-popup-close {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    color: white !important;
+    font-size: 26px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    z-index: 10000 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+}
+
+.event-popup-close:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+    transform: rotate(90deg) scale(1.1) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.event-popup-close:active {
+    transform: rotate(90deg) scale(0.95) !important;
+}
+
+/* Garantir que o overlay do popup funcione corretamente */
+.event-popup-overlay {
+    z-index: 9999 !important;
+}
+
+.event-popup-container {
+    position: relative !important;
+    z-index: 10000 !important;
+}

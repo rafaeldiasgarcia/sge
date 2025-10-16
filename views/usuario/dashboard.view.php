@@ -76,7 +76,7 @@
                 <div class="text-content">
                     <h2>AQUI VOCÊ VERÁ</h2>
                     <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
-                    <span class="highlight-text">UNIVERSIDADE!</span>
+                    <span class="highlight-text">UNIFIO!</span>
                 </div>
                 <div class="character-image-container static-character">
                     <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
