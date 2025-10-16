@@ -409,8 +409,3 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
-
-<?php 
-$content = ob_get_clean(); 
-include VIEW_PATH . "/layout.php"; 
-?>

@@ -216,7 +216,7 @@ class AgendamentoController extends BaseController
 
         $calendarData = $this->buildCalendarData($inicio, $ocupado, false);
         view('pages/agendar-evento', array_merge([
-            'title' => 'Agendar Evento na Quadra',
+            'title' => 'Agendar Evento na Quadra - UNIFIO',
             'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll(),
         ], $calendarData));
@@ -359,7 +359,7 @@ class AgendamentoController extends BaseController
 
         $agendamentos = $agendamentoRepo->findByUserId(Auth::id());
         view('pages/meus-agendamentos', [
-            'title' => 'Meus Agendamentos',
+            'title' => 'Meus Agendamentos - UNIFIO',
             'user' => $this->getUserData(),
             'agendamentos' => $agendamentos
         ]);
@@ -410,7 +410,7 @@ class AgendamentoController extends BaseController
 
         $calendarData = $this->buildCalendarData($inicio, $ocupado, false);
         view('pages/editar-evento', array_merge([
-            'title' => 'Editar Evento',
+            'title' => 'Editar Evento - UNIFIO',
             'user' => $this->getUserData(),
             'evento' => $evento,
             'modalidades' => $modalidadeRepo->findAll(),

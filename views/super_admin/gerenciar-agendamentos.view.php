@@ -28,6 +28,7 @@
  */
 
 use Application\Core\Auth;
+
 ?>
 
 <h1>Gerenciar Agendamentos</h1>

@@ -100,7 +100,7 @@ class AdminAtleticaController extends BaseController
         ];
 
         view('admin_atletica/dashboard', [
-            'title' => 'Painel da Atlética',
+            'title' => 'Painel da Atlética - UNIFIO',
             'user' => $this->getUserData(),
             'stats' => $stats
         ]);
@@ -114,7 +114,7 @@ class AdminAtleticaController extends BaseController
         $pendentes = $adminRepo->findMembrosPendentes($atleticaId);
 
         view('admin_atletica/gerenciar-membros', [
-            'title' => 'Gerenciar Membros',
+            'title' => 'Gerenciar Membros - UNIFIO',
             'user' => $this->getUserData(),
             'pendentes' => $pendentes
         ]);
@@ -148,7 +148,7 @@ class AdminAtleticaController extends BaseController
 
         $adminRepo = $this->repository('AdminAtleticaRepository');
         view('admin_atletica/gerenciar-inscricoes', [
-            'title' => 'Gerenciar Inscrições e Membros',
+            'title' => 'Gerenciar Inscrições e Membros - UNIFIO',
             'user' => $this->getUserData(),
             'solicitacoes_pendentes' => $adminRepo->findMembrosPendentes($atleticaId),
             'membros' => $adminRepo->findMembrosAtletica($atleticaId)
@@ -184,7 +184,7 @@ class AdminAtleticaController extends BaseController
         }
 
         view('admin_atletica/gerenciar-eventos', [
-            'title' => 'Gerenciar Participações em Eventos',
+            'title' => 'Gerenciar Participações em Eventos - UNIFIO',
             'user' => $this->getUserData(),
             'eventos' => $eventos
         ]);
@@ -221,7 +221,7 @@ class AdminAtleticaController extends BaseController
         $membros = $adminRepo->findMembrosAtletica($atleticaId);
 
         view('admin_atletica/gerenciar-membros-atletica', [
-            'title' => 'Gerenciar Membros da Atlética',
+            'title' => 'Gerenciar Membros da Atlética - UNIFIO',
             'user' => $this->getUserData(),
             'membros' => $membros
         ]);

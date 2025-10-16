@@ -72,7 +72,7 @@ class UsuarioController extends BaseController
         $eventosComPresenca = $agendamentoRepository->findEventosComPresenca(Auth::id());
 
         view('usuario/dashboard', [
-            'title' => 'Meu Painel',
+            'title' => 'Meu Painel - UNIFIO',
             'user' => $userData,
             'eventos_presenca' => $eventosComPresenca
         ]);
@@ -106,7 +106,7 @@ class UsuarioController extends BaseController
             $meusEventos = $agendamentoRepository->findTodosEventosComPresencaFuturos($userId);
 
             view('usuario/perfil', [
-                'title' => 'Editar Perfil',
+                'title' => 'Editar Perfil - UNIFIO',
                 'user' => $user,
                 'cursos' => $cursos,
                 'atletica_info' => $atleticaInfo,
@@ -216,7 +216,7 @@ class UsuarioController extends BaseController
         });
 
         view('usuario/inscricoes', [
-            'title' => 'Minhas Inscrições',
+            'title' => 'Minhas Inscrições - UNIFIO',
             'user' => $this->getUserData(),
             'inscricoes' => $minhasInscricoes
         ]);

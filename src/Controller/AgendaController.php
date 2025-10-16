@@ -75,7 +75,7 @@ class AgendaController extends BaseController
             $eventos_passados_nao_esportivos = $filterByTipo($eventos_passados, 'nao_esportivo');
 
             view('pages/agenda', [
-                'title' => 'Agenda da Quadra',
+                'title' => 'Agenda da Quadra - UNIFIO',
                 'user' => Auth::check() ? $this->getUserData() : null,
                 'eventos' => $eventos,
                 'eventos_futuros_esportivos' => $eventos_futuros_esportivos,
