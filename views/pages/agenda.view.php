@@ -39,8 +39,10 @@
  * CONTROLLER: AgendaController::index()
  * JAVASCRIPT: Inline (marcação de presença AJAX, toggles)
  * CSS: agenda.css, calendar.css
+ * 
  */
 ?>
+
 <h1 class="title-dashboard">Agenda da Quadra</h1>
 <p class="title-dashboard">Confira os próximos eventos aprovados e marque sua presença.</p>
 
@@ -407,3 +409,8 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
+
+<?php 
+$content = ob_get_clean(); 
+include VIEW_PATH . "/layout.php"; 
+?>
