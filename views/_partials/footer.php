@@ -1,29 +1,8 @@
 <?php
 /**
- * Template do Rodapé da Aplicação (Footer Partial)
- * 
- * Arquivo incluído automaticamente em todas as views pela função view() do helpers.php.
- * Contém o rodapé do site e o fechamento das tags HTML.
- * 
- * Conteúdo:
- * - Fecha tag </main> aberta no header
- * - Rodapé institucional com logo e informações de contato da UNIFIO
- * - Links e telefones de atendimento
- * - Scripts JavaScript do Bootstrap e da aplicação
- * - Fecha tags </body> e </html>
- * 
- * Scripts Incluídos Condicionalmente:
- * - Bootstrap Bundle 5.3.3 (sempre)
- * - calendar.js (exceto páginas de autenticação)
- * - header.js (exceto páginas de autenticação)
- * - event-popup.js (exceto páginas de autenticação)
- * - notifications.js (apenas para usuários autenticados)
- * 
- * @package Views\Partials
+ * Rodapé institucional simples. Scripts e fechamento de tags estão no layout.
  */
 ?>
-</main>
-
 <footer class="unifio-footer <?php echo (isset($isAuthPage) && $isAuthPage) ? 'unifio-footer-auth' : 'mt-auto'; ?>">
     <div class="unifio-footer-container">
         <div class="unifio-footer-left">
@@ -53,17 +32,3 @@
         </div>
     </div>
 </footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<?php if (!isset($isAuthPage) || !$isAuthPage): ?>
-<script src="/js/calendar.js"></script>
-<script src="/js/header.js"></script>
-<script src="/js/event-popup.js"></script>
-<?php endif; ?>
-<?php
-use Application\Core\Auth;
-if (Auth::check()): ?>
-<script src="/js/notifications.js"></script>
-<?php endif; ?>
-</body>
-</html>

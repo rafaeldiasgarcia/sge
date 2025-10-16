@@ -1,74 +1,11 @@
 <?php
-/**
- * Template do Cabeçalho da Aplicação (Header Partial)
- * 
- * Arquivo incluído automaticamente em todas as views pela função view() do helpers.php.
- * Contém toda a estrutura inicial do HTML e a barra de navegação.
- * 
- * Conteúdo:
- * - DOCTYPE e tags HTML de abertura
- * - <head> completo com meta tags, título e links de CSS
- * - Navbar responsivo com Bootstrap 5.3
- * - Sistema de notificações em tempo real
- * - Menu dropdown de usuário
- * - Links condicionais baseados no perfil (role)
- * 
- * Perfis e Menus:
- * - Super Admin: Todos os menus + link para painel de admin
- * - Admin Atlética: Menus de gerenciamento da atlética
- * - Usuário Comum: Agenda, Agendar, Meus Agendamentos, Perfil
- * - Não autenticado: Apenas Login e Registro
- * 
- * CSS Incluídos:
- * - Bootstrap 5.3.3 (framework CSS)
- * - Bootstrap Icons 1.11.3 (ícones)
- * - Fontes: Montserrat do Google Fonts
- * - Estilos personalizados: header, default, calendar, notifications, event-popup
- * - auth.css (apenas em páginas de autenticação)
- * 
- * JavaScript Inline:
- * - window.userRole: Role do usuário atual para lógica JS
- * 
- * @package Views\Partials
- */
 use Application\Core\Auth;
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($title) ? htmlspecialchars($title) : 'SGE - UNIFIO'; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/default.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-    <link rel="stylesheet" href="/css/notifications.css">
-    <link rel="stylesheet" href="/css/event-popup.css">
-    <?php if (isset($isAuthPage) && $isAuthPage): ?>
-    <link rel="stylesheet" href="/css/auth.css">
-    <?php endif; ?>
-    <?php if (isset($additional_styles) && is_array($additional_styles)): ?>
-        <?php foreach ($additional_styles as $style): ?>
-    <link rel="stylesheet" href="<?php echo $style; ?>">
-        <?php endforeach; ?>
-    <?php endif; ?>
-    <?php if (Auth::check()): ?>
-    <script>
-        // Variável global com o role do usuário para uso em JavaScript
-        window.userRole = '<?php echo Auth::role(); ?>';
-    </script>
-    <?php endif; ?>
-</head>
-<?php if (isset($isAuthPage) && $isAuthPage): ?>
-<body class="auth-body">
-<div class="auth-background"></div>
-<main class="auth-container">
-<?php else: ?>
-<body class="d-flex flex-column min-vh-100">
 
+// Em páginas de autenticação, não renderizamos navbar
+if (!empty($isAuthPage)) {
+    return;
+}
+?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white p-1">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="header-left">
@@ -161,6 +98,3 @@ use Application\Core\Auth;
         </div>
     </div>
 </nav>
-
-<main class="container mt-4 flex-grow-1">
-<?php endif; ?>
