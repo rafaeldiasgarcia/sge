@@ -8,6 +8,7 @@
 $podeSerAdmin = !empty($usuario_editado['atletica_id']) || !empty($usuario_editado['atletica_nome']);
 $isProfessor = ($usuario_editado['tipo_usuario_detalhado'] ?? '') === 'Professor';
 $isExterno = ($usuario_editado['tipo_usuario_detalhado'] ?? '') === 'Comunidade Externa';
+
 ?>
 <h2>Editando Usuário: <?php echo htmlspecialchars($usuario_editado['nome']); ?></h2>
 <a href="/superadmin/usuarios" class="btn btn-secondary mb-3">Voltar para a lista</a>

@@ -39,34 +39,26 @@
  */
 function view(string $view, array $data = [])
 {
-    // Transforma as chaves do array $data em variáveis acessíveis na view
-    // Exemplo: ['nome' => 'João'] torna-se $nome = 'João'
+    // Torna as chaves de $data acessíveis como variáveis na view/layout
     extract($data);
 
-    // Detecta se é uma página de autenticação baseada no prefixo do caminho
-    // Usado no header.php para ajustar o layout (ex: não mostrar menu de navegação)
+    // Sinaliza páginas de autenticação para ajustes de layout
     $isAuthPage = strpos($view, 'auth/') === 0;
 
-    // Constrói o caminho completo para o arquivo da view
-    // Substitui pontos por barras e adiciona a extensão .view.php
-    // Exemplo: 'auth/login' -> ROOT_PATH . '/views/auth/login.view.php'
+    // Caminho da view específica
     $viewPath = ROOT_PATH . '/views/' . str_replace('.', '/', $view) . '.view.php';
 
-    // Verifica se o arquivo existe antes de tentar incluí-lo
-    if (file_exists($viewPath)) {
-        // Inclui o cabeçalho (DOCTYPE, <head>, <body>, navegação)
-        require ROOT_PATH . '/views/_partials/header.php';
-        
-        // Inclui a view principal (conteúdo específico da página)
-        require $viewPath;
-        
-        // Inclui o rodapé (scripts JavaScript, fechamento de tags)
-        require ROOT_PATH . '/views/_partials/footer.php';
-    } else {
-        // Se a view não existir, lança uma exceção com o caminho esperado
-        // Isso ajuda no debug mostrando exatamente onde o sistema procurou
+    if (!file_exists($viewPath)) {
         throw new \Exception("View não encontrada em: {$viewPath}");
     }
+
+    // Renderiza a view em buffer para disponibilizar como $content
+    ob_start();
+    require $viewPath;
+    $content = ob_get_clean();
+
+    // Entrega o conteúdo para o layout principal
+    require ROOT_PATH . '/views/layout.php';
 }
 
 /**

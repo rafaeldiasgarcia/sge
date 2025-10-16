@@ -74,7 +74,7 @@ class AuthController extends BaseController
     public function showLoginForm()
     {
         view('auth/login', [
-            'title' => 'Login - SGE UNIFIO'
+            'title' => 'Login - UNIFIO'
         ]);
     }
 
@@ -184,7 +184,7 @@ class AuthController extends BaseController
     public function showVerifyForm()
     {
         $this->requireSessionKeyOrRedirect('login_email', '/login');
-        view('auth/login-verify', ['title' => 'Verificação de Acesso - SGE UNIFIO']);
+        view('auth/login-verify', ['title' => 'Verificação de Acesso - UNIFIO']);
     }
 
     public function verifyCode()
@@ -398,7 +398,7 @@ class AuthController extends BaseController
 
     public function showForgotPasswordForm()
     {
-        view('auth/esqueci-senha', ['title' => 'Recuperar Senha']);
+        view('auth/esqueci-senha', ['title' => 'Recuperar Senha - UNIFIO']);
     }
 
     public function sendRecoveryLink()
@@ -454,7 +454,7 @@ class AuthController extends BaseController
         }
 
         view('auth/redefinir-senha', [
-            'title' => 'Redefinir Senha',
+            'title' => 'Redefinir Senha - UNIFIO',
             'token' => $token
         ]);
     }

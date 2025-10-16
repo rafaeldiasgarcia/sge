@@ -92,6 +92,9 @@ date_default_timezone_set('America/Sao_Paulo');
 // Usada para incluir arquivos de forma absoluta (views, configs, etc)
 define('ROOT_PATH', dirname(__DIR__));
 
+// Adicionar comentário depois
+define('VIEW_PATH', __DIR__ . '/../views');
+
 // ============================================================================
 // 3. AUTOLOADING E CARREGAMENTO DE DEPENDÊNCIAS
 // ============================================================================

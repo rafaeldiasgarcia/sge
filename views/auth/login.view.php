@@ -33,10 +33,8 @@
  */
 ?>
 
-<link rel="stylesheet" href="/css/default.css">
-
 <!-- Card centralizado de autenticação -->
-<div class="auth-card">
+ <div class="auth-card">
     <!-- Cabeçalho do sistema -->
     <h1 class="auth-title">Jogos Acadêmicos</h1>
     <p class="auth-subtitle">Gerenciamento da Quadra esportiva</p>

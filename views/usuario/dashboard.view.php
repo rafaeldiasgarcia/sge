@@ -39,20 +39,6 @@
  * JAVASCRIPT: event-popup.js (popup de detalhes)
  */
 ?>
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE UNIFIO - Dashboard</title>
-    <link rel="stylesheet" href="/css/usuario.css">
-    <link rel="stylesheet" href="/css/default.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-</head>
-
-<body>
-
 <section>
     <div class="container">
         <div class="title-dashboard">
@@ -76,7 +62,7 @@
                 <div class="text-content">
                     <h2>AQUI VOCÊ VERÁ</h2>
                     <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
-                    <span class="highlight-text">UNIVERSIDADE!</span>
+                    <span class="highlight-text">UNIFIO!</span>
                 </div>
                 <div class="character-image-container static-character">
                     <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
@@ -268,6 +254,3 @@
     </div>
 </div>
 </section>
-
-</body>
-</html>

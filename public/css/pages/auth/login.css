@@ -1,0 +1,113 @@
+/* Sobrescreve o padrão do Bootstrap para .row > * nas telas de autenticação */
+.row > * {
+    flex-shrink: 0;
+    width: 50%; /* Altere aqui conforme desejar */
+    max-width: 100%;
+    padding-right: calc(var(--bs-gutter-x, 1.5rem) * .5);
+    padding-left: calc(var(--bs-gutter-x, 1.5rem) * .5);
+    margin-top: var(--bs-gutter-y, 0);
+}
+/* Auth Pages Styling - JOGOS ACADÊMICOS UNIFIO */
+
+body.auth-body {
+    background: linear-gradient(90deg,rgba(7, 97, 233, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden; /* Permite scroll vertical */
+    overflow-y: auto; /* Permite scroll vertical */
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 0 400px rgba(0,0,0,0.9) inset;
+    /* Remove padding-bottom para que o footer não seja fixo */
+}
+
+.auth-background{
+    position: absolute;
+    top: 0px;
+    width: 97%;
+    height: 97%;
+    background-image: url('/img/jogador-azul.webp'), url('/img/jogador-branco.webp');
+    background-position: left center, right center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: contain, contain;
+    opacity: 0.6;
+    z-index: 1;
+}
+
+.auth-container {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh; /* Volta para altura total da tela */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-card-register {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    width: 100vw;
+    max-width: 900px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-title {
+    color: var(--blue-color) !important;
+    font-weight: bold;
+    font-size: 1.9rem;
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-subtitle {
+    color: #666;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.auth-form .form-label {
+    margin-left: 10px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.auth-form .form-control,
+.auth-form .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.auth-form .form-control:focus,
+.auth-form .form-select:focus {
+    border-color: #2e5bff !important;
+    box-shadow: 0 0 0 0.2rem rgba(46, 91, 255, 0.15) !important;
+    background: white;
+}
+
+.auth-form .form-control::placeholder {
+    color: #999;
+    font-style: italic;
+}

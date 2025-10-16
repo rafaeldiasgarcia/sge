@@ -53,12 +53,6 @@
  * CSS: calendar.css
  */
 ?>
-<!-- CSS específico para calendário -->
-<link rel="stylesheet" href="/css/calendar.css">
-
-<!-- JavaScript para interatividade -->
-<script src="/js/calendar.js" defer></script>
-<script src="/js/event-form.js" defer></script>
 
 <!-- Script para restaurar estado dos campos dinâmicos -->
 <script>

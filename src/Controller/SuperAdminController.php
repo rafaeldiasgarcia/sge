@@ -132,7 +132,7 @@ class SuperAdminController extends BaseController
     {
         $this->guardSuperAdmin();
         view('super_admin/dashboard', [
-            'title' => 'Painel Super Admin',
+            'title' => 'Painel Super Admin - UNIFIO',
             'user' => $this->getUserData()
         ]);
     }
@@ -145,7 +145,7 @@ class SuperAdminController extends BaseController
         $aprovados = $agendamentoRepo->findApprovedAgendamentos();
         $rejeitados = $agendamentoRepo->findRejectedAgendamentos();
         view('super_admin/gerenciar-agendamentos', [
-            'title' => 'Gerenciar Agendamentos',
+            'title' => 'Gerenciar Agendamentos - UNIFIO',
             'user' => $this->getUserData(),
             'pendentes' => $pendentes,
             'aprovados' => $aprovados,
@@ -306,7 +306,7 @@ class SuperAdminController extends BaseController
         $solicitacoesProcessadas = $solicitacaoRepo->findProcessadas();
         
         view('super_admin/gerenciar-usuarios', [
-            'title' => 'Gerenciar Usuários',
+            'title' => 'Gerenciar Usuários - UNIFIO',
             'user' => $this->getUserData(),
             'usuarios' => $usuarios,
             'solicitacoes_pendentes' => $solicitacoesPendentes,
@@ -326,7 +326,7 @@ class SuperAdminController extends BaseController
             $this->errorAndRedirect("Usuário não encontrado.", '/superadmin/usuarios');
         }
         view('super_admin/editar-usuario', [
-            'title' => 'Editar Usuário',
+            'title' => 'Editar Usuário - UNIFIO',
             'user' => $this->getUserData(),
             'usuario_editado' => $user,
             'cursos' => $cursoRepo->findAll(),
@@ -461,7 +461,7 @@ class SuperAdminController extends BaseController
         $atleticaRepo = $this->repository('AtleticaRepository');
 
         view('super_admin/gerenciar-estrutura', [
-            'title' => 'Gerenciar Estrutura Acadêmica',
+            'title' => 'Gerenciar Estrutura Acadêmica - UNIFIO',
             'user' => $this->getUserData(),
             'cursos' => $cursoRepo->findAll(),
             'atleticas_disponiveis' => $atleticaRepo->findAll(),
@@ -489,7 +489,7 @@ class SuperAdminController extends BaseController
         if (!$curso) redirect('/superadmin/estrutura');
         $atleticas = $this->repository('AtleticaRepository')->findAll();
         view('super_admin/editar-curso', [
-            'title' => 'Editar Curso',
+            'title' => 'Editar Curso - UNIFIO',
             'user' => $this->getUserData(),
             'curso' => $curso,
             'atleticas' => $atleticas
@@ -539,7 +539,7 @@ class SuperAdminController extends BaseController
         $atletica = $this->repository('AtleticaRepository')->findById($id);
         if (!$atletica) redirect('/superadmin/estrutura');
         view('super_admin/editar-atletica', [
-            'title' => 'Editar Atlética',
+            'title' => 'Editar Atlética - UNIFIO',
             'user' => $this->getUserData(),
             'atletica' => $atletica
         ]);
@@ -574,7 +574,7 @@ class SuperAdminController extends BaseController
         $this->guardSuperAdmin();
         $modalidadeRepo = $this->repository('ModalidadeRepository');
         view('super_admin/gerenciar-modalidades', [
-            'title' => 'Gerenciar Modalidades',
+            'title' => 'Gerenciar Modalidades - UNIFIO',
             'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll()
         ]);
@@ -598,7 +598,7 @@ class SuperAdminController extends BaseController
         $modalidade = $this->repository('ModalidadeRepository')->findById($id);
         if (!$modalidade) redirect('/superadmin/modalidades');
         view('super_admin/editar-modalidade', [
-            'title' => 'Editar Modalidade',
+            'title' => 'Editar Modalidade - UNIFIO',
             'user' => $this->getUserData(),
             'modalidade' => $modalidade
         ]);
@@ -632,7 +632,7 @@ class SuperAdminController extends BaseController
         $this->guardSuperAdmin();
         $userRepo = $this->repository('UsuarioRepository');
         view('super_admin/gerenciar-admins', [
-            'title' => 'Gerenciar Admins',
+            'title' => 'Gerenciar Admins - UNIFIO',
             'user' => $this->getUserData(),
             'admins' => $userRepo->findAdmins(),
             'elegiveis' => $userRepo->findEligibleAdmins()
@@ -680,7 +680,7 @@ class SuperAdminController extends BaseController
         $userRepo = $this->repository('UsuarioRepository');
 
         view('super_admin/relatorios', [
-            'title' => 'Relatórios',
+            'title' => 'Relatórios - UNIFIO',
             'user' => $this->getUserData(),
             'eventos' => $agendamentoRepo->findAllForSelect(),
             'usuarios' => $userRepo->findAllExcept(Auth::id()),
@@ -748,7 +748,7 @@ class SuperAdminController extends BaseController
         $agendamentoRepo = $this->repository('AgendamentoRepository');
         $userRepo = $this->repository('UsuarioRepository');
         view('super_admin/relatorios', [
-            'title' => 'Resultado do Relatório',
+            'title' => 'Resultado do Relatório - UNIFIO',
             'user' => $this->getUserData(),
             'eventos' => $agendamentoRepo->findAllForSelect(),
             'usuarios' => $userRepo->findAllExcept(Auth::id()),
@@ -807,7 +807,7 @@ class SuperAdminController extends BaseController
         }
 
         // Para a view de impressão, não usamos o layout padrão.
-        extract(['title' => 'Imprimir Relatório', 'dados_relatorio' => $dadosRelatorio]);
+        extract(['title' => 'Imprimir Relatório - UNIFIO', 'dados_relatorio' => $dadosRelatorio]);
         require ROOT_PATH . '/views/super_admin/relatorio-print.view.php';
     }
 
@@ -815,7 +815,7 @@ class SuperAdminController extends BaseController
     {
         $this->guardSuperAdmin();
         view('super_admin/enviar-notificacao-global', [
-            'title' => 'Enviar Notificação Global',
+            'title' => 'Enviar Notificação Global - UNIFIO',
             'user' => $this->getUserData()
         ]);
     }
