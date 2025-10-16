@@ -61,7 +61,7 @@
             <div class="custom-card orange-card">
                 <div class="text-content">
                     <h2>AQUI VOCÊ VERÁ</h2>
-                    <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
+                    <p>OS EVENTOS MAIS AGUARDADOS DA<p>
                     <span class="highlight-text">UNIFIO!</span>
                 </div>
                 <div class="character-image-container static-character">
@@ -168,8 +168,7 @@
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-12">
+    <div class="mt-4">
             <div class="card border-0 mb-4 card-events-presence">
                 <div class="card-header text-white">
                     <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Próximos Eventos (Presença Marcada)</h5>
@@ -250,7 +249,6 @@
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 </section>

@@ -149,7 +149,8 @@ class SuperAdminController extends BaseController
             'user' => $this->getUserData(),
             'pendentes' => $pendentes,
             'aprovados' => $aprovados,
-            'rejeitados' => $rejeitados
+            'rejeitados' => $rejeitados,
+            'additional_scripts' => ['/js/event-popup.js']
         ]);
     }
 
@@ -330,7 +331,8 @@ class SuperAdminController extends BaseController
             'user' => $this->getUserData(),
             'usuario_editado' => $user,
             'cursos' => $cursoRepo->findAll(),
-            'atleticas' => $atleticaRepo->findAll()
+            'atleticas' => $atleticaRepo->findAll(),
+            'additional_scripts' => ['/js/editar-usuario.js']
         ]);
     }
 
