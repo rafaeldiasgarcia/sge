@@ -322,18 +322,3 @@ use Application\Core\Auth;
     </div>
 <?php endforeach; ?>
 
-<!-- CSS do Event Popup -->
-<link rel="stylesheet" href="/css/event-popup.css">
-
-<!-- O event-popup.js já está carregado no header.php, não precisa carregar novamente -->
-<script>
-// Garantir que o popup funcione nas linhas clicáveis desta página
-document.addEventListener('DOMContentLoaded', function() {
-    // Aguardar o eventPopup estar disponível
-    if (typeof eventPopup !== 'undefined') {
-        console.log('EventPopup já inicializado, apenas adicionando listeners');
-    } else {
-        console.warn('EventPopup ainda não foi carregado');
-    }
-});
-</script>

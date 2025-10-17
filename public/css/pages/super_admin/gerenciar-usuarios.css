@@ -1,0 +1,142 @@
+/* Estilos para a Gaveta do Histórico */
+.card-header[data-bs-toggle="collapse"] {
+    transition: all 0.3s ease;
+}
+
+.card-header[data-bs-toggle="collapse"]:hover {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+.card-header[data-bs-toggle="collapse"] i.bi-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.card-header[data-bs-toggle="collapse"][aria-expanded="true"] i.bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Estilos para o Histórico de Solicitações */
+.solicitacoes-historico {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.historico-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.historico-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.historico-aprovada {
+    border-left: 5px solid #22c55e;
+}
+
+.historico-recusada {
+    border-left: 5px solid #ef4444;
+}
+
+.historico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.historico-status-badge .badge {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+.historico-dates {
+    text-align: right;
+}
+
+.historico-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.historico-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.historico-col strong {
+    display: block;
+    color: #475569;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.historico-col p {
+    margin: 0;
+    color: #1e293b;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.historico-justificativa {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.historico-justificativa strong {
+    display: block;
+    color: #475569;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.justificativa-texto {
+    color: #1e293b;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    text-align: justify;
+}
+
+.justificativa-resposta-texto {
+    color: #dc2626;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    text-align: justify;
+    font-weight: 500;
+    background: #fef2f2;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 3px solid #ef4444;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .historico-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .historico-dates {
+        text-align: left;
+    }
+    
+    .historico-row {
+        grid-template-columns: 1fr;
+    }
+}
