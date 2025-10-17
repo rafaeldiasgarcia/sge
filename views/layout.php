@@ -56,7 +56,7 @@ use Application\Core\Auth;
     <script src="/js/modules/_partials/header.js"></script>
     <?php endif; ?>
     <?php if (Auth::check()): ?>
-    <script src="/js/_partials/notifications.js"></script>
+    <script src="/js/modules/_partials/notifications.js"></script>
     <?php endif; ?>
 
     <!-- Scripts adicionais específicos das páginas de autenticação -->
@@ -72,5 +72,7 @@ use Application\Core\Auth;
     <!-- Scripts adicionais específicos das páginas do Super Admin -->
     <script src="/js/modules/super_admin/editar-usuario.js"></script>
     <script src="/js/modules/super_admin/enviar-notificacao-global.js"></script>
+    <script src="/js/modules/super_admin/gerenciar-agendamentos.js"></script>
+    <script src="/js/modules/super_admin/gerenciar-usuarios.js"></script>
 </body>
 </html>
