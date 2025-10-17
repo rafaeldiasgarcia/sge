@@ -266,6 +266,15 @@ class AuthController extends BaseController
                 $_SESSION['atletica_id'] = $user['atletica_id'];
             }
         }
+
+        // Limpar notificações antigas (30+ dias) quando usuário faz login
+        try {
+            $notificationService = new \Application\Core\NotificationService();
+            $notificationService->cleanOldNotifications(30);
+        } catch (\Exception $e) {
+            // Log do erro mas não interrompe o login
+            error_log("Erro ao limpar notificações antigas: " . $e->getMessage());
+        }
     }
 
     public function logout()
