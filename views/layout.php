@@ -14,13 +14,6 @@ use Application\Core\Auth;
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/css/default.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-    <link rel="stylesheet" href="/css/notifications.css">
-    <link rel="stylesheet" href="/css/event-popup.css">
-    <?php if (!empty($isAuthPage)): ?>
-    <link rel="stylesheet" href="/css/auth.css">
-    <?php endif; ?>
 
     <?php if (!empty($additional_styles) && is_array($additional_styles)): ?>
         <?php foreach ($additional_styles as $style): ?>

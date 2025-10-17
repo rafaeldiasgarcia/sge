@@ -292,7 +292,7 @@ class AuthController extends BaseController
             unset($_SESSION['old_input']); // Limpar após usar
             
             view('auth/registro', [
-                'title' => 'Criar Conta - SGE UNIFIO',
+                'title' => 'Criar Conta - UNIFIO',
                 'cursos' => $cursos,
                 'old' => $oldInput
             ]);
