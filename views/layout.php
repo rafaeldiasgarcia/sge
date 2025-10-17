@@ -51,13 +51,26 @@ use Application\Core\Auth;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <?php if (empty($isAuthPage)): ?>
-    <script src="/js/calendar.js"></script>
-    <script src="/js/event-form.js"></script>
-    <script src="/js/event-popup.js"></script>
-    <script src="/js/header.js"></script>
+    <script src="/js/modules/_partials/calendar.js"></script>
+    <script src="/js/modules/events/event-form.js"></script>
+    <script src="/js/modules/_partials/header.js"></script>
     <?php endif; ?>
     <?php if (Auth::check()): ?>
-    <script src="/js/notifications.js"></script>
+    <script src="/js/_partials/notifications.js"></script>
     <?php endif; ?>
+
+    <!-- Scripts adicionais específicos das páginas de autenticação -->
+    <!-- Login -->
+    <script src="/js/modules/auth/login.js"></script>
+    <!-- Register -->    
+    <script src="/js/modules/auth/register.js"></script>
+
+    <!-- Profile -->
+    <script src="/js/modules/users/profile.js"></script>
+    <script src="/js/modules/events/event-popup.js"></script>
+
+    <!-- Scripts adicionais específicos das páginas do Super Admin -->
+    <script src="/js/modules/super_admin/editar-usuario.js"></script>
+    <script src="/js/modules/super_admin/enviar-notificacao-global.js"></script>
 </body>
 </html>

@@ -93,18 +93,3 @@
         </div>
     </form>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const toggle = document.getElementById("togglePassword");
-  const input = document.getElementById("senha");
-  const icon = toggle.querySelector("i");
-
-  toggle.addEventListener("click", () => {
-    const isPassword = input.type === "password";
-    input.type = isPassword ? "text" : "password";
-    icon.classList.toggle("bi-eye");
-    icon.classList.toggle("bi-eye-slash");
-  });
-});
-</script>
