@@ -74,7 +74,8 @@ class UsuarioController extends BaseController
         view('usuario/dashboard', [
             'title' => 'Meu Painel - UNIFIO',
             'user' => $userData,
-            'eventos_presenca' => $eventosComPresenca
+            'eventos_presenca' => $eventosComPresenca,
+            'additional_scripts' => ['/js/modules/events/event-popup.js']
         ]);
     }
 
@@ -110,7 +111,8 @@ class UsuarioController extends BaseController
                 'user' => $user,
                 'cursos' => $cursos,
                 'atletica_info' => $atleticaInfo,
-                'meus_eventos' => $meusEventos
+                'meus_eventos' => $meusEventos,
+                'additional_scripts' => ['/js/modules/users/profile.js']
             ]);
         } catch (\Exception $e) {
             $this->setErrorAndRedirect("Ocorreu um erro ao carregar seu perfil.", '/dashboard');

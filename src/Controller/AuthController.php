@@ -74,7 +74,8 @@ class AuthController extends BaseController
     public function showLoginForm()
     {
         view('auth/login', [
-            'title' => 'Login - UNIFIO'
+            'title' => 'Login - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
         ]);
     }
 
@@ -184,7 +185,10 @@ class AuthController extends BaseController
     public function showVerifyForm()
     {
         $this->requireSessionKeyOrRedirect('login_email', '/login');
-        view('auth/login-verify', ['title' => 'Verificação de Acesso - UNIFIO']);
+        view('auth/login-verify', [
+            'title' => 'Verificação de Acesso - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
+        ]);
     }
 
     public function verifyCode()
@@ -294,7 +298,8 @@ class AuthController extends BaseController
             view('auth/registro', [
                 'title' => 'Criar Conta - UNIFIO',
                 'cursos' => $cursos,
-                'old' => $oldInput
+                'old' => $oldInput,
+                'additional_scripts' => ['/js/modules/auth/register.js']
             ]);
         } catch (\Exception $e) {
             die('Não foi possível carregar a página de registro. Erro no banco de dados.');
@@ -398,7 +403,10 @@ class AuthController extends BaseController
 
     public function showForgotPasswordForm()
     {
-        view('auth/esqueci-senha', ['title' => 'Recuperar Senha - UNIFIO']);
+        view('auth/esqueci-senha', [
+            'title' => 'Recuperar Senha - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
+        ]);
     }
 
     public function sendRecoveryLink()
@@ -455,7 +463,8 @@ class AuthController extends BaseController
 
         view('auth/redefinir-senha', [
             'title' => 'Redefinir Senha - UNIFIO',
-            'token' => $token
+            'token' => $token,
+            'additional_scripts' => ['/js/modules/auth/login.js']
         ]);
     }
 
