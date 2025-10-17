@@ -59,28 +59,10 @@ use Application\Core\Auth;
     <script src="/js/modules/_partials/notifications.js"></script>
     <?php endif; ?>
 
-<<<<<<< HEAD
     <?php if (!empty($additional_scripts) && is_array($additional_scripts)): ?>
         <?php foreach ($additional_scripts as $script): ?>
     <script src="<?= htmlspecialchars($script) ?>"></script>
         <?php endforeach; ?>
     <?php endif; ?>
-=======
-    <!-- Scripts adicionais específicos das páginas de autenticação -->
-    <!-- Login -->
-    <script src="/js/modules/auth/login.js"></script>
-    <!-- Register -->    
-    <script src="/js/modules/auth/register.js"></script>
-
-    <!-- Profile -->
-    <script src="/js/modules/users/profile.js"></script>
-    <script src="/js/modules/events/event-popup.js"></script>
-
-    <!-- Scripts adicionais específicos das páginas do Super Admin -->
-    <script src="/js/modules/super_admin/editar-usuario.js"></script>
-    <script src="/js/modules/super_admin/enviar-notificacao-global.js"></script>
-    <script src="/js/modules/super_admin/gerenciar-agendamentos.js"></script>
-    <script src="/js/modules/super_admin/gerenciar-usuarios.js"></script>
->>>>>>> 37ba587aff728cc74eeb56d922016c6960e99744
 </body>
 </html>
