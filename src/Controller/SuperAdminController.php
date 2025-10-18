@@ -818,7 +818,8 @@ class SuperAdminController extends BaseController
         $this->guardSuperAdmin();
         view('super_admin/enviar-notificacao-global', [
             'title' => 'Enviar Notificação Global - UNIFIO',
-            'user' => $this->getUserData()
+            'user' => $this->getUserData(),
+            'additional_scripts' => ['/js/modules/super_admin/enviar-notificacao-global.js']
         ]);
     }
 

@@ -1,191 +1,184 @@
-/* ABAIXO CSS DO REGISTRO */
+/* =======================================================================
+   AUTH FORM — REGISTRO DE NOVOS USUÁRIOS
+======================================================================= */
+
+.password-input {
+  padding-right: 2.6rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: .25rem .4rem;
+  color: #6c757d;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;           
+  cursor: pointer;
+}
+.password-toggle-btn:hover { color: #0d6efd; }
+.password-toggle-btn i { font-size: 1.05rem; }
+
 .auth-form-register .form-label {
-    margin-left: 10px;
-    color: #333;
-    font-weight: 500;
-    align-items: column;
+  margin-left: 10px;
+  color: #333;
+  font-weight: 500;
+  display: block;         
 }
 
 .auth-form-register .form-control,
 .auth-form-register .form-select {
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 10px 10px;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
-    background: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 10px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
 }
 
 .auth-form-register .form-control:focus,
 .auth-form-register .form-select:focus {
-    border-color: #2e5bff !important;
-    box-shadow: 0 0 0 0.2rem rgba(46, 91, 255, 0.15) !important;
-    background: white;
+  border-color: #2e5bff !important;
+  box-shadow: 0 0 0 0.2rem rgba(46, 91, 255, 0.15) !important;
+  background: white;
 }
 
 .auth-form-register .form-control::placeholder {
-    color: #999;
-    font-style: italic;
+  color: #999;
+  font-style: italic;
 }
 
 .btn-auth-primary {
-    background: linear-gradient(135deg, #ff8c00, #ffa500) !important;
-    border: none !important;
-    border-radius: 10px;
-    padding: 12px 30px;
-    font-weight: bold;
-    color: white !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    width: 100%;
-    font-size: 1rem;
+  background: linear-gradient(135deg, #ff8c00, #ffa500) !important;
+  border: none !important;
+  border-radius: 10px;
+  padding: 12px 30px;
+  font-weight: bold;
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-size: 1rem;
 }
-
 .btn-auth-primary:hover {
-    background: linear-gradient(135deg, #e67e00, #ff9500) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+  background: linear-gradient(135deg, #e67e00, #ff9500) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
 }
 
-.auth-links {
-    text-align: right;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-.auth-links-es {
-    text-align: center;
-    font-weight: 600;
-    font-size: 14px;
-    margin-top: 20px;
-    text-decoration: none;
-}
-
-.auth-links-es a:hover {
-    text-align: center;
-    font-weight: 600;
-    font-size: 14px;
-    margin-top: 20px;
-    text-decoration: underline;
-}
-
-.auth-links-register{
-    text-align: center;
-    margin-top: 25px;
-}
+.auth-links { text-align: right; font-size: 14px; margin-top: 10px; }
+.auth-links-es { text-align: center; font-weight: 600; font-size: 14px; margin-top: 20px; text-decoration: none; }
+.auth-links-es a:hover { text-decoration: underline; }
+.auth-links-register { text-align: center; margin-top: 25px; }
 
 .auth-links a {
-    color: #2e5bff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
+  color: #2e5bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease;
 }
-
-.auth-links a:hover {
-    color: #1a4bff;
-    text-decoration: underline;
-}
+.auth-links a:hover { color: #1a4bff; text-decoration: underline; }
 
 .auth-links-register a {
-    color: #1a4bff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-    font-size: 14px;
+  color: #1a4bff; text-decoration: none; font-weight: 600; transition: color 0.3s ease; font-size: 14px;
+}
+.auth-links-register a:hover { color: #1a4bff; text-decoration: underline; }
+
+.auth-help-text { color: #666; font-size: 0.85rem; text-align: center; margin-top: 20px; }
+
+.unifio-logo { color: #2e5bff; font-weight: bold; font-size: 1.2rem; text-align: center; margin-top: 30px; }
+.unifio-logo img { max-width: 120px; height: auto; opacity: 1; }
+
+.alert-auth { border-radius: 10px; margin-bottom: 20px; border: none; font-size: 0.9rem; }
+.alert-danger { background-color: rgba(220, 53, 69, 0.1); color: #721c24; border-left: 4px solid #dc3545; }
+.alert-success { background-color: rgba(25, 135, 84, 0.1); color: #0f5132; border-left: 4px solid #198754; }
+
+body.auth-body .auth-background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url('/img/bg-auth-desktop.webp');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
 }
 
-.auth-links-register a:hover {
-    color: #1a4bff;
-    text-decoration: underline;
+.auth-container {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-.auth-help-text {
-    color: #666;
-    font-size: 0.85rem;
-    text-align: center;
-    margin-top: 20px;
+.auth-card-register {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  width: 100%;
+  max-width: 900px;
 }
 
-.unifio-logo {
-    color: #2e5bff;
-    font-weight: bold;
-    font-size: 1.2rem;
-    text-align: center;
-    margin-top: 30px;
+/* =======================================================================
+   MOBILE / TABLET
+======================================================================= */
+@media (max-width: 991.98px) {
+  body.auth-body .auth-background {
+    background-image: url('/img/bg-auth-mobile.webp') !important;
+    background-repeat: no-repeat !important;
+    background-position: center bottom !important;
+    background-size: cover !important;
+    opacity: 0.9 !important;
+
+    position: fixed !important;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+
+  .auth-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100dvh !important; 
+    padding: 40px 20px !important;
+    position: relative;
+    z-index: 2;                      
+  }
+
+  .auth-card-register {
+    margin: auto;
+    padding: 25px;
+  }
 }
 
-.unifio-logo img {
-    max-width: 120px;
-    height: auto;
-    opacity: 1;
+@media (max-width: 430px) {
+  body.auth-body .auth-background {
+    background-position: center bottom !important;
+    background-size: cover !important;
+    position: fixed !important;
+    inset: 0;
+    opacity: 0.85 !important;
+  }
+
+  .auth-card-register { padding: 20px; }
 }
 
-.alert-auth {
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border: none;
-    font-size: 0.9rem;
-}
-
-.alert-danger {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #721c24;
-    border-left: 4px solid #dc3545;
-}
-
-.alert-success {
-    background-color: rgba(25, 135, 84, 0.1);
-    color: #0f5132;
-    border-left: 4px solid #198754;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .auth-card {
-        margin: 20px;
-        padding: 30px 25px;
-    }
-
-    .auth-title {
-        font-size: 1.6rem;
-    }
-
-    .auth-background {
-        background-size: 200px, 200px;
-    }
-}
-
-/* Special styling for verification code page */
-.verification-code-input {
-    text-align: center;
-    font-size: 1.5rem;
-    letter-spacing: 3px;
-    font-weight: bold;
-    border: 3px solid #e0e0e0;
-}
-
-.verification-code-input:focus {
-    border-color: #2e5bff !important;
-    box-shadow: 0 0 0 0.2rem rgba(46, 91, 255, 0.25) !important;
-}
-
-/* Additional form elements styling */
-.form-check-input:checked {
-    background-color: #2e5bff;
-    border-color: #2e5bff;
-}
-
-.form-check-label {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Hide navbar on auth pages */
-body.auth-body .navbar {
-    display: none !important;
-}
-
-body.auth-body main.container {
-    display: none !important;
-}
+body.auth-body .navbar { display: none !important; }
+body.auth-body main.container { display: none !important; }

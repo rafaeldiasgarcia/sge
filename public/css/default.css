@@ -14,6 +14,7 @@
 @import url('./pages/profile.css');
 @import url('./partials/header.css');
 @import url('./partials/footer.css');
+@import url('./pages/super_admin/gerenciar-usuarios.css');
 
 :root {
     --blue-color: #0900FF;
@@ -35,9 +36,4 @@
 body {
     font-family: 'Montserrat', Arial, sans-serif;
     min-height: 100vh; /* Garante altura mínima da tela */
-}
-
-/* Páginas normais também precisam de altura suficiente para o scroll */
-body.d-flex {
-    min-height: 120vh; /* Força conteúdo maior que a tela para ter scroll */
 }

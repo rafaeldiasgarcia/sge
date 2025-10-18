@@ -24,7 +24,7 @@
 <body>
 <div class="container my-5">
     <div class="report-header text-center">
-        <h2>SGE UNIFIO</h2>
+        <h2>UNIFIO</h2>
         <p class="lead">Relatório do Sistema de Gerenciamento de Eventos</p>
     </div>
 

@@ -74,7 +74,8 @@ class AuthController extends BaseController
     public function showLoginForm()
     {
         view('auth/login', [
-            'title' => 'Login - UNIFIO'
+            'title' => 'Login - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
         ]);
     }
 
@@ -184,7 +185,10 @@ class AuthController extends BaseController
     public function showVerifyForm()
     {
         $this->requireSessionKeyOrRedirect('login_email', '/login');
-        view('auth/login-verify', ['title' => 'Verificação de Acesso - UNIFIO']);
+        view('auth/login-verify', [
+            'title' => 'Verificação de Acesso - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
+        ]);
     }
 
     public function verifyCode()
@@ -262,6 +266,15 @@ class AuthController extends BaseController
                 $_SESSION['atletica_id'] = $user['atletica_id'];
             }
         }
+
+        // Limpar notificações antigas (30+ dias) quando usuário faz login
+        try {
+            $notificationService = new \Application\Core\NotificationService();
+            $notificationService->cleanOldNotifications(30);
+        } catch (\Exception $e) {
+            // Log do erro mas não interrompe o login
+            error_log("Erro ao limpar notificações antigas: " . $e->getMessage());
+        }
     }
 
     public function logout()
@@ -292,9 +305,10 @@ class AuthController extends BaseController
             unset($_SESSION['old_input']); // Limpar após usar
             
             view('auth/registro', [
-                'title' => 'Criar Conta - SGE UNIFIO',
+                'title' => 'Criar Conta - UNIFIO',
                 'cursos' => $cursos,
-                'old' => $oldInput
+                'old' => $oldInput,
+                'additional_scripts' => ['/js/modules/auth/register.js']
             ]);
         } catch (\Exception $e) {
             die('Não foi possível carregar a página de registro. Erro no banco de dados.');
@@ -398,7 +412,10 @@ class AuthController extends BaseController
 
     public function showForgotPasswordForm()
     {
-        view('auth/esqueci-senha', ['title' => 'Recuperar Senha - UNIFIO']);
+        view('auth/esqueci-senha', [
+            'title' => 'Recuperar Senha - UNIFIO',
+            'additional_scripts' => ['/js/modules/auth/login.js']
+        ]);
     }
 
     public function sendRecoveryLink()
@@ -455,7 +472,8 @@ class AuthController extends BaseController
 
         view('auth/redefinir-senha', [
             'title' => 'Redefinir Senha - UNIFIO',
-            'token' => $token
+            'token' => $token,
+            'additional_scripts' => ['/js/modules/auth/login.js']
         ]);
     }
 

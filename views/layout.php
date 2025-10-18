@@ -65,7 +65,13 @@ use Application\Core\Auth;
     <?php endif; ?>
     <!-- Notificações em tempo real/UX: carregadas apenas para usuários autenticados -->
     <?php if (Auth::check()): ?>
-    <script src="/js/notifications.js"></script>
+    <script src="/js/modules/_partials/notifications.js"></script>
+    <?php endif; ?>
+
+    <?php if (!empty($additional_scripts) && is_array($additional_scripts)): ?>
+        <?php foreach ($additional_scripts as $script): ?>
+    <script src="<?= htmlspecialchars($script) ?>"></script>
+        <?php endforeach; ?>
     <?php endif; ?>
 
     <!-- Scripts adicionais específicos da página (injetados pelo controller via 'additional_scripts') -->

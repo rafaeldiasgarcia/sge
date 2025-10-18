@@ -34,61 +34,61 @@
 ?>
 
 <!-- Card centralizado de autenticação -->
- <div class="auth-card">
-    <!-- Cabeçalho do sistema -->
+<div class="auth-card">
     <h1 class="auth-title">Jogos Acadêmicos</h1>
-    <p class="auth-subtitle">Gerenciamento da Quadra esportiva</p>
+    <p class="auth-subtitle">Gerenciamento da Quadra Esportiva</p>
 
-    <!-- Mensagens de feedback -->
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success alert-auth">
-            <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+            <?= $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
         </div>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['error_message'])): ?>
         <div class="alert alert-danger alert-auth">
-            <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+            <?= $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
         </div>
     <?php endif; ?>
 
-    <!-- Formulário de login -->
     <form action="/login" method="post" class="auth-form">
-        <!-- Campo: Email -->
+        <!-- E-mail -->
         <div class="mb-3">
             <label for="email" class="form-label">E-mail</label>
-            <input type="text" name="email" id="email" class="form-control" 
+            <input type="text" name="email" id="email" class="form-control"
                    placeholder="******@seuemail.com" required>
         </div>
-        
-        <!-- Campo: Senha -->
+
+        <!-- Senha com olho (overlay, sem CSS novo) -->
         <div class="mb-1">
             <label for="senha" class="form-label">Senha</label>
-            <input type="password" name="senha" id="senha" class="form-control" 
-                   placeholder="••••••••" required>
+            <div class="position-relative">
+                <input type="password" name="senha" id="senha" class="form-control pe-5"
+                       placeholder="••••••••" required>
+                <button type="button"
+                        id="togglePassword"
+                        class="btn btn-link p-0 position-absolute top-50 end-0 translate-middle-y me-3"
+                        tabindex="-1" aria-label="Mostrar senha" title="Mostrar/ocultar senha">
+                    <i class="bi bi-eye fs-5"></i>
+                </button>
+            </div>
         </div>
-        
-        <!-- Link: Recuperação de senha -->
+
         <div class="auth-links mb-3">
             <a class="esqueceu-senha" href="/esqueci-senha">Esqueceu a senha?</a>
         </div>
-        
-        <!-- Botão: Entrar -->
-        <button type="submit" class="btn btn-auth-primary">Entrar</button>
 
-        <!-- Link: Cadastro -->
-        <div class="auth-links-register">
+        <button type="submit" class="btn btn-auth-primary w-100">Entrar</button>
+
+        <div class="auth-links-register mt-3">
             <a href="/registro">Cadastre-se</a>
         </div>
 
-        <!-- Texto de ajuda -->
-        <div class="auth-help-text">
+        <div class="auth-help-text mt-3">
             Precisa de ajuda?<br>
             Entre em contato com a universidade
         </div>
 
-        <!-- Logo institucional -->
-        <div class="unifio-logo">
+        <div class="unifio-logo mt-3">
             <img src="/img/logo-unifio-azul.webp" alt="Logo UNIFIO">
         </div>
     </form>
