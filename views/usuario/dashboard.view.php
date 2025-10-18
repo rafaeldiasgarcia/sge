@@ -41,12 +41,11 @@
 ?>
 <section>
     <div class="container">
-        <div class="title-dashboard">
-            <div>
-                <h1>SEJA BEM-VINDO</h1>
-                <h1>À NOSSA SALA DE EVENTOS!!!</h1>
+        <section class="welcome-section">
+            <div class="welcome-text">
+                <h1 class="welcome-title">SEJA BEM-VINDO<br>A NOSSA SALA DE EVENTOS!!!</h1>
             </div>
-        </div>
+        </section>
 
         <!-- CARROSSEL COM 2 SLIDES -->
         <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
