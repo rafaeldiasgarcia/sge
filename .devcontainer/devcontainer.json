@@ -3,7 +3,7 @@
     "dockerComposeFile": "../docker-compose.yml",
     "service": "apache",
     "workspaceFolder": "/var/www/html",
-    "postCreateCommand": "composer install --no-interaction",
+    "postCreateCommand": "if [ ! -f vendor/autoload.php ]; then composer install --no-interaction; fi",
     "forwardPorts": [80, 8080, 3306],
     "portsAttributes": {
         "80": {

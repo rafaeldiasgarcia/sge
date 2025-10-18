@@ -185,48 +185,44 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- SLIDE 2: Card Branco com Efeito 3D -->
-        <div class="carousel-item">
-            <div class="custom-card white-card">
-                <div class="text-content">
-                    <h2>
-                        <span class="gradient-text-orange">LOGO</span>
-                        <span class="gradient-text-blue">ABAIXO</span>
-                    </h2>
-                    <p class="card-text-body">
-                        <span class="text-orange">GERENCIE SEU</span>
-                        <span class="text-blue">ESPAÇO,</span><br>
-                        <span class="text-blue">SEU</span>
-                        <span class="text-orange">ESPORTE</span>
-                        <span class="text-blue">E</span><br>
-                        <span class="text-blue">SUA</span>
-                        <span class="text-orange">RESERVA</span>
-                    </p>
+                <!-- SLIDE 2: Card Branco com Efeito 3D -->
+                <div class="carousel-item">
+                    <div class="custom-card white-card">
+                        <div class="text-content">
+                            <h2>
+                                <span class="gradient-text-orange">LOGO</span>
+                                <span class="gradient-text-blue">ABAIXO</span>
+                            </h2>
+                            <p class="card-text-body">
+                                <span class="text-orange">GERENCIE SEU</span>
+                                <span class="text-blue">ESPAÇO,</span><br>
+                                <span class="text-blue">SEU</span>
+                                <span class="text-orange">ESPORTE</span>
+                                <span class="text-blue">E</span><br>
+                                <span class="text-blue">SUA</span>
+                                <span class="text-orange">RESERVA</span>
+                            </p>
+                        </div>
+                        <!-- Container da imagem que vai "sair" do card -->
+                        <div class="character-image-container popup-character">
+                            <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
+                        </div>
+                    </div>
                 </div>
-                <!-- Container da imagem que vai "sair" do card -->
-                <div class="character-image-container popup-character">
-                    <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
-                </div>
             </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-
-       
+    </div>   
 </section>
-
 
 <section>
     <?php

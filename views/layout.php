@@ -61,18 +61,21 @@ use Application\Core\Auth;
 
     <!-- JS global do cabeçalho (somente para páginas não-auth) -->
     <?php if (empty($isAuthPage)): ?>
-    <script src="/js/header.js"></script>
+    <script src="/js/modules/_partials/calendar.js"></script>
+    <script src="/js/modules/events/event-form.js"></script>
+    <script src="/js/modules/_partials/header.js"></script>
     <?php endif; ?>
     <!-- Notificações em tempo real/UX: carregadas apenas para usuários autenticados -->
     <?php if (Auth::check()): ?>
-    <script src="/js/notifications.js"></script>
+    <script src="/js/modules/_partials/notifications.js"></script>
     <?php endif; ?>
 
-    <!-- Scripts adicionais específicos da página (injetados pelo controller via 'additional_scripts') -->
     <?php if (!empty($additional_scripts) && is_array($additional_scripts)): ?>
         <?php foreach ($additional_scripts as $script): ?>
     <script src="<?= htmlspecialchars($script) ?>"></script>
         <?php endforeach; ?>
     <?php endif; ?>
+    
+    <script src="/js/app.js"></script>
 </body>
 </html>

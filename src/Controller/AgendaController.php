@@ -88,8 +88,8 @@ class AgendaController extends BaseController
                 'atletica_id' => Auth::check() ? Auth::get('atletica_id') : null,
                 'tipo_usuario_detalhado' => Auth::check() ? Auth::get('tipo_usuario_detalhado') : null,
                 'is_logged_in' => Auth::check(),
-                'additional_styles' => ['/css/agenda.css'],
-                'additional_scripts' => ['/js/event-popup.js', '/js/agenda-page.js']
+                'additional_styles' => ['/css/components/agenda.css', '/css/components/event-popup.css'],
+                'additional_scripts' => ['/js/modules/events/agenda.js', '/js/modules/events/event-popup.js']
             ]);
         } catch (\Exception $e) {
             die("Erro ao carregar a agenda: " . $e->getMessage());

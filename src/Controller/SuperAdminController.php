@@ -150,7 +150,7 @@ class SuperAdminController extends BaseController
             'pendentes' => $pendentes,
             'aprovados' => $aprovados,
             'rejeitados' => $rejeitados,
-            'additional_scripts' => ['/js/event-popup.js']
+            'additional_scripts' => ['/js/modules/events/event-popup.js']
         ]);
     }
 
@@ -332,7 +332,7 @@ class SuperAdminController extends BaseController
             'usuario_editado' => $user,
             'cursos' => $cursoRepo->findAll(),
             'atleticas' => $atleticaRepo->findAll(),
-            'additional_scripts' => ['/js/editar-usuario.js']
+            'additional_scripts' => ['/js/modules/super_admin/editar-usuario.js']
         ]);
     }
 
@@ -818,7 +818,8 @@ class SuperAdminController extends BaseController
         $this->guardSuperAdmin();
         view('super_admin/enviar-notificacao-global', [
             'title' => 'Enviar Notificação Global - UNIFIO',
-            'user' => $this->getUserData()
+            'user' => $this->getUserData(),
+            'additional_scripts' => ['/js/modules/super_admin/enviar-notificacao-global.js']
         ]);
     }
 

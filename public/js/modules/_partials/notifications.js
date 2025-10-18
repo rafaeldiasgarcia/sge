@@ -83,6 +83,10 @@ class SimpleNotifications {
 
             this.notificationContainer.addEventListener('mouseleave', () => {
                 this.closeDropdown();
+                // Marcar todas como lidas quando o mouse sair
+                if (this.badge && this.badge.classList.contains('active')) {
+                    this.markAllAsRead();
+                }
             });
         }
 

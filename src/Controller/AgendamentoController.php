@@ -364,7 +364,7 @@ class AgendamentoController extends BaseController
             'title' => 'Meus Agendamentos - UNIFIO',
             'user' => $this->getUserData(),
             'agendamentos' => $agendamentos,
-            'additional_scripts' => ['/js/event-popup.js', '/js/meus-agendamentos.js']
+            'additional_scripts' => ['/js/modules/events/event-popup.js']
         ]);
     }
 

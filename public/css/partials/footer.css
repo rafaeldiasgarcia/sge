@@ -1,122 +1,49 @@
-/* UNIFIO Footer Styles */
 .unifio-footer {
-    background-color: #343a40 !important; /* Preto/cinza escuro sólido */
-    color: white !important;
-    padding: 20px 0;
-    position: relative; /* Remove margin-top: auto para não ficar colado */
-    opacity: 1 !important; /* Garante que não seja transparente */
-    z-index: 1000; /* Garante que fique por cima de outros elementos */
-    margin-top: 50px; /* Adiciona espaço antes do footer */
+  position: relative;
+  z-index: 1000;
 }
 
 .unifio-footer-auth {
-    background-color: #343a40 !important; /* Preto/cinza escuro sólido */
-    position: relative;
-    margin-top: 50px;
-    opacity: 1 !important; /* Garante que não seja transparente */
-    z-index: 1000; /* Garante que fique por cima de outros elementos */
-}
-
-.unifio-footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.unifio-footer-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  position: relative;
+  z-index: 1000;
 }
 
 .unifio-logo {
-    height: 60px;
-    width: auto;
-}
-
-.unifio-address {
-    color: #ffffff;
+  height: 60px;
+  width: auto;
 }
 
 .unifio-address p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.unifio-footer-right {
-    text-align: center;
+  margin: 0;
+  line-height: 1.4;
+  font-size: 14px;
 }
 
 .unifio-footer-right h5 {
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.unifio-contact-info {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-}
-
-.unifio-contact-item {
-    text-align: center;
+  color: #ffffff;
 }
 
 .unifio-contact-item p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.4;
+  margin: 0;
+  line-height: 1.4;
+  font-size: 14px;
 }
+.unifio-contact-item p:first-child { font-weight: bold; }
+.unifio-contact-item p:last-child  { color: #cccccc; font-size: 12px; }
 
-.unifio-contact-item p:first-child {
-    font-weight: bold;
-}
-
-.unifio-contact-item p:last-child {
-    color: #cccccc;
-    font-size: 12px;
-}
-
-/* Links no footer - mantém aparência mas com indicação sutil de clicável */
 .footer-link {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    cursor: pointer;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
-
 .footer-link:hover {
-    color: #ff8c00;
-    text-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+  color: #ff8c00;
+  text-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
 }
+.footer-link:visited { color: #ffffff; }
 
-.footer-link:visited {
-    color: #ffffff;
-}
-
-/* Responsive design for smaller screens */
 @media (max-width: 768px) {
-    .unifio-footer-container {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-    }
-
-    .unifio-footer-left {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .unifio-contact-info {
-        flex-direction: column;
-        gap: 15px;
-    }
+  .unifio-footer-right h5 { text-align: center; }
 }

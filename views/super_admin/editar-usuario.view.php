@@ -179,4 +179,3 @@ $isExterno = ($usuario_editado['tipo_usuario_detalhado'] ?? '') === 'Comunidade 
         </div>
     </div>
 </div>
-
