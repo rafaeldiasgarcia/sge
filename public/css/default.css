@@ -37,8 +37,3 @@ body {
     font-family: 'Montserrat', Arial, sans-serif;
     min-height: 100vh; /* Garante altura mínima da tela */
 }
-
-/* Páginas normais também precisam de altura suficiente para o scroll */
-body.d-flex {
-    min-height: 120vh; /* Força conteúdo maior que a tela para ter scroll */
-}
