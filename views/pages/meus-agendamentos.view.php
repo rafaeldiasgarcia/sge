@@ -171,12 +171,3 @@
         </div>
     </div>
 </div>
-
-<script>
-function cancelarEvento(id, titulo) {
-    document.getElementById('nomeEvento').textContent = titulo;
-    document.getElementById('eventoIdCancelamento').value = id;
-    const modal = new bootstrap.Modal(document.getElementById('modalCancelamento'));
-    modal.show();
-}
-</script>

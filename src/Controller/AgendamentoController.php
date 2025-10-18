@@ -219,6 +219,8 @@ class AgendamentoController extends BaseController
             'title' => 'Agendar Evento na Quadra - UNIFIO',
             'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll(),
+            'isFluidPage' => true,
+            'additional_scripts' => ['/js/calendar.js', '/js/event-form.js', '/js/agendar-evento-restore.js'],
         ], $calendarData));
     }
 
@@ -362,7 +364,7 @@ class AgendamentoController extends BaseController
             'title' => 'Meus Agendamentos - UNIFIO',
             'user' => $this->getUserData(),
             'agendamentos' => $agendamentos,
-            'additional_scripts' => ['/js/modules/events/event-popup.js']
+            'additional_scripts' => ['/js/event-popup.js', '/js/meus-agendamentos.js']
         ]);
     }
 
