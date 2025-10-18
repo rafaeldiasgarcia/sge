@@ -54,79 +54,14 @@
  */
 ?>
 
-<!-- Script para restaurar estado dos campos dinâmicos -->
+<?php $formData = $formData ?? ($_SESSION['form_data'] ?? []); ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Garante que $formData existe antes do uso no script
-    <?php $formData = $formData ?? ($_SESSION['form_data'] ?? []); ?>
-    // Verificar se há dados do formulário salvos na sessão
-    const hasFormData = <?php echo !empty($formData) ? 'true' : 'false'; ?>;
-    
-    if (hasFormData) {
-        // Aguardar um pouco para garantir que os outros scripts carregaram
-        setTimeout(function() {
-            // Restaurar estado dos campos dinâmicos
-            const tipoAgendamento = document.getElementById('tipo_agendamento');
-            if (tipoAgendamento && tipoAgendamento.value) {
-                // Disparar evento de mudança para ativar campos dinâmicos
-                tipoAgendamento.dispatchEvent(new Event('change'));
-                
-                // Restaurar campos específicos do tipo não esportivo
-                if (tipoAgendamento.value === 'nao_esportivo') {
-                    const subtipoNaoEsp = document.getElementById('subtipo_evento_nao_esp');
-                    if (subtipoNaoEsp && subtipoNaoEsp.value) {
-                        subtipoNaoEsp.dispatchEvent(new Event('change'));
-                    }
-                }
-                
-                // Restaurar campos de materiais para eventos esportivos
-                if (tipoAgendamento.value === 'esportivo') {
-                    const possuiMateriais = document.getElementsByName('possui_materiais');
-                    possuiMateriais.forEach(function(radio) {
-                        if (radio.checked) {
-                            radio.dispatchEvent(new Event('change'));
-                        }
-                    });
-                }
-                
-                // Restaurar campos de público para eventos não esportivos
-                if (tipoAgendamento.value === 'nao_esportivo') {
-                    const eventoAberto = document.getElementsByName('evento_aberto_publico');
-                    eventoAberto.forEach(function(radio) {
-                        if (radio.checked) {
-                            radio.dispatchEvent(new Event('change'));
-                        }
-                    });
-                }
-            }
-            
-            // Restaurar seleção de data e período no calendário
-            const dataAgendamento = document.getElementById('data_agendamento');
-            const periodo = document.getElementById('periodo');
-            
-            if (dataAgendamento && dataAgendamento.value && periodo && periodo.value) {
-                // Atualizar o texto de seleção
-                const selecionado = document.getElementById('selecionado');
-                if (selecionado) {
-                    const data = new Date(dataAgendamento.value);
-                    const dataFormatada = data.toLocaleDateString('pt-BR');
-                    const periodoTexto = periodo.value === 'primeiro' ? 'Primeiro Período' : 'Segundo Período';
-                    selecionado.textContent = `${dataFormatada} - ${periodoTexto}`;
-                }
-                
-                // Marcar o slot no calendário se a função estiver disponível
-                if (typeof window.selectCalendarSlot === 'function') {
-                    window.selectCalendarSlot(dataAgendamento.value, periodo.value);
-                }
-            }
-        }, 100);
-    }
-});
+window.__hasFormDataAgendarEvento = <?php echo !empty($formData) ? 'true' : 'false'; ?>;
 </script>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-center">
+        <div class="w-100 px-2 px-md-3" style="max-width: 1200px;">
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> Agendamento de Evento na Quadra</h4>

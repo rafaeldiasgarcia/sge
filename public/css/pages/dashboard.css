@@ -74,6 +74,10 @@ body{
     .shortcut-card {
         padding: 24px 12px;
     }
+    
+    .calendar-card {
+        padding: 30px 35px; /* Padding intermediário */
+    }
 }
 @media (max-width: 768px) {
     .dashboard-shortcuts {
@@ -98,19 +102,39 @@ body{
         margin: 0 auto;
     }
 }
-.title-dashboard h1 {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 900;
-    font-size: 3rem;
-    line-height: 1.2;
+/* Welcome Section */
+.welcome-section {
     text-align: center;
-    text-transform: uppercase;
-    /* Gradiente animado */
+    margin-bottom: 40px;
+    padding: 60px 40px;
+    background: transparent;
+}
+
+.welcome-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 0px;
+}
+
+.welcome-title {
+    font-family: Montserrat;
+    font-size: 74px;
+    font-style: normal;
+    font-weight: 900;
+    /* Gradiente animado - MANTIDO */
     background: linear-gradient(270deg, #3a00ff, #a000ff, #ff6a00, #3a00ff);
     background-size: 400% 400%;
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    line-height: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     animation: gradientMove 10s ease infinite;
 }
 
@@ -120,21 +144,19 @@ body{
   100% { background-position: 0% 50%; }
 }
 
-
-.title-dashboard {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 15px;
-    margin-bottom: 10px;
-}
-
 /* Permite que o conteúdo (a imagem 3D) vaze para fora sem ser cortado */
 .carousel {
     margin-bottom: 60px; /* Dá espaço abaixo para a sombra da imagem que vaza */
 }
 .carousel-inner {
-    overflow: visible !important; /* A regra mais importante! */
+    overflow: visible; /* A regra mais importante! */
+}
+
+/* Controlar overflow em mobile para evitar scroll horizontal */
+@media (max-width: 768px) {
+    .carousel-inner {
+        overflow: hidden; /* Evitar scroll horizontal em mobile */
+    }
 }
 
 /* Animação suave fade-in/fade-out para as imagens do carrossel */
@@ -164,8 +186,6 @@ body{
     margin: 0 auto; /* Centraliza o card no slide */
     border-radius: 10px;
     box-shadow: var(--shadow-carousel);
-    -webkit-box-shadow: var(--shadow-carousel);
-    -moz-box-shadow: var(--shadow-carousel);
     padding: 30px 40px;
     display: flex;
     align-items: center;
@@ -195,21 +215,32 @@ body{
 }
 
 .carousel-control-prev {
-  left: auto; /* Move a seta esquerda para fora */
+  left: -60px; /* Move a seta esquerda para fora do slide */
 }
 
 .carousel-control-next {
-  right: 0px; /* Move a seta direita para fora */
+  right: -60px; /* Move a seta direita para fora do slide */
+}
+
+/* Ajuste para tablet */
+@media (max-width: 1024px) {
+  .carousel-control-prev {
+    left: -50px; /* Move a seta esquerda para fora do slide */
+  }
+  
+  .carousel-control-next {
+    right: -50px; /* Move a seta direita para fora do slide */
+  }
 }
 
 /* Ajuste para mobile - mantém o mesmo estilo */
 @media (max-width: 768px) {
   .carousel-control-prev {
-    left: -35px;
+    left: -40px; /* Move a seta esquerda para fora do slide */
   }
   
   .carousel-control-next {
-    right: -35px;
+    right: -40px; /* Move a seta direita para fora do slide */
   }
 }
 
@@ -233,17 +264,16 @@ body{
     z-index: 1;
     flex-basis: 60%;
     font-size: 3rem;
-    
 }
 
-/* Estilo do conteúdo de texto */
-.text-content p{
+.text-content p {
     font-weight: 700;
     text-transform: uppercase;
     position: relative;
-    z-index: 1; /* Garante que o texto fique atrás da imagem 3D */
-    flex-basis: 60%; /* Ocupa 60% do espaço, deixando 40% para a imagem */
+    z-index: 1;
+    flex-basis: 60%;
     font-size: 1.5rem;
+    margin: 0;
 }
 
 .text-content h2 {
@@ -253,7 +283,7 @@ body{
     z-index: 1;
     flex-basis: 60%;
     font-size: 3rem;
-    margin-top: 30px; /* Desce o "LOGO ABAIXO" */
+    margin-top: 30px;
 }
 
 .highlight-text {
@@ -275,6 +305,21 @@ body{
     right: 40px;
     width: 320px;
 }
+
+/* Responsividade para imagens estáticas */
+@media (max-width: 1200px) {
+    .static-character {
+        width: 300px;
+        right: 30px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .static-character {
+        width: 280px;
+        right: 20px;
+    }
+}
 .static-character img {
     width: 100%;
     filter: drop-shadow(5px 15px 20px rgba(0, 0, 0, 0.6));
@@ -286,6 +331,22 @@ body{
     width: 390px; /* Tamanho da imagem */
     top: -80px;   /* Move 60px PARA CIMA (fora do card) */
     right: -40px; /* Move 40px PARA A DIREITA (fora do card) */
+}
+
+/* Responsividade para imagens popup */
+@media (max-width: 1200px) {
+    .popup-character {
+        width: 360px;
+        right: -30px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .popup-character {
+        width: 330px;
+        right: -20px;
+        top: -70px;
+    }
 }
 .popup-character img {
     width: 100%;
@@ -313,17 +374,11 @@ body{
 /* SEÇÃO DE EVENTOS - DASHBOARD USUÁRIO */
 /* ===================================== */
 
-.agenda-events{
-    align-items: center;
-    justify-content: center;
-}
 
 .card-events-presence{
     width: 100%;
     border-radius: 10px;
     box-shadow: var(--shadow-card);
-    -webkit-box-shadow: var(--shadow-card);
-    -moz-box-shadow: var(--shadow-card);
 }
 
 .card-header{
@@ -335,26 +390,6 @@ body{
     width: 100%;
     border-radius: 10px;
     box-shadow: var(--shadow-card);
-    -webkit-box-shadow: var(--shadow-card);
-    -moz-box-shadow: var(--shadow-card);
-}
-
-.card-events-in{
-    border-radius: 10px;
-}
-
-.card-container{
-    align-items: center;
-    justify-content: center;
-}
-
-
-.welcome-title {
-    background: var(--gradient-color-text);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 800;
 }
 
 .user-badge {
@@ -590,6 +625,21 @@ body{
     color: #000;
 }
 
+/* Responsividade para mini-calendar */
+@media (max-width: 1200px) {
+    .mini-calendar-container {
+        width: 280px;
+        right: 30px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .mini-calendar-container {
+        width: 260px;
+        right: 20px;
+    }
+}
+
 .mini-calendar-container:hover {
     transform: translateY(-50%) scale(1.05);
     box-shadow: var(--shadow-card-hover);
@@ -718,6 +768,8 @@ body{
     border-radius: 20px;
     font-size: 0.7rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -775,10 +827,15 @@ img {
 /* ===================================== */
 
 @media (max-width: 768px) {
-    /* Título do dashboard */
-    .title-dashboard h1 {
-        font-size: 2rem;
-        line-height: 1.3;
+    /* Welcome Section - Mobile */
+    .welcome-section {
+        padding: 40px 20px;
+        margin-bottom: 30px;
+    }
+    
+    .welcome-title {
+        font-size: 36px;
+        white-space: nowrap;
     }
 
     /* Cards do carousel */
@@ -898,6 +955,11 @@ img {
         height: 250px;
         padding: 15px 20px;
     }
+    
+    .calendar-card {
+        height: 250px; /* Mesma altura do custom-card */
+        padding: 15px 20px; /* Mesmo padding do custom-card */
+    }
 
     .text-content h2 {
         font-size: 1.5rem;
@@ -972,3 +1034,577 @@ img {
     }
 }
 
+/* Mobile pequeno (480px) */
+@media (max-width: 480px) {
+    .welcome-section {
+        padding: 30px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-title {
+        font-size: 28px;
+        white-space: nowrap;
+    }
+}
+
+/* ===================================== */
+/* CALENDAR CONTAINER - SEGUNDO SLIDE */
+/* ===================================== */
+
+
+.calendar-card {
+    border-radius: 20px;
+    background: var(--orange-color);
+    box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.5);
+    padding: 40px;
+    position: relative;
+    overflow: visible;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    width: 90%; /* Mesma largura do custom-card */
+    margin: 0 auto; /* Centraliza o card no slide */
+    max-width: 1200px;
+}
+
+/* Controlar overflow em mobile */
+@media (max-width: 768px) {
+    .calendar-card {
+        overflow: hidden; /* Evitar vazamento em mobile */
+        height: 300px; /* Mesma altura do custom-card */
+        width: 95%; /* Mesma largura do custom-card */
+        padding: 20px 25px; /* Mesmo padding do custom-card */
+    }
+}
+
+.calendar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.calendar-text {
+    flex: 1;
+    max-width: 40%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Container do texto principal */
+.calendar-text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 5px;
+}
+
+/* Linhas de texto individuais */
+.calendar-text-container .text-line {
+    color: #FFF;
+    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40);
+    font-family: Montserrat;
+    font-size: 34px !important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Bloco separado para "NADA" */
+.calendar-text-final {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-left: 100px;
+}
+
+.calendar-text-final .highlight {
+    font-size: 50px !important;
+    font-weight: 900;
+    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40);
+    background: linear-gradient(90deg, #000 0%, #0900FF 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Estatísticas do calendário */
+.calendar-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 15px 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: #FFF;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #FFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Personagem do calendário */
+.calendar-character {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    overflow: visible;
+}
+
+/* Controlar overflow em mobile */
+@media (max-width: 768px) {
+    .calendar-character {
+        overflow: hidden; /* Evitar vazamento em mobile */
+    }
+}
+
+.player-image {
+    position: absolute;
+    left: calc(35%);
+    top: 50.55%;
+    z-index: 2;
+    width: 80%;
+    height: 120%;
+    object-fit: contain;
+    object-position: center center;
+    transform: translate(-50%, -50%) translateX(-60px) scale(1.0);
+    transition: all 0.3s ease;
+}
+
+/* Widget do calendário */
+.calendar-widget {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    background: var(--background-color);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+    width: 300px;
+    border: 3px solid var(--blue-color);
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+.calendar-widget:hover {
+    transform: translateY(-50%) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-header h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--blue-color);
+}
+
+.calendar-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    background: white;
+    border: 2px solid var(--blue-color);
+    width: 28px;
+    height: 28px;
+    line-height: 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--blue-color);
+    padding: 0;
+    transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+    background: var(--blue-color);
+    color: white;
+}
+
+.calendar-month {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.calendar-year {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.calendar-day {
+    text-align: center;
+    padding: 4px 2px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.calendar-date {
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    position: relative;
+    user-select: none;
+}
+
+.calendar-date:hover {
+    background-color: #f3f4f6;
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-date.empty {
+    pointer-events: none;
+    opacity: 0.3;
+    cursor: default;
+}
+
+.calendar-date.empty:hover {
+    transform: none;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.calendar-date.today {
+    background: var(--blue-color);
+    color: white;
+    font-weight: 700;
+    border-radius: 50%;
+}
+
+.calendar-date.past {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.calendar-date.has-event::after {
+    content: '●';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 8px;
+    color: var(--blue-color);
+}
+
+.calendar-day-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: inherit;
+    margin-bottom: 2px;
+}
+
+.calendar-day-badge {
+    text-align: center;
+}
+
+.calendar-day-badge .badge {
+    padding: 2px 6px;
+    font-size: 0.5rem;
+    border-radius: 8px;
+}
+
+.calendar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #374151;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.legend-red {
+    background-color: #ef4444;
+}
+
+.legend-orange {
+    background-color: #f97316;
+}
+
+.legend-green {
+    background-color: #10b981;
+}
+
+/* Modal de eventos do calendário */
+.event-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.event-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    background: var(--blue-color);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.event-details p {
+    margin-bottom: 10px;
+    color: #374151;
+}
+
+.event-details strong {
+    color: var(--blue-color);
+}
+
+/* Responsividade para o container do calendário */
+@media (max-width: 1200px) {
+    .calendar-widget {
+        width: 280px;
+        right: 5px;
+    }
+    
+    .calendar-card {
+        padding: 35px 38px; /* Padding intermediário */
+    }
+}
+
+@media (max-width: 1024px) {
+    .calendar-widget {
+        width: 320px;
+        right: 0px;
+    }
+    
+    .calendar-card {
+        padding: 32px 36px; /* Padding intermediário */
+    }
+    
+    .calendar-text-container .text-line {
+        font-size: 20px !important;
+        line-height: 1.2;
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: 28px !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .calendar-widget {
+        width: 300px;
+        right: 0px;
+    }
+    
+    .calendar-card {
+        padding: 30px 35px; /* Padding intermediário */
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .calendar-text {
+        max-width: 100%;
+        margin-bottom: 30px;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .calendar-widget {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 360px;
+        transform: none;
+    }
+    
+    .calendar-character {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .player-image {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: 70%;
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-text-container .text-line {
+        font-size: 12px !important;
+        line-height: 1.2;
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: 18px !important;
+    }
+    
+    .calendar-stats {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .stat-item {
+        padding: 10px 15px;
+    }
+    
+    .stat-number {
+        font-size: 20px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+        white-space: nowrap;
+        text-align: center;
+    }
+}

@@ -41,12 +41,12 @@
 ?>
 <section>
     <div class="container">
-        <div class="title-dashboard">
-            <div>
-                <h1>SEJA BEM-VINDO</br>
-                À NOSSA SALA DE EVENTOS!!!</h1>
+        <section class="welcome-section">
+            <div class="welcome-text">
+                <h1 class="welcome-title">SEJA BEM-VINDO</h1>
+                <h1 class="welcome-title">A NOSSA SALA DE EVENTOS!!!</h1>
             </div>
-        </div>
+        </section>
 
         <!-- CARROSSEL COM 2 SLIDES -->
         <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
@@ -55,17 +55,133 @@
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
             </div>
 
-            <div class="carousel-inner">
-                <!-- SLIDE 1: Card Laranja -->
-                <div class="carousel-item active">
-                    <div class="custom-card orange-card">
-                        <div class="text-content">
-                            <h2>AQUI VOCÊ VERÁ</h2>
-                            <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
-                            <span class="highlight-text">UNIFIO!</span>
+    <div class="carousel-inner">
+        <!-- SLIDE 1: Container do Calendário -->
+        <div class="carousel-item active">
+            <div class="calendar-wrapper">
+                <div class="calendar-card">
+                    <div class="calendar-content">
+                        <div class="calendar-text">
+                            <div class="calendar-text-container">
+                                <div class="text-line">ESTE É O CALENDÁRIO!</div>
+                                <div class="text-line">CONFIRA OS DIAS DOS</div>
+                                <div class="text-line">EVENTOS PARA QUE</div>
+                                <div class="text-line">VOCÊ NÃO PERCA</div>
+                            </div>
+                            <div class="calendar-text-final">
+                                <span class="highlight">NADA!!!</span>
+                            </div>
+                            <div class="calendar-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="calendarTotalEvents"><?php echo count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-label">Eventos</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="calendarAvailableDays"><?php echo date('t') - count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-label">Dias Livres</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="calendarBusyDays"><?php echo count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-label">Ocupados</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="character-image-container static-character">
-                            <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
+                        <div class="calendar-character">
+                            <img src="/img/jogador-laranja2.webp" alt="Jogador" class="player-image">
+                            <div class="calendar-widget">
+                                <div class="calendar-header">
+                                    <h4>Calendário</h4>
+                                    <div class="calendar-nav">
+                                        <button class="nav-btn" id="calendarPrevMonth">‹</button>
+                                        <button class="nav-btn" id="calendarNextMonth">›</button>
+                                    </div>
+                                </div>
+                                <div class="calendar-month" id="calendarCurrentMonth"><?php echo strtoupper(date('F', strtotime('now'))); ?></div>
+                                <div class="calendar-year" id="calendarCurrentYear"><?php echo date('Y'); ?></div>
+                                <div class="calendar-grid" id="calendarGridWidget">
+                                    <!-- Dias da semana -->
+                                    <div class="calendar-day">DOM</div>
+                                    <div class="calendar-day">SEG</div>
+                                    <div class="calendar-day">TER</div>
+                                    <div class="calendar-day">QUA</div>
+                                    <div class="calendar-day">QUI</div>
+                                    <div class="calendar-day">SEX</div>
+                                    <div class="calendar-day">SAB</div>
+                                    
+                                    <!-- Dias do mês serão gerados dinamicamente -->
+                                    <?php
+                                    $hoje = new DateTime();
+                                    $primeiroDia = new DateTime($hoje->format('Y-m-01'));
+                                    $ultimoDia = new DateTime($hoje->format('Y-m-t'));
+                                    $primeiroW = (int)$primeiroDia->format('w');
+                                    $diasNoMes = (int)$ultimoDia->format('d');
+                                    
+                                    // Adiciona células vazias antes do primeiro dia do mês
+                                    for ($i = 0; $i < $primeiroW; $i++): ?>
+                                        <div class="calendar-date empty"></div>
+                                    <?php endfor;
+                                    
+                                    // Loop por cada dia do mês
+                                    for ($dia = 1; $dia <= $diasNoMes; $dia++):
+                                        $dataAtual = new DateTime($hoje->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT));
+                                        $isToday = $dataAtual->format('Y-m-d') === $hoje->format('Y-m-d');
+                                        $isPast = $dataAtual < $hoje;
+                                        
+                                        // Verifica se tem eventos neste dia
+                                        $hasEvent = false;
+                                        if (!empty($eventos_presenca)) {
+                                            foreach ($eventos_presenca as $evento) {
+                                                if (date('Y-m-d', strtotime($evento['data_agendamento'])) === $dataAtual->format('Y-m-d')) {
+                                                    $hasEvent = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        
+                                        $class = 'calendar-date';
+                                        if ($isToday) $class .= ' today';
+                                        if ($isPast) $class .= ' past';
+                                        if ($hasEvent) $class .= ' has-event';
+                                        ?>
+                                        <div class="<?= $class ?>" data-date="<?= $dataAtual->format('Y-m-d') ?>">
+                                            <div class="calendar-day-number"><?= $dia ?></div>
+                                            <?php if ($hasEvent): ?>
+                                                <div class="calendar-day-badge">
+                                                    <span class="badge bg-primary">●</span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endfor; ?>
+                                </div>
+                                
+                                <div class="calendar-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color legend-red"></div>
+                                        <span>DIA NÃO DISPONÍVEL</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color legend-orange"></div>
+                                        <span>PERÍODO LIVRE</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color legend-green"></div>
+                                        <span>DIA LIVRE</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal de detalhes do evento -->
+                <div class="event-modal" id="calendarEventModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="calendarModalTitle">Detalhes do Evento</h3>
+                            <button class="close-modal" id="calendarCloseModal">&times;</button>
+                        </div>
+                        <div class="modal-body" id="calendarModalBody">
+                            <!-- Conteúdo será preenchido dinamicamente -->
                         </div>
                     </div>
                 </div>
@@ -166,8 +282,7 @@
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-12">
+    <div class="mt-4">
             <div class="card border-0 mb-4 card-events-presence">
                 <div class="card-header text-white">
                     <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Próximos Eventos (Presença Marcada)</h5>
@@ -248,7 +363,13 @@
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 </section>
+
+<!-- JavaScript específico do calendário -->
+<script>
+    // Passar dados do PHP para o JavaScript
+    window.eventosPresenca = <?php echo json_encode($eventos_presenca ?? []); ?>;
+</script>
+<script src="/js/dashboard-calendar.js"></script>
