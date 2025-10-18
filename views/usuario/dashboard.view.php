@@ -43,8 +43,8 @@
     <div class="container">
         <div class="title-dashboard">
             <div>
-                <h1>SEJA BEM-VINDO</h1>
-                <h1>À NOSSA SALA DE EVENTOS!!!</h1>
+                <h1>SEJA BEM-VINDO</br>
+                À NOSSA SALA DE EVENTOS!!!</h1>
             </div>
         </div>
 
@@ -55,60 +55,58 @@
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
             </div>
 
-    <div class="carousel-inner">
-        <!-- SLIDE 1: Card Laranja -->
-        <div class="carousel-item active">
-            <div class="custom-card orange-card">
-                <div class="text-content">
-                    <h2>AQUI VOCÊ VERÁ</h2>
-                    <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
-                    <span class="highlight-text">UNIFIO!</span>
+            <div class="carousel-inner">
+                <!-- SLIDE 1: Card Laranja -->
+                <div class="carousel-item active">
+                    <div class="custom-card orange-card">
+                        <div class="text-content">
+                            <h2>AQUI VOCÊ VERÁ</h2>
+                            <p>OS EVENTOS MAIS AGUARDADOS DA NOSSA<p>
+                            <span class="highlight-text">UNIFIO!</span>
+                        </div>
+                        <div class="character-image-container static-character">
+                            <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
+                        </div>
+                    </div>
                 </div>
-                <div class="character-image-container static-character">
-                    <img src="/img/jogador-laranja2.webp" alt="Jogador de Vôlei">
+
+                <!-- SLIDE 2: Card Branco com Efeito 3D -->
+                <div class="carousel-item">
+                    <div class="custom-card white-card">
+                        <div class="text-content">
+                            <h2>
+                                <span class="gradient-text-orange">LOGO</span>
+                                <span class="gradient-text-blue">ABAIXO</span>
+                            </h2>
+                            <p class="card-text-body">
+                                <span class="text-orange">GERENCIE SEU</span>
+                                <span class="text-blue">ESPAÇO,</span><br>
+                                <span class="text-blue">SEU</span>
+                                <span class="text-orange">ESPORTE</span>
+                                <span class="text-blue">E</span><br>
+                                <span class="text-blue">SUA</span>
+                                <span class="text-orange">RESERVA</span>
+                            </p>
+                        </div>
+                        <!-- Container da imagem que vai "sair" do card -->
+                        <div class="character-image-container popup-character">
+                            <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-
-        <!-- SLIDE 2: Card Branco com Efeito 3D -->
-        <div class="carousel-item">
-            <div class="custom-card white-card">
-                <div class="text-content">
-                    <h2>
-                        <span class="gradient-text-orange">LOGO</span>
-                        <span class="gradient-text-blue">ABAIXO</span>
-                    </h2>
-                    <p class="card-text-body">
-                        <span class="text-orange">GERENCIE SEU</span>
-                        <span class="text-blue">ESPAÇO,</span><br>
-                        <span class="text-blue">SEU</span>
-                        <span class="text-orange">ESPORTE</span>
-                        <span class="text-blue">E</span><br>
-                        <span class="text-blue">SUA</span>
-                        <span class="text-orange">RESERVA</span>
-                    </p>
-                </div>
-                <!-- Container da imagem que vai "sair" do card -->
-                <div class="character-image-container popup-character">
-                    <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-
-       
+    </div>   
 </section>
-
 
 <section>
     <?php

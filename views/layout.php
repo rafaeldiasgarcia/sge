@@ -64,5 +64,7 @@ use Application\Core\Auth;
     <script src="<?= htmlspecialchars($script) ?>"></script>
         <?php endforeach; ?>
     <?php endif; ?>
+    
+    <script src="/js/app.js"></script>
 </body>
 </html>
