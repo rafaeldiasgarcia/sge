@@ -322,3 +322,6 @@ use Application\Core\Auth;
     </div>
 <?php endforeach; ?>
 
+<!-- CSS do Event Popup -->
+<link rel="stylesheet" href="/css/event-popup.css">
+
