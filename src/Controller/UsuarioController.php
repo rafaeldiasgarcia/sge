@@ -70,12 +70,58 @@ class UsuarioController extends BaseController
 
         $agendamentoRepository = $this->repository('AgendamentoRepository');
         $eventosComPresenca = $agendamentoRepository->findEventosComPresenca(Auth::id());
+        
+        // Buscar todos os eventos aprovados para o calendário
+        $todosEventosAprovados = $agendamentoRepository->findApprovedAgendamentos();
+        
+        // Obter mês atual ou mês solicitado
+        $mesAtual = $_GET['mes'] ?? date('Y-m');
+        $dataMes = new \DateTime($mesAtual . '-01');
+        
+        
+        // Se não há eventos, criar alguns de teste para demonstrar as cores
+        if (empty($todosEventosAprovados)) {
+            $todosEventosAprovados = [
+                [
+                    'id' => 1,
+                    'titulo' => 'Teste Evento 1',
+                    'tipo_agendamento' => 'esportivo',
+                    'esporte_tipo' => 'Futsal',
+                    'data_agendamento' => date('Y-m-d', strtotime('+1 day')),
+                    'periodo' => 'primeiro',
+                    'responsavel' => 'João Silva'
+                ],
+                [
+                    'id' => 2,
+                    'titulo' => 'Teste Evento 2',
+                    'tipo_agendamento' => 'nao_esportivo',
+                    'esporte_tipo' => 'Palestra',
+                    'data_agendamento' => date('Y-m-d', strtotime('+1 day')),
+                    'periodo' => 'segundo',
+                    'responsavel' => 'Maria Santos'
+                ],
+                [
+                    'id' => 3,
+                    'titulo' => 'Teste Evento 3',
+                    'tipo_agendamento' => 'esportivo',
+                    'esporte_tipo' => 'Vôlei',
+                    'data_agendamento' => date('Y-m-d', strtotime('+2 days')),
+                    'periodo' => 'primeiro',
+                    'responsavel' => 'Pedro Costa'
+                ]
+            ];
+        }
 
         view('usuario/dashboard', [
             'title' => 'Meu Painel - UNIFIO',
             'user' => $userData,
             'eventos_presenca' => $eventosComPresenca,
-            'additional_scripts' => ['/js/modules/events/event-popup.js']
+            'todos_eventos' => $todosEventosAprovados,
+            'dataMes' => $dataMes,
+            'additional_scripts' => [
+                '/js/modules/events/event-popup.js',
+                '/js/modules/_partials/dashboard-calendar.js'
+            ]
         ]);
     }
 
@@ -112,7 +158,7 @@ class UsuarioController extends BaseController
                 'cursos' => $cursos,
                 'atletica_info' => $atleticaInfo,
                 'meus_eventos' => $meusEventos,
-                'additional_scripts' => ['/js/modules/users/profile.js']
+                'additional_scripts' => ['/js/modules/users/profile.js', '/js/modules/users/perfil-page.js']
             ]);
         } catch (\Exception $e) {
             $this->setErrorAndRedirect("Ocorreu um erro ao carregar seu perfil.", '/dashboard');

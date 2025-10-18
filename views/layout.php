@@ -64,6 +64,7 @@ use Application\Core\Auth;
     <script src="/js/modules/_partials/calendar.js"></script>
     <script src="/js/modules/events/event-form.js"></script>
     <script src="/js/modules/_partials/header.js"></script>
+    <script src="/js/modules/_partials/dashboard-calendar.js"></script>
     <?php endif; ?>
     <!-- Notificações em tempo real/UX: carregadas apenas para usuários autenticados -->
     <?php if (Auth::check()): ?>
@@ -74,6 +75,21 @@ use Application\Core\Auth;
         <?php foreach ($additional_scripts as $script): ?>
     <script src="<?= htmlspecialchars($script) ?>"></script>
         <?php endforeach; ?>
+    <?php endif; ?>
+    
+    <!-- Scripts específicos da página -->
+    <?php if (isset($eventos_presenca)): ?>
+    <script>
+        // Passar dados do PHP para o JavaScript (dashboard)
+        window.eventosPresenca = <?php echo json_encode($eventos_presenca ?? []); ?>;
+    </script>
+    <?php endif; ?>
+    
+    <?php if (isset($todos_eventos)): ?>
+    <script>
+        // Passar todos os eventos aprovados para o JavaScript (dashboard)
+        window.todosEventos = <?php echo json_encode($todos_eventos ?? []); ?>;
+    </script>
     <?php endif; ?>
     
     <script src="/js/app.js"></script>

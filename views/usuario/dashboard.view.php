@@ -49,7 +49,7 @@
         </section>
 
         <!-- CARROSSEL COM 2 SLIDES -->
-        <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="8000">
+        <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="false">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -73,15 +73,15 @@
                             </div>
                             <div class="calendar-stats">
                                 <div class="stat-item">
-                                    <span class="stat-number" id="calendarTotalEvents"><?php echo count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-number" id="calendarTotalEvents"><?php echo count($todos_eventos ?? []); ?></span>
                                     <span class="stat-label">Eventos</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="stat-number" id="calendarAvailableDays"><?php echo date('t') - count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-number" id="calendarAvailableDays"><?php echo date('t') - count($todos_eventos ?? []); ?></span>
                                     <span class="stat-label">Dias Livres</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="stat-number" id="calendarBusyDays"><?php echo count($eventos_presenca ?? []); ?></span>
+                                    <span class="stat-number" id="calendarBusyDays"><?php echo count($todos_eventos ?? []); ?></span>
                                     <span class="stat-label">Ocupados</span>
                                 </div>
                             </div>
@@ -96,8 +96,8 @@
                                         <button class="nav-btn" id="calendarNextMonth">›</button>
                                     </div>
                                 </div>
-                                <div class="calendar-month" id="calendarCurrentMonth"><?php echo strtoupper(date('F', strtotime('now'))); ?></div>
-                                <div class="calendar-year" id="calendarCurrentYear"><?php echo date('Y'); ?></div>
+                                <div class="calendar-month" id="calendarCurrentMonth"><?php echo strtoupper($dataMes->format('F')); ?></div>
+                                <div class="calendar-year" id="calendarCurrentYear"><?php echo $dataMes->format('Y'); ?></div>
                                 <div class="calendar-grid" id="calendarGridWidget">
                                     <!-- Dias da semana -->
                                     <div class="calendar-day">DOM</div>
@@ -111,8 +111,10 @@
                                     <!-- Dias do mês serão gerados dinamicamente -->
                                     <?php
                                     $hoje = new DateTime();
-                                    $primeiroDia = new DateTime($hoje->format('Y-m-01'));
-                                    $ultimoDia = new DateTime($hoje->format('Y-m-t'));
+                                    $mesAtual = $_GET['mes'] ?? date('Y-m');
+                                    $dataMes = new DateTime($mesAtual . '-01');
+                                    $primeiroDia = new DateTime($dataMes->format('Y-m-01'));
+                                    $ultimoDia = new DateTime($dataMes->format('Y-m-t'));
                                     $primeiroW = (int)$primeiroDia->format('w');
                                     $diasNoMes = (int)$ultimoDia->format('d');
                                     
@@ -123,33 +125,47 @@
                                     
                                     // Loop por cada dia do mês
                                     for ($dia = 1; $dia <= $diasNoMes; $dia++):
-                                        $dataAtual = new DateTime($hoje->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT));
+                                        $dataAtual = new DateTime($dataMes->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT));
                                         $isToday = $dataAtual->format('Y-m-d') === $hoje->format('Y-m-d');
                                         $isPast = $dataAtual < $hoje;
                                         
-                                        // Verifica se tem eventos neste dia
-                                        $hasEvent = false;
-                                        if (!empty($eventos_presenca)) {
-                                            foreach ($eventos_presenca as $evento) {
-                                                if (date('Y-m-d', strtotime($evento['data_agendamento'])) === $dataAtual->format('Y-m-d')) {
-                                                    $hasEvent = true;
-                                                    break;
+                                    // Verifica quantos horários estão ocupados neste dia
+                                    $primeiroHorarioOcupado = false;
+                                    $segundoHorarioOcupado = false;
+                                    $eventosDoDia = [];
+                                    
+                                    if (!empty($todos_eventos)) {
+                                        foreach ($todos_eventos as $evento) {
+                                            if (date('Y-m-d', strtotime($evento['data_agendamento'])) === $dataAtual->format('Y-m-d')) {
+                                                $eventosDoDia[] = $evento;
+                                                
+                                                // Verificar qual horário está ocupado
+                                                if ($evento['periodo'] === 'primeiro') {
+                                                    $primeiroHorarioOcupado = true;
+                                                } elseif ($evento['periodo'] === 'segundo') {
+                                                    $segundoHorarioOcupado = true;
                                                 }
                                             }
                                         }
+                                    }
+                                    
+                                    // Determinar cor baseada na ocupação dos horários
+                                    $corDia = '';
+                                    if (!$primeiroHorarioOcupado && !$segundoHorarioOcupado) {
+                                        $corDia = 'dia-livre'; // Verde - nenhum horário ocupado
+                                    } elseif (($primeiroHorarioOcupado && !$segundoHorarioOcupado) || (!$primeiroHorarioOcupado && $segundoHorarioOcupado)) {
+                                        $corDia = 'periodo-livre'; // Amarelo - apenas 1 horário ocupado
+                                    } else {
+                                        $corDia = 'dia-ocupado'; // Vermelho - ambos os horários ocupados
+                                    }
                                         
-                                        $class = 'calendar-date';
+                                        $class = 'calendar-date ' . $corDia;
                                         if ($isToday) $class .= ' today';
                                         if ($isPast) $class .= ' past';
-                                        if ($hasEvent) $class .= ' has-event';
+                                        if ($primeiroHorarioOcupado || $segundoHorarioOcupado) $class .= ' has-event';
                                         ?>
-                                        <div class="<?= $class ?>" data-date="<?= $dataAtual->format('Y-m-d') ?>">
+                                        <div class="<?= $class ?>" data-date="<?= $dataAtual->format('Y-m-d') ?>" data-eventos='<?= json_encode($eventosDoDia) ?>' style="<?= $corDia === 'dia-livre' ? 'background-color: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important;' : ($corDia === 'periodo-livre' ? 'background-color: #fef3c7 !important; border: 2px solid #d97706 !important; color: #92400e !important;' : ($corDia === 'dia-ocupado' ? 'background-color: #fecaca !important; border: 2px solid #dc2626 !important; color: #991b1b !important;' : '')) ?>">
                                             <div class="calendar-day-number"><?= $dia ?></div>
-                                            <?php if ($hasEvent): ?>
-                                                <div class="calendar-day-badge">
-                                                    <span class="badge bg-primary">●</span>
-                                                </div>
-                                            <?php endif; ?>
                                         </div>
                                     <?php endfor; ?>
                                 </div>
@@ -157,15 +173,15 @@
                                 <div class="calendar-legend">
                                     <div class="legend-item">
                                         <div class="legend-color legend-red"></div>
-                                        <span>DIA NÃO DISPONÍVEL</span>
+                                        <span>DIA OCUPADO (2 HORÁRIOS)</span>
                                     </div>
                                     <div class="legend-item">
                                         <div class="legend-color legend-orange"></div>
-                                        <span>PERÍODO LIVRE</span>
+                                        <span>PERÍODO LIVRE (1 HORÁRIO)</span>
                                     </div>
                                     <div class="legend-item">
                                         <div class="legend-color legend-green"></div>
-                                        <span>DIA LIVRE</span>
+                                        <span>DIA LIVRE (SEM EVENTOS)</span>
                                     </div>
                                 </div>
                             </div>
@@ -185,38 +201,40 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- SLIDE 2: Card Branco com Efeito 3D -->
-                <div class="carousel-item">
-                    <div class="custom-card white-card">
-                        <div class="text-content">
-                            <h2>
-                                <span class="gradient-text-orange">LOGO</span>
-                                <span class="gradient-text-blue">ABAIXO</span>
-                            </h2>
-                            <p class="card-text-body">
-                                <span class="text-orange">GERENCIE SEU</span>
-                                <span class="text-blue">ESPAÇO,</span><br>
-                                <span class="text-blue">SEU</span>
-                                <span class="text-orange">ESPORTE</span>
-                                <span class="text-blue">E</span><br>
-                                <span class="text-blue">SUA</span>
-                                <span class="text-orange">RESERVA</span>
-                            </p>
-                        </div>
-                        <!-- Container da imagem que vai "sair" do card -->
-                        <div class="character-image-container popup-character">
-                            <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
-                        </div>
-                    </div>
+        <!-- SLIDE 2: Card Branco com Efeito 3D -->
+        <div class="carousel-item">
+            <div class="custom-card white-card">
+                <div class="text-content">
+                    <h2>
+                        <span class="gradient-text-orange">LOGO</span>
+                        <span class="gradient-text-blue">ABAIXO</span>
+                    </h2>
+                    <p class="card-text-body">
+                        <span class="text-orange">GERENCIE SEU</span>
+                        <span class="text-blue">ESPAÇO,</span><br>
+                        <span class="text-blue">SEU</span>
+                        <span class="text-orange">ESPORTE</span>
+                        <span class="text-blue">E</span><br>
+                        <span class="text-blue">SUA</span>
+                        <span class="text-orange">RESERVA</span>
+                    </p>
+                </div>
+                <!-- Container da imagem que vai "sair" do card -->
+                <div class="character-image-container popup-character">
+                    <img src="/img/jogadora-laranja.webp" alt="Personagem de cabelo branco saindo do card">
                 </div>
             </div>
+        </div>
+    </div>
 
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
@@ -366,10 +384,3 @@
     </div>
 </div>
 </section>
-
-<!-- JavaScript específico do calendário -->
-<script>
-    // Passar dados do PHP para o JavaScript
-    window.eventosPresenca = <?php echo json_encode($eventos_presenca ?? []); ?>;
-</script>
-<script src="/js/dashboard-calendar.js"></script>

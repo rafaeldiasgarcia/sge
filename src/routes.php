@@ -112,6 +112,8 @@ Router::post('/agendamento/cancelar', 'AgendamentoController@cancel');          
 
 // Endpoints AJAX para Calendário
 Router::get('/calendario-partial', 'AgendamentoController@getCalendarPartial'); // HTML do calendário
+Router::get('/agendamento/calendar-partial', 'AgendamentoController@getCalendarGrid'); // Grid do calendário para AJAX
+Router::get('/agendamento/calendar-stats', 'AgendamentoController@getCalendarStats'); // Estatísticas do calendário
 Router::get('/agendamento/detalhes', 'AgendamentoController@getEventDetails');  // JSON detalhes do evento
 
 // =============================================================================

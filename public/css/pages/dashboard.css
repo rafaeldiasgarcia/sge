@@ -159,11 +159,35 @@ body{
     }
 }
 
-/* Animação suave fade-in/fade-out para as imagens do carrossel */
+/* ===================================== */
+/* ANIMAÇÕES DO CARROSSEL FADE */
+/* ===================================== */
+
+/* Configuração base para carousel-fade */
+.carousel-fade .carousel-item {
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: block;
+}
+
+.carousel-fade .carousel-item:first-child {
+    position: relative;
+}
+
+.carousel-fade .carousel-item.active {
+    opacity: 1;
+    position: relative;
+}
+
+/* Animação suave para imagens dos personagens */
 .carousel-item .character-image-container img {
     opacity: 0;
     transform: scale(0.9);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .carousel-item.active .character-image-container img {
@@ -171,17 +195,60 @@ body{
     transform: scale(1);
 }
 
-/* Animação de saída - imagem some e diminui */
-.carousel-item.carousel-item-start .character-image-container img,
-.carousel-item.carousel-item-end .character-image-container img {
+/* Animação de entrada para o calendário */
+.carousel-item .calendar-card {
     opacity: 0;
-    transform: scale(0.85);
+    transform: translateY(30px) scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-item.active .calendar-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Animação de entrada para o card branco */
+.carousel-item .custom-card {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-item.active .custom-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Animação de entrada para o texto do calendário */
+.carousel-item .calendar-text {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition-delay: 0.05s;
+}
+
+.carousel-item.active .calendar-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animação de entrada para o widget do calendário */
+.carousel-item .calendar-widget {
+    opacity: 0;
+    transform: translateX(30px) scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition-delay: 0.1s;
+}
+
+.carousel-item.active .calendar-widget {
+    opacity: 1;
+    transform: translateX(0) scale(1);
 }
 
 
 /* BASE DO NOSSO CARD CUSTOMIZADO */
 .custom-card {
-    height: 350px; /* Altura fixa para todos os cards */
+    height: 450px; /* Altura fixa igual ao calendário */
     width: 90%;   /* Ocupa 90% da largura do carrossel */
     margin: 0 auto; /* Centraliza o card no slide */
     border-radius: 10px;
@@ -952,12 +1019,12 @@ img {
     }
 
     .custom-card {
-        height: 250px;
+        height: 350px;
         padding: 15px 20px;
     }
     
     .calendar-card {
-        height: 250px; /* Mesma altura do custom-card */
+        height: 350px; /* Mesma altura do custom-card */
         padding: 15px 20px; /* Mesmo padding do custom-card */
     }
 
@@ -1061,6 +1128,7 @@ img {
     overflow: visible;
     border: 2px solid rgba(255, 255, 255, 0.1);
     width: 90%; /* Mesma largura do custom-card */
+    height: 450px; /* Altura fixa igual ao custom-card */
     margin: 0 auto; /* Centraliza o card no slide */
     max-width: 1200px;
 }
@@ -1069,7 +1137,7 @@ img {
 @media (max-width: 768px) {
     .calendar-card {
         overflow: hidden; /* Evitar vazamento em mobile */
-        height: 300px; /* Mesma altura do custom-card */
+        height: 350px; /* Mesma altura do custom-card em mobile */
         width: 95%; /* Mesma largura do custom-card */
         padding: 20px 25px; /* Mesmo padding do custom-card */
     }
@@ -1195,7 +1263,7 @@ img {
 .player-image {
     position: absolute;
     left: calc(35%);
-    top: 50.55%;
+    top: 40%;
     z-index: 2;
     width: 80%;
     height: 120%;
@@ -1208,8 +1276,8 @@ img {
 /* Widget do calendário */
 .calendar-widget {
     position: absolute;
-    top: 50%;
-    right: 10px;
+    top: -30px;
+    right: 20px;
     background: var(--background-color);
     border-radius: 20px;
     padding: 16px;
@@ -1348,14 +1416,6 @@ img {
     border: 1px solid #fecaca;
 }
 
-.calendar-date.has-event::after {
-    content: '●';
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 8px;
-    color: var(--blue-color);
-}
 
 .calendar-day-number {
     font-size: 0.75rem;
@@ -1395,16 +1455,55 @@ img {
     border-radius: 2px;
 }
 
+/* Cores dos dias do calendário baseadas na ocupação */
+.calendar-grid .calendar-date.dia-livre {
+    background-color: #dcfce7 !important; /* Verde claro */
+    border: 2px solid #16a34a !important;
+    color: #166534 !important;
+    border-radius: 8px !important;
+}
+
+.calendar-grid .calendar-date.periodo-livre {
+    background-color: #fef3c7 !important; /* Amarelo claro */
+    border: 2px solid #d97706 !important;
+    color: #92400e !important;
+    border-radius: 8px !important;
+}
+
+.calendar-grid .calendar-date.dia-ocupado {
+    background-color: #fecaca !important; /* Vermelho claro */
+    border: 2px solid #dc2626 !important;
+    color: #991b1b !important;
+    border-radius: 8px !important;
+}
+
+/* Hover states para as cores */
+.calendar-date.dia-livre:hover {
+    background-color: #bbf7d0;
+    transform: scale(1.05);
+}
+
+.calendar-date.periodo-livre:hover {
+    background-color: #fde68a;
+    transform: scale(1.05);
+}
+
+.calendar-date.dia-ocupado:hover {
+    background-color: #fca5a5;
+    transform: scale(1.05);
+}
+
+/* Cores da legenda */
 .legend-red {
-    background-color: #ef4444;
+    background-color: #dc2626;
 }
 
 .legend-orange {
-    background-color: #f97316;
+    background-color: #d97706;
 }
 
 .legend-green {
-    background-color: #10b981;
+    background-color: #16a34a;
 }
 
 /* Modal de eventos do calendário */
@@ -1557,7 +1656,7 @@ img {
         position: relative;
         top: auto;
         right: auto;
-        margin-top: 20px;
+        margin-top: 10px;
         width: 100%;
         max-width: 360px;
         transform: none;

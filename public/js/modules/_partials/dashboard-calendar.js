@@ -41,8 +41,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     
     const today = new Date();
-    let currentMonth = today.getMonth();
-    let currentYear = today.getFullYear();
+    
+    // Obter mês atual da URL ou usar o mês atual
+    const urlParams = new URLSearchParams(window.location.search);
+    const mesParam = urlParams.get('mes');
+    let currentMonth, currentYear;
+    
+    if (mesParam) {
+        const [year, month] = mesParam.split('-');
+        currentYear = parseInt(year);
+        currentMonth = parseInt(month) - 1; // JavaScript usa 0-11 para meses
+    } else {
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+    }
     
     // Array com nomes dos meses em português
     const months = [
@@ -55,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     
     // Obter dados dos eventos do PHP via data attributes
-    const eventosData = window.eventosPresenca || [];
+    const eventosData = window.todosEventos || [];
     
     // Converter dados PHP para formato JavaScript
     const eventsData = {};
@@ -84,98 +96,101 @@ document.addEventListener('DOMContentLoaded', function() {
      * Inicializa o calendário
      */
     function initCalendar() {
-        updateCalendar();
+        // Não chamar updateCalendar() na inicialização para evitar loops
         updateStats();
     }
     
     /**
-     * Atualiza a exibição do calendário
+     * Atualiza a exibição do calendário via AJAX
      */
-    function updateCalendar() {
-        // Atualizar cabeçalho
-        monthElement.textContent = months[currentMonth];
-        yearElement.textContent = currentYear;
-        
-        // Limpar grid (manter apenas os dias da semana)
-        const existingDates = calendarGrid.querySelectorAll('.calendar-date');
-        existingDates.forEach(date => date.remove());
-        
-        // Obter primeiro dia do mês e número de dias
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const today = new Date();
-        const isCurrentMonth = currentYear === today.getFullYear() && currentMonth === today.getMonth();
-        
-        // Adicionar dias vazios no início
-        for (let i = 0; i < firstDay; i++) {
-            const emptyDay = document.createElement('div');
-            emptyDay.className = 'calendar-date empty';
-            calendarGrid.appendChild(emptyDay);
-        }
-        
-        // Adicionar dias do mês
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'calendar-date';
-            
-            // Criar estrutura interna
-            const dayNumber = document.createElement('div');
-            dayNumber.className = 'calendar-day-number';
-            dayNumber.textContent = day;
-            dayElement.appendChild(dayNumber);
-            
-            // Verificar se é hoje
-            if (isCurrentMonth && day === today.getDate()) {
-                dayElement.classList.add('today');
+function updateCalendarAjax() {
+    // Atualizar cabeçalho
+    monthElement.textContent = months[currentMonth];
+    yearElement.textContent = currentYear;
+
+    // Fazer requisição AJAX para obter o calendário do novo mês
+    const mesParam = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+
+    fetch(`/agendamento/calendar-partial?mes=${mesParam}`)
+        .then(response => response.text())
+        .then(html => {
+            // Atualizar apenas o grid do calendário
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newGrid = doc.querySelector('.calendar-grid');
+
+            if (newGrid) {
+                calendarGrid.innerHTML = newGrid.innerHTML;
+
+                // Re-adicionar event listeners aos novos dias
+                addEventListenersToDays();
             }
-            
-            // Verificar se tem evento
-            const event = eventsData[currentYear]?.[currentMonth]?.[day];
-            if (event) {
-                dayElement.classList.add(`date-${event.type}`);
-                dayElement.classList.add('has-event');
-                dayElement.setAttribute('data-event', JSON.stringify(event));
-                dayElement.setAttribute('title', event.title);
-                
-                // Adicionar badge de evento
-                const badge = document.createElement('div');
-                badge.className = 'calendar-day-badge';
-                const badgeSpan = document.createElement('span');
-                badgeSpan.className = 'badge bg-primary';
-                badgeSpan.textContent = '●';
-                badge.appendChild(badgeSpan);
-                dayElement.appendChild(badge);
-            } else {
-                dayElement.setAttribute('title', `${day} de ${months[currentMonth]} - Dia disponível`);
-            }
-            
-            // Adicionar evento de clique
-            dayElement.addEventListener('click', () => showEventDetails(day, event));
-            
-            calendarGrid.appendChild(dayElement);
-        }
-    }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar calendário:', error);
+        });
+
+    // Atualizar contadores via AJAX
+    updateCalendarCounters(mesParam);
+}
+
+function updateCalendarCounters(mesParam) {
+    fetch(`/agendamento/calendar-stats?mes=${mesParam}`)
+        .then(response => response.json())
+        .then(data => {
+            // Atualizar contadores
+            const totalEventsEl = document.getElementById('calendarTotalEvents');
+            const availableDaysEl = document.getElementById('calendarAvailableDays');
+            const busyDaysEl = document.getElementById('calendarBusyDays');
+
+            if (totalEventsEl) totalEventsEl.textContent = data.totalEventos;
+            if (availableDaysEl) availableDaysEl.textContent = data.diasLivres;
+            if (busyDaysEl) busyDaysEl.textContent = data.diasOcupados;
+        })
+        .catch(error => {
+            console.error('Erro ao carregar estatísticas:', error);
+        });
+}
     
     /**
-     * Mostra detalhes do evento em modal
+     * Mostra detalhes dos eventos do dia em modal
      */
-    function showEventDetails(day, event) {
-        if (event) {
-            modalTitle.textContent = `${day} de ${months[currentMonth]} - ${event.title}`;
+    function showEventDetails(day, eventData) {
+        const dataFormatada = `${day} de ${months[currentMonth]} de ${currentYear}`;
+        modalTitle.textContent = dataFormatada;
+        
+        if (eventData && eventData.length > 0) {
+            let eventosHtml = '';
+            
+            eventData.forEach((evento, index) => {
+                const tipoEvento = evento.tipo_agendamento === 'esportivo' ? 'Esportivo' : 'Não Esportivo';
+                const horario = evento.horario_periodo || 'Horário não definido';
+                const esporte = evento.esporte_tipo || 'N/A';
+                
+                eventosHtml += `
+                    <div class="evento-item" style="border-left: 4px solid ${evento.tipo_agendamento === 'esportivo' ? '#10b981' : '#3b82f6'}; padding: 15px; margin-bottom: 15px; background: #f8fafc; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0; color: #1f2937; font-size: 16px;">${evento.titulo}</h4>
+                        <p style="margin: 5px 0; color: #6b7280;"><strong>Tipo:</strong> ${tipoEvento}</p>
+                        <p style="margin: 5px 0; color: #6b7280;"><strong>Horário:</strong> ${horario}</p>
+                        <p style="margin: 5px 0; color: #6b7280;"><strong>Esporte:</strong> ${esporte}</p>
+                        <p style="margin: 5px 0; color: #6b7280;"><strong>Responsável:</strong> ${evento.responsavel}</p>
+                    </div>
+                `;
+            });
+            
             modalBody.innerHTML = `
                 <div class="event-details">
-                    <p><strong>Descrição:</strong> ${event.description}</p>
-                    <p><strong>Tipo:</strong> ${getEventTypeName(event.type)}</p>
-                    <p><strong>Esporte:</strong> ${event.esporte}</p>
-                    <p><strong>Data:</strong> ${day} de ${months[currentMonth]} de ${currentYear}</p>
+                    <p style="margin-bottom: 20px; color: #374151; font-weight: 600;">
+                        ${eventData.length} evento(s) agendado(s) para este dia:
+                    </p>
+                    ${eventosHtml}
                 </div>
             `;
         } else {
-            modalTitle.textContent = `${day} de ${months[currentMonth]}`;
             modalBody.innerHTML = `
                 <div class="event-details">
-                    <p>Nenhum evento agendado para este dia.</p>
-                    <p>Dia disponível para reservas.</p>
+                    <p style="margin-bottom: 10px; color: #374151;">Nenhum evento agendado para este dia.</p>
+                    <p style="color: #6b7280;">Dia disponível para reservas.</p>
                 </div>
             `;
         }
@@ -224,8 +239,9 @@ document.addEventListener('DOMContentLoaded', function() {
         prevBtn.addEventListener('click', () => {
             currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
             if (currentMonth === 11) currentYear--;
-            updateCalendar();
-            updateStats();
+            
+            // Atualizar calendário via AJAX
+            updateCalendarAjax();
         });
     }
     
@@ -234,8 +250,9 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', () => {
             currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
             if (currentMonth === 0) currentYear++;
-            updateCalendar();
-            updateStats();
+            
+            // Atualizar calendário via AJAX
+            updateCalendarAjax();
         });
     }
     
@@ -259,6 +276,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // INICIALIZAÇÃO
     // ========================================
     
-    // Inicializar calendário
+    // Inicializar calendário (apenas navegação)
     initCalendar();
+    
+    // Atualizar contadores na inicialização
+    const mesAtual = new Date();
+    const mesParamInicial = `${mesAtual.getFullYear()}-${String(mesAtual.getMonth() + 1).padStart(2, '0')}`;
+    updateCalendarCounters(mesParamInicial);
+    
+    /**
+     * Adiciona event listeners aos dias do calendário
+     */
+    function addEventListenersToDays() {
+        const calendarDates = document.querySelectorAll('.calendar-date[data-eventos]');
+        calendarDates.forEach(dateElement => {
+            dateElement.addEventListener('click', () => {
+                const day = dateElement.querySelector('.calendar-day-number').textContent;
+                const eventosDoDia = JSON.parse(dateElement.getAttribute('data-eventos') || '[]');
+                showEventDetails(day, eventosDoDia);
+            });
+        });
+    }
+    
+    // Adicionar event listeners aos dias do calendário gerado pelo PHP
+    addEventListenersToDays();
 });

@@ -1,5 +1,5 @@
 // Tabs control
-function openTab(tabName) {
+function openTab(event, tabName) {
     var tabContents = document.querySelectorAll('.profile-tab-content');
     tabContents.forEach(function(content) { content.classList.remove('active'); });
 
@@ -9,8 +9,8 @@ function openTab(tabName) {
     var contentEl = document.getElementById(tabName);
     if (contentEl) contentEl.classList.add('active');
 
-    if (window.event && window.event.target) {
-        window.event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
     }
 }
 

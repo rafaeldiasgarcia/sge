@@ -220,7 +220,7 @@ class AgendamentoController extends BaseController
             'user' => $this->getUserData(),
             'modalidades' => $modalidadeRepo->findAll(),
             'isFluidPage' => true,
-            'additional_scripts' => ['/js/calendar.js', '/js/event-form.js', '/js/agendar-evento-restore.js'],
+            'additional_scripts' => ['/js/modules/_partials/calendar.js', '/js/modules/events/event-form.js', '/js/modules/events/agendar-evento-restore.js'],
         ], $calendarData));
     }
 
@@ -364,7 +364,7 @@ class AgendamentoController extends BaseController
             'title' => 'Meus Agendamentos - UNIFIO',
             'user' => $this->getUserData(),
             'agendamentos' => $agendamentos,
-            'additional_scripts' => ['/js/modules/events/event-popup.js']
+            'additional_scripts' => ['/js/modules/events/event-popup.js', '/js/modules/events/meus-agendamentos.js']
         ]);
     }
 
@@ -570,6 +570,83 @@ class AgendamentoController extends BaseController
         require ROOT_PATH . '/views/_partials/calendar.php';
     }
 
+    public function getCalendarGrid()
+    {
+        $mesParam = $_GET['mes'] ?? date('Y-m');
+        $dataMes = new \DateTime($mesParam . '-01');
+        
+        // Buscar eventos do mês
+        $agendamentoRepo = $this->repository('AgendamentoRepository');
+        $todosEventosAprovados = $agendamentoRepo->findApprovedAgendamentos();
+        
+        
+        // Gerar o grid do calendário
+        $hoje = new \DateTime();
+        $primeiroDia = new \DateTime($dataMes->format('Y-m-01'));
+        $ultimoDia = new \DateTime($dataMes->format('Y-m-t'));
+        $primeiroW = (int)$primeiroDia->format('w');
+        $diasNoMes = (int)$ultimoDia->format('d');
+        
+        echo '<div class="calendar-grid">';
+        
+        // Adiciona células vazias antes do primeiro dia do mês
+        for ($i = 0; $i < $primeiroW; $i++) {
+            echo '<div class="calendar-date empty"></div>';
+        }
+        
+        // Loop por cada dia do mês
+        for ($dia = 1; $dia <= $diasNoMes; $dia++) {
+            $dataAtual = new \DateTime($dataMes->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT));
+            $isToday = $dataAtual->format('Y-m-d') === $hoje->format('Y-m-d');
+            $isPast = $dataAtual < $hoje;
+            
+            // Verifica quantos horários estão ocupados neste dia
+            $primeiroHorarioOcupado = false;
+            $segundoHorarioOcupado = false;
+            $eventosDoDia = [];
+            
+            if (!empty($todosEventosAprovados)) {
+                foreach ($todosEventosAprovados as $evento) {
+                    if (date('Y-m-d', strtotime($evento['data_agendamento'])) === $dataAtual->format('Y-m-d')) {
+                        $eventosDoDia[] = $evento;
+                        
+                        // Verificar qual horário está ocupado
+                        if ($evento['periodo'] === 'primeiro') {
+                            $primeiroHorarioOcupado = true;
+                        } elseif ($evento['periodo'] === 'segundo') {
+                            $segundoHorarioOcupado = true;
+                        }
+                    }
+                }
+            }
+            
+            // Determinar cor baseada na ocupação dos horários
+            $corDia = '';
+            if (!$primeiroHorarioOcupado && !$segundoHorarioOcupado) {
+                $corDia = 'dia-livre'; // Verde - nenhum horário ocupado
+            } elseif (($primeiroHorarioOcupado && !$segundoHorarioOcupado) || (!$primeiroHorarioOcupado && $segundoHorarioOcupado)) {
+                $corDia = 'periodo-livre'; // Amarelo - apenas 1 horário ocupado
+            } else {
+                $corDia = 'dia-ocupado'; // Vermelho - ambos os horários ocupados
+            }
+            
+            $class = 'calendar-date ' . $corDia;
+            if ($isToday) $class .= ' today';
+            if ($isPast) $class .= ' past';
+            if ($primeiroHorarioOcupado || $segundoHorarioOcupado) $class .= ' has-event';
+            
+            $style = $corDia === 'dia-livre' ? 'background-color: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important;' : 
+                    ($corDia === 'periodo-livre' ? 'background-color: #fef3c7 !important; border: 2px solid #d97706 !important; color: #92400e !important;' : 
+                    ($corDia === 'dia-ocupado' ? 'background-color: #fecaca !important; border: 2px solid #dc2626 !important; color: #991b1b !important;' : ''));
+            
+            echo '<div class="' . $class . '" data-date="' . $dataAtual->format('Y-m-d') . '" data-eventos=\'' . json_encode($eventosDoDia) . '\' style="' . $style . '">';
+            echo '<div class="calendar-day-number">' . $dia . '</div>';
+            echo '</div>';
+        }
+        
+        echo '</div>';
+    }
+
     public function cancel()
     {
         Auth::protect();
@@ -696,5 +773,72 @@ class AgendamentoController extends BaseController
             ob_end_flush();
             exit;
         }
+    }
+
+    /**
+     * Retorna estatísticas do calendário para um mês específico
+     */
+    public function getCalendarStats()
+    {
+        $mesParam = $_GET['mes'] ?? date('Y-m');
+        $dataMes = new \DateTime($mesParam . '-01');
+
+        // Buscar eventos do mês
+        $agendamentoRepo = $this->repository('AgendamentoRepository');
+        $todosEventosAprovados = $agendamentoRepo->findApprovedAgendamentos();
+
+
+        // Calcular estatísticas de forma mais simples
+        $totalEventos = 0;
+        $diasOcupados = 0; // Dias com ambos os horários ocupados
+        $diasParciais = 0; // Dias com apenas 1 horário ocupado
+        $diasLivres = 0;   // Dias sem eventos
+
+        $hoje = new \DateTime();
+        $primeiroDia = new \DateTime($dataMes->format('Y-m-01'));
+        $ultimoDia = new \DateTime($dataMes->format('Y-m-t'));
+        $diasNoMes = (int)$ultimoDia->format('d');
+
+        // Agrupar eventos por dia
+        $eventosPorDia = [];
+        foreach ($todosEventosAprovados as $evento) {
+            $dataEvento = date('Y-m-d', strtotime($evento['data_agendamento']));
+            if (date('Y-m', strtotime($evento['data_agendamento'])) === $dataMes->format('Y-m')) {
+                if (!isset($eventosPorDia[$dataEvento])) {
+                    $eventosPorDia[$dataEvento] = ['primeiro' => false, 'segundo' => false];
+                }
+                $eventosPorDia[$dataEvento][$evento['periodo']] = true;
+                $totalEventos++;
+            }
+        }
+
+        // Analisar cada dia do mês
+        for ($dia = 1; $dia <= $diasNoMes; $dia++) {
+            $dataAtual = new \DateTime($dataMes->format('Y-m') . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT));
+            $dataStr = $dataAtual->format('Y-m-d');
+            
+            if (isset($eventosPorDia[$dataStr])) {
+                $primeiroOcupado = $eventosPorDia[$dataStr]['primeiro'];
+                $segundoOcupado = $eventosPorDia[$dataStr]['segundo'];
+                
+                if ($primeiroOcupado && $segundoOcupado) {
+                    $diasOcupados++;
+                } elseif ($primeiroOcupado || $segundoOcupado) {
+                    $diasParciais++;
+                }
+            } else {
+                $diasLivres++;
+            }
+        }
+
+
+        // Retornar JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'totalEventos' => $totalEventos,
+            'diasLivres' => $diasLivres,
+            'diasOcupados' => $diasOcupados,
+            'diasParciais' => $diasParciais
+        ]);
     }
 }
