@@ -7,22 +7,40 @@
     max-width: calc(100vw - 20px) !important; /* Nunca ultrapassa a largura da tela */
     max-height: 500px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible !important; /* Permitir overflow horizontal para evitar corte */
     border: none;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     border-radius: 12px;
     background: white;
     display: none;
     z-index: 10500;
-    right: 0;
+    right: 0; /* Alinhar à direita do item de notificação */
+    left: auto; /* Remover alinhamento à esquerda */
     top: 100%;
     margin-top: 0.5rem;
+    transform: translateX(calc(100% - 600px)); /* Move o dropdown para ocupar toda a área à esquerda */
     will-change: transform; /* Otimização para animações */
 }
 
 /* Item de notificações no menu - SEM interferência com animações */
 .nav-item.notifications {
     position: relative;
+    overflow: visible !important; /* Garantir que o dropdown não seja cortado */
+}
+
+/* Garantir que o container pai não corte o dropdown */
+.nav-item.notifications .dropdown-menu {
+    overflow: visible !important;
+}
+
+/* Garantir que todos os containers pais permitam overflow */
+.navbar, .navbar-collapse, .navbar-nav, .header-right {
+    overflow: visible !important;
+}
+
+/* Garantir que o container principal não corte os dropdowns */
+nav .container {
+    overflow: visible !important;
 }
 
 /* Badge de notificação - TOTALMENTE ISOLADO */
@@ -159,12 +177,39 @@
     overflow-wrap: break-word;
 }
 
+/* Ajuste para telas médias (tablets) */
+@media (max-width: 992px) and (min-width: 769px) {
+    .notification-dropdown {
+        transform: translateX(calc(100% - 350px)); /* Ajuste intermediário para tablets */
+        width: 350px !important;
+    }
+}
+
+/* Ajuste para telas pequenas (entre 480px e 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+    .notification-dropdown {
+        transform: translateX(calc(100% - 320px)); /* Ajuste para telas pequenas */
+        width: 320px !important;
+    }
+}
+
+/* Ajuste para telas muito pequenas (até 480px) */
+@media (max-width: 480px) {
+    .notification-dropdown {
+        transform: translateX(calc(100% - 280px)); /* Ajuste para telas muito pequenas */
+        width: 280px !important;
+        right: 10px; /* Pequeno offset da direita para não colar na borda */
+    }
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
     /* Quando usado dentro do painel colapsado, faça o dropdown ocupar 100% do painel */
     .notification-dropdown {
         width: 100% !important;
         left: 0 !important;
+        right: auto !important; /* Remove o posicionamento à direita em mobile */
+        transform: none !important; /* Remove o translateX em mobile */
         border-radius: 0.5rem !important;
         box-shadow: none !important;
         max-height: calc(100vh - 140px) !important;
