@@ -39,10 +39,23 @@
   cursor: pointer;
 }
 .footer-link:hover {
-  color: #ff8c00;
+  color: #ff8c00 !important;
   text-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
 }
-.footer-link:visited { color: #ffffff; }
+.footer-link:visited { 
+  color: #ffffff; 
+}
+.footer-link:visited:hover {
+  color: #ff8c00 !important;
+}
+
+/* Garantir que todos os links do footer tenham hover laranja */
+a.footer-link:hover,
+a.footer-link[target="_blank"]:hover,
+a.footer-link[rel="noopener"]:hover {
+  color: #ff8c00 !important;
+  text-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
+}
 
 @media (max-width: 768px) {
   .unifio-footer-right h5 { text-align: center; }
