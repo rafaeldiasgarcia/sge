@@ -7,6 +7,7 @@ window.addEventListener('load', () => {
     try { el.focus({ preventScroll: true }); } catch(_) { el.focus(); }
   });
 }, { once:true });
+
 let __hoverReady = false;
 window.addEventListener('pointermove', () => { __hoverReady = true; }, { once:true });
 window.__hoverReady = () => __hoverReady;
