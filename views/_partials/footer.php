@@ -10,8 +10,8 @@
 
       <!-- Lado Esquerdo: logo + endereço -->
       <div class="col-12 col-lg-auto">
-        <div class="d-flex align-items-center gap-3 flex-column flex-sm-row text-center text-sm-start">
-          <img src="/img/logo-unifio-branco.webp" alt="Logo UNIFIO" class="unifio-logo img-fluid">
+        <div class="d-flex align-items-center gap-3 flex-column flex-sm-row text-center text-sm-start justify-content-center">
+          <img src="/img/logo-unifio-branco.webp" alt="Logo UNIFIO" class="unifio-logo-footer img-fluid">
           <div class="unifio-address small">
             <p class="mb-0">Rodovia BR 153, Km 338+420m,</p>
             <p class="mb-0">Bairro Água do Cateto, Ourinhos-SP.</p>

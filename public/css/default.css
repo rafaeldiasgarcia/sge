@@ -37,3 +37,35 @@ body {
     font-family: 'Montserrat', Arial, sans-serif;
     min-height: 100vh; /* Garante altura mínima da tela */
 }
+
+/* TEMPORARIO, PARA CORRIGIR PROBLEMA DE BARRA DE ROLAGEM NO MOBILE (APARENTEMENTE O CARROSSEL ESTÁ VAZANDO) */
+html, body {
+  overflow-x: hidden;
+}
+
+.navbar, .navbar-collapse {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+.navbar-nav, .nav-item, .nav-link {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.navbar-collapse.show {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+button, a {
+  overflow: hidden;
+}
