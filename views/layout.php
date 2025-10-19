@@ -26,6 +26,7 @@ use Application\Core\Auth;
 
     <!-- Exposição do papel do usuário para o front-end quando autenticado -->
     <?php if (Auth::check()): ?>
+    <script src="/js/app.js"></script>
     <script>
         window.userRole = '<?= Auth::role(); ?>';
     </script>
@@ -55,7 +56,6 @@ use Application\Core\Auth;
         <!-- Rodapé global (parcial) -->
         <?php include ROOT_PATH . '/views/_partials/footer.php'; ?>
     </footer>
-
     <!-- JS de terceiros (Bootstrap Bundle com Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -91,7 +91,5 @@ use Application\Core\Auth;
         window.todosEventos = <?php echo json_encode($todos_eventos ?? []); ?>;
     </script>
     <?php endif; ?>
-    
-    <script src="/js/app.js"></script>
 </body>
 </html>
