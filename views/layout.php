@@ -70,6 +70,11 @@ use Application\Core\Auth;
     <?php if (Auth::check()): ?>
     <script src="/js/modules/_partials/notifications.js"></script>
     <?php endif; ?>
+    
+    <!-- Scripts específicos do Super Admin -->
+    <?php if (Auth::check() && Auth::role() === 'super_admin'): ?>
+    <script src="/js/modules/super_admin/relatorios.js"></script>
+    <?php endif; ?>
 
     <?php if (!empty($additional_scripts) && is_array($additional_scripts)): ?>
         <?php foreach ($additional_scripts as $script): ?>

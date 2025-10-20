@@ -3,11 +3,11 @@
 /* Dropdown das notificações */
 .notification-dropdown {
     position: absolute !important;
-    width: 380px !important;
+    width: 420px !important;
     max-width: calc(100vw - 20px) !important; /* Nunca ultrapassa a largura da tela */
     max-height: 500px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
     border: none;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     border-radius: 12px;
@@ -18,6 +18,8 @@
     top: 100%;
     margin-top: 0.5rem;
     will-change: transform; /* Otimização para animações */
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 /* Item de notificações no menu - SEM interferência com animações */

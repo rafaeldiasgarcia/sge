@@ -47,12 +47,32 @@ nav .container{position:relative;padding:.2rem 1rem;display:flex;align-items:cen
   .nav-item.dropdown .dropdown-menu{
     position:absolute;left:0;top:100%;margin-top:.25rem;display:block;visibility:hidden;opacity:0;transform:translateY(6px);
     transition:opacity .26s ease,transform .26s ease,visibility 0s linear .26s;will-change:opacity,transform;z-index:1060;
+    white-space:normal;word-wrap:break-word;
   }
   .nav-item.dropdown .dropdown-menu.show{visibility:visible;opacity:1;transform:translateY(0);transition:opacity .26s ease,transform .26s ease,visibility 0s;}
+  
+  /* Menu do perfil - largura automática baseada no conteúdo */
+  .user-menu-item .dropdown-menu{
+    min-width:auto;max-width:none;width:auto;
+    padding:0.5rem 0;
+  }
+  
+  /* Notificações mantém largura fixa */
+  .notifications .dropdown-menu{
+    min-width:420px;max-width:420px;width:420px;
+  }
 }
 .dropdown-menu .dropdown-item{
   opacity:0;transform:translateX(-8px);transition:opacity .24s ease,transform .24s ease;
   font-family:"Montserrat",Arial,sans-serif;font-weight:500;color:#333;
+  white-space:normal;word-wrap:break-word;overflow-wrap:break-word;
+  padding:0.5rem 1rem;
+}
+
+/* Itens do menu do perfil mais compactos */
+.user-menu-item .dropdown-item{
+  padding:0.4rem 1rem;
+  white-space:nowrap;
 }
 .dropdown-menu.show .dropdown-item{opacity:1;transform:translateX(0);}
 .dropdown-menu.show .dropdown-item:nth-child(1){transition-delay:.06s;}

@@ -45,13 +45,19 @@ html, body {
 
 .navbar, .navbar-collapse {
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: visible;
 }
 
 
 .navbar-nav, .nav-item, .nav-link {
   max-width: 100%;
   white-space: nowrap;
+}
+
+/* Permitir que dropdowns se estendam além do container */
+.navbar .dropdown-menu {
+  overflow: visible;
+  max-width: none;
 }
 
 .navbar-collapse.show {
