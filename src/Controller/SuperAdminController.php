@@ -758,6 +758,83 @@ class SuperAdminController extends BaseController
         ]);
     }
 
+    public function gerarRelatorioAjax()
+    {
+        $this->guardSuperAdmin();
+        $tipo = $_POST['tipo_relatorio'] ?? '';
+        $relatorioRepo = $this->repository('RelatorioRepository');
+        $dadosRelatorio = null;
+
+        try {
+            switch ($tipo) {
+                case 'periodo':
+                    $dataInicio = $_POST['data_inicio'] ?? '';
+                    $dataFim = $_POST['data_fim'] ?? '';
+                    if ($dataInicio && $dataFim) {
+                        $dadosRelatorio = [
+                            'tipo' => 'periodo',
+                            'periodo' => ['inicio' => $dataInicio, 'fim' => $dataFim],
+                            'estatisticas' => $relatorioRepo->getRelatorioGeral($dataInicio, $dataFim),
+                            'eventos_lista' => $relatorioRepo->getEventosNoPeriodo($dataInicio, $dataFim)
+                        ];
+                    }
+                    break;
+
+                case 'evento_especifico':
+                    $eventoId = (int)($_POST['evento_id'] ?? 0);
+                    if ($eventoId > 0) {
+                        $eventoData = $relatorioRepo->getDadosEvento($eventoId);
+                        if (!empty($eventoData['lista_participantes'])) {
+                            $userRepo = $this->repository('UsuarioRepository');
+                            $ras = array_filter(array_map('trim', explode("\n", $eventoData['lista_participantes'])));
+                            $participantesFormatados = $userRepo->findParticipantesByRAs($ras);
+                            $eventoData['participantes_formatados'] = $participantesFormatados;
+                        }
+                        $dadosRelatorio = [
+                            'tipo' => 'evento_especifico',
+                            'evento' => $eventoData,
+                            'presencas' => $relatorioRepo->getPresencasPorEvento($eventoId)
+                        ];
+                    }
+                    break;
+
+                case 'usuario':
+                    $usuarioId = (int)($_POST['usuario_id'] ?? 0);
+                    if ($usuarioId > 0) {
+                        $dadosRelatorio = [
+                            'tipo' => 'usuario',
+                            'usuario' => $this->repository('UsuarioRepository')->findById($usuarioId),
+                            'agendamentos' => $relatorioRepo->getAgendamentosPorUsuario($usuarioId),
+                            'presencas' => $relatorioRepo->getPresencasPorUsuario($usuarioId)
+                        ];
+                    }
+                    break;
+            }
+
+            if (!$dadosRelatorio) {
+                throw new Exception("Parâmetros inválidos para gerar o relatório.");
+            }
+
+            // Retornar JSON de sucesso
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'dados_relatorio' => $dadosRelatorio
+            ]);
+            exit;
+
+        } catch (Exception $e) {
+            // Retornar JSON de erro
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
     public function imprimirRelatorio()
     {
         $this->guardSuperAdmin();

@@ -48,6 +48,15 @@ html, body {
   overflow-x: visible;
 }
 
+/* Permitir que dropdowns se estendam além dos limites do container */
+.nav-item.dropdown {
+  overflow: visible !important;
+}
+
+.nav-item.dropdown .dropdown-menu {
+  overflow: visible !important;
+}
+
 
 .navbar-nav, .nav-item, .nav-link {
   max-width: 100%;

@@ -8,9 +8,9 @@ nav{
   padding:0;min-height:64px;align-items:center;
   --bs-navbar-toggler-icon:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(0,0,0,0.7)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
-nav .container{position:relative;padding:.2rem 1rem;display:flex;align-items:center;}
+nav .container{position:relative;padding:.2rem 1rem;display:flex;align-items:center;overflow:visible;}
 .logo-header{height:50px;width:auto;}
-.header-right{min-width:120px;display:flex;align-items:center;justify-content:flex-end;gap:.25rem;}
+.header-right{min-width:120px;display:flex;align-items:center;justify-content:flex-end;gap:.25rem;overflow:visible;}
 .navbar-brand strong{color:var(--textcolor-blue);}
 .navbar .nav-link{
   font-family:"Montserrat",Arial,sans-serif;font-weight:500;line-height:1.2;
@@ -89,7 +89,7 @@ nav .container{position:relative;padding:.2rem 1rem;display:flex;align-items:cen
 
 @media(max-width:991.98px){
   nav .container{position:relative;}
-  .navbar-toggler{position:absolute;top:12px;right:12px;border-radius:8px;padding:.4rem .5rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.12);}
+  .navbar-toggler{position:absolute;top:7px;right:12px;border-radius:8px;padding:.4rem .5rem;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.12);}
   .navbar-toggler[aria-expanded="true"]{z-index:1040;}
   .header-right .navbar-collapse{
     position:fixed;top:64px;right:12px;left:auto;background:#fff;z-index:10500;box-shadow:0 .5rem 1rem rgba(0,0,0,.15);
