@@ -62,5 +62,3 @@ function ajustarTamanhoNome() {
 
 document.addEventListener('DOMContentLoaded', ajustarTamanhoNome);
 window.addEventListener('resize', ajustarTamanhoNome);
-
-
