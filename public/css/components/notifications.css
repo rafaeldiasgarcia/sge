@@ -1,319 +1,103 @@
-/* Sistema de Notificações - VERSÃO NOVA E LIMPA */
+/* ===== Notifications — CSS mínimo ===== */
 
-/* Dropdown das notificações */
+/* Dropdown das notificações (usa .dropdown-menu do Bootstrap) */
 .notification-dropdown {
-    position: absolute !important;
-    width: 420px !important;
-    max-width: calc(100vw - 20px) !important; /* Nunca ultrapassa a largura da tela */
-    max-height: 500px;
-    overflow-y: auto;
-    overflow-x: visible;
-    border: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
-    background: white;
-    display: none;
-    z-index: 10500;
-    right: 0;
-    top: 100%;
-    margin-top: 0.5rem;
-    will-change: transform; /* Otimização para animações */
-    white-space: normal;
-    word-wrap: break-word;
+  width: 420px;
+  max-width: calc(100vw - 20px);
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Item de notificações no menu - SEM interferência com animações */
-.nav-item.notifications {
-    position: relative;
-    overflow: visible !important; /* Garantir que o dropdown não seja cortado */
+/* Em telas < lg, deixa fluido */
+@media (max-width: 991.98px) {
+  .notification-dropdown {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 140px);
+  }
 }
 
-/* Garantir que o container pai não corte o dropdown */
-.nav-item.notifications .dropdown-menu {
-    overflow: visible !important;
+/* Badge do sino (usa o #notification-badge esperado pelo JS) */
+#notification-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 0.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Garantir que todos os containers pais permitam overflow */
-.navbar, .navbar-collapse, .navbar-nav, .header-right {
-    overflow: visible !important;
+/* Esconde o badge quando vazio */
+#notification-badge:empty {
+  display: none;
 }
 
-/* Garantir que o container principal não corte os dropdowns */
-nav .container {
-    overflow: visible !important;
-}
-
-/* Badge de notificação - TOTALMENTE ISOLADO */
-.notification-badge {
-    position: absolute !important;
-    top: 6px !important;
-    left: 8px !important;
-    background: #dc3545 !important;
-    color: white !important;
-    border-radius: 50% !important;
-    width: 16px !important;
-    height: 16px !important;
-    font-size: 10px !important;
-    font-weight: bold !important;
-    text-align: center !important;
-    line-height: 16px !important;
-    z-index: 9999 !important;
-    border: 1px solid white !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
-    /* CRÍTICO: Iniciar sempre escondido */
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    /* Prevenir qualquer transformação ou animação externa */
-    transform: none !important;
-    transition: none !important;
-    animation: none !important;
-}
-
-/* Estado visível do badge - APENAS quando explicitamente ativado */
-.notification-badge.active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Garantir que o badge NUNCA seja afetado pelo hover do nav-item */
-.nav-item.notifications:hover .notification-badge,
-.nav-item.notifications .nav-link:hover .notification-badge,
-.navbar-nav .nav-item:hover .notification-badge {
-    position: absolute !important;
-    top: 6px !important;
-    left: 8px !important;
-    transform: none !important;
-    animation: none !important;
-    transition: none !important;
-}
-
-/* Remover qualquer animação do badge durante hover */
-.nav-item.notifications:hover .notification-badge.active,
-.nav-item.notifications .nav-link:hover .notification-badge.active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Itens da lista de notificações */
+/* Itens da lista */
 .notification-item {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e9ecef;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: background-color .15s ease-in-out;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .notification-item:last-child {
-    border-bottom: none;
+  border-bottom: 0;
 }
 
 .notification-item:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
+/* Destaque para não lida */
 .notification-item.unread {
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
 }
 
+/* Tipografia básica dentro do item */
 .notification-item h6 {
-    color: #333;
-    margin: 0 0 6px 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
-}
-
-.notification-item.unread h6 {
-    font-weight: 700;
-    color: #1976d2;
+  margin: 0 0 6px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .notification-item p {
-    color: #666;
-    margin: 0 0 6px 0;
-    font-size: 0.8rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
+  margin: 0 0 6px 0;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .notification-item small {
-    color: #999;
-    font-size: 0.75rem;
+  font-size: 0.75rem;
+  color: #999;
 }
 
 /* Header do dropdown */
 .dropdown-header {
-    padding: 12px 18px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #dee2e6;
-    margin: 0;
-    font-weight: 600;
-    color: #495057;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  margin: 0;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Lista — sem overflow horizontal */
+#notification-list {
+  overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Estado vazio */
 .notification-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: #6c757d;
-}
-
-/* Lista de notificações - sem overflow horizontal */
-#notification-list {
-    overflow-x: hidden !important;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-/* Ajuste para telas médias (tablets) */
-@media (max-width: 992px) and (min-width: 769px) {
-    .notification-dropdown {
-        transform: translateX(calc(100% - 350px)); /* Ajuste intermediário para tablets */
-        width: 350px !important;
-    }
-}
-
-/* Ajuste para telas pequenas (entre 480px e 768px) */
-@media (max-width: 768px) and (min-width: 481px) {
-    .notification-dropdown {
-        transform: translateX(calc(100% - 320px)); /* Ajuste para telas pequenas */
-        width: 320px !important;
-    }
-}
-
-/* Ajuste para telas muito pequenas (até 480px) */
-@media (max-width: 480px) {
-    .notification-dropdown {
-        transform: translateX(calc(100% - 280px)); /* Ajuste para telas muito pequenas */
-        width: 280px !important;
-        right: 10px; /* Pequeno offset da direita para não colar na borda */
-    }
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    /* Quando usado dentro do painel colapsado, faça o dropdown ocupar 100% do painel */
-    .notification-dropdown {
-        width: 100% !important;
-        left: 0 !important;
-        right: auto !important; /* Remove o posicionamento à direita em mobile */
-        transform: none !important; /* Remove o translateX em mobile */
-        border-radius: 0.5rem !important;
-        box-shadow: none !important;
-        max-height: calc(100vh - 140px) !important;
-    }
-
-    /* Se o dropdown estiver dentro do painel colapsado, force position: static para evitar deslocamento lateral */
-    .header-right .navbar-collapse .notification-dropdown {
-        position: static !important;
-        transform: none !important;
-        margin: 0 !important;
-        left: auto !important;
-        right: auto !important;
-    }
-
-    /* Badge ajustado quando o dropdown aparece dentro do painel fixo */
-    .header-right .notification-badge {
-        top: 8px !important;
-        left: 8px !important;
-        right: auto !important;
-    }
-
-    /* Quando dentro do painel colapsado, posicione o badge de forma relativa ao item */
-    .header-right .navbar-collapse .nav-item.notifications .notification-badge {
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        margin-right: .5rem !important;
-        transform: none !important;
-        float: none !important;
-    }
-
-    /* Regras adicionais para garantir que o painel de notificações caiba e não vaze
-       quando aberto dentro do painel colapsado */
-    .header-right .navbar-collapse .notification-dropdown {
-        position: static !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        left: auto !important;
-        right: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        border-radius: .5rem !important;
-        z-index: 10501 !important;
-        overflow: auto !important;
-        max-height: calc(100vh - 140px) !important;
-        transition: opacity 0.2s ease !important;
-        opacity: 1 !important;
-    }
-    
-    /* Ocultar notificações quando não estiver com classe .show */
-    .header-right .navbar-collapse .notification-dropdown:not(.show) {
-        display: none !important;
-        opacity: 0 !important;
-    }
-
-    /* Cabeçalho do dropdown fixo no topo do painel interno para não esconder conteúdo */
-    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
-        position: sticky !important;
-        top: 0 !important;
-        background: #fff !important;
-        z-index: 10502 !important;
-        border-bottom: 1px solid #dee2e6 !important;
-    }
-
-    /* (Botão 'Marcar todas como lidas' removido do template; regras relacionadas removidas) */
-    /* Header: permitir wrap para que o botão possa aparecer inteiro em linha separada se necessário */
-    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: .5rem !important;
-        padding: .5rem .75rem !important;
-        box-sizing: border-box !important;
-        flex-wrap: wrap !important; /* permite que elementos quebrem para a próxima linha */
-    }
-
-    /* Título: pode encolher para abrir espaço, min-width:0 evita overflow por flex */
-    .header-right .navbar-collapse .notification-dropdown .dropdown-header > span {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-        margin-right: .5rem !important;
-        white-space: normal !important;
-    }
-
-    /* Regras para responsividade do header do dropdown sem o botão extra */
-
-    /* Itens ocupando toda a largura e sem bordas que causem deslocamento */
-    .header-right .navbar-collapse .notification-dropdown .notification-item {
-        padding: 12px 14px !important;
-        border-bottom: 1px solid #e9ecef !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-    }
-
-    .header-right .navbar-collapse .notification-dropdown .notification-item.unread {
-        border-left: none !important;
-        background-color: #fff3cd !important;
-    }
-
-    /* Garantir contraste do texto dentro do painel */
-    .header-right .navbar-collapse .notification-dropdown,
-    .header-right .navbar-collapse .notification-dropdown .notification-item,
-    .header-right .navbar-collapse .notification-dropdown .dropdown-header {
-        color: #333 !important;
-    }
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
 }

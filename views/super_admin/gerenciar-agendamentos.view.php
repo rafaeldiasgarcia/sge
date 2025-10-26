@@ -95,7 +95,7 @@ use Application\Core\Auth;
                                     <td>
                                         <?php echo htmlspecialchars($agendamento['titulo']); ?>
                                         <?php if (!empty($agendamento['foi_editado'])): ?>
-                                            <span class="badge bg-warning text-dark ms-2" title="Este evento foi editado em <?php echo date('d/m/Y H:i', strtotime($agendamento['data_edicao'])); ?>">
+                                            <span class="badge bg-warning text-dark ms-2" title="Este evento foi editado">
                                                 <i class="bi bi-pencil-fill"></i> EDITADO
                                             </span>
                                         <?php endif; ?>

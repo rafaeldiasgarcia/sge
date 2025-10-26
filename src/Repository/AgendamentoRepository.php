@@ -56,8 +56,7 @@ class AgendamentoRepository
         // Se usuarioId for null, não verifica presença (usuário não logado)
         if ($usuarioId === null) {
             $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                           u.nome as responsavel, NULL as presenca_id, a.atletica_confirmada, 
-                           a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
+                           u.nome as responsavel, NULL as presenca_id, at.nome as atletica_nome,
                            (SELECT COUNT(*) FROM presencas p2 WHERE p2.agendamento_id = a.id) as total_presencas,
                            CASE 
                                WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
@@ -66,7 +65,8 @@ class AgendamentoRepository
                            END as horario_periodo
                     FROM agendamentos a
                     JOIN usuarios u ON a.usuario_id = u.id
-                    LEFT JOIN atleticas at ON a.atletica_id_confirmada = at.id
+                    LEFT JOIN usuarios criador ON a.usuario_id = criador.id
+                    LEFT JOIN atleticas at ON criador.atletica_id = at.id
                     WHERE a.status IN ('aprovado', 'finalizado')
                     ORDER BY a.data_agendamento ASC, a.periodo ASC";
             
@@ -77,8 +77,7 @@ class AgendamentoRepository
         
         // Se usuário logado, verifica presença dele
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                       u.nome as responsavel, p.id as presenca_id, a.atletica_confirmada, 
-                       a.atletica_id_confirmada, a.quantidade_atletica, at.nome as atletica_nome,
+                       u.nome as responsavel, p.id as presenca_id, at.nome as atletica_nome,
                        (SELECT COUNT(*) FROM presencas p2 WHERE p2.agendamento_id = a.id) as total_presencas,
                        CASE 
                            WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
@@ -88,7 +87,8 @@ class AgendamentoRepository
                 FROM agendamentos a
                 JOIN usuarios u ON a.usuario_id = u.id
                 LEFT JOIN presencas p ON a.id = p.agendamento_id AND p.usuario_id = :usuario_id
-                LEFT JOIN atleticas at ON a.atletica_id_confirmada = at.id
+                LEFT JOIN usuarios criador ON a.usuario_id = criador.id
+                LEFT JOIN atleticas at ON criador.atletica_id = at.id
                 WHERE a.status IN ('aprovado', 'finalizado')
                 ORDER BY a.data_agendamento ASC, a.periodo ASC";
 
@@ -140,16 +140,16 @@ class AgendamentoRepository
     {
         $sql = "INSERT INTO agendamentos (
             usuario_id, titulo, tipo_agendamento, subtipo_evento, esporte_tipo, 
-            data_agendamento, periodo, descricao, quantidade_pessoas, responsavel_evento,
+            data_agendamento, periodo, descricao, responsavel_evento,
             possui_materiais, materiais_necessarios, responsabiliza_devolucao, 
-            lista_participantes, arquivo_participantes, arbitro_partida,
+            lista_participantes, arbitro_partida,
             estimativa_participantes, evento_aberto_publico, descricao_publico_alvo, 
             infraestrutura_adicional, observacoes, status
         ) VALUES (
             :usuario_id, :titulo, :tipo_agendamento, :subtipo_evento, :esporte_tipo,
-            :data_agendamento, :periodo, :descricao, :quantidade_pessoas, :responsavel_evento,
+            :data_agendamento, :periodo, :descricao, :responsavel_evento,
             :possui_materiais, :materiais_necessarios, :responsabiliza_devolucao,
-            :lista_participantes, :arquivo_participantes, :arbitro_partida,
+            :lista_participantes, :arbitro_partida,
             :estimativa_participantes, :evento_aberto_publico, :descricao_publico_alvo,
             :infraestrutura_adicional, :observacoes, 'pendente'
         )";
@@ -164,13 +164,11 @@ class AgendamentoRepository
         $stmt->bindValue(':data_agendamento', $data['data_agendamento']);
         $stmt->bindValue(':periodo', $data['periodo']);
         $stmt->bindValue(':descricao', $data['descricao'] ?? null);
-        $stmt->bindValue(':quantidade_pessoas', $data['quantidade_pessoas'] ?? null, PDO::PARAM_INT);
         $stmt->bindValue(':responsavel_evento', $data['responsavel_evento']);
         $stmt->bindValue(':possui_materiais', isset($data['possui_materiais']) ? (int)$data['possui_materiais'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':materiais_necessarios', $data['materiais_necessarios'] ?? null);
         $stmt->bindValue(':responsabiliza_devolucao', isset($data['responsabiliza_devolucao']) ? (int)$data['responsabiliza_devolucao'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':lista_participantes', $data['lista_participantes'] ?? null);
-        $stmt->bindValue(':arquivo_participantes', $data['arquivo_participantes'] ?? null);
         $stmt->bindValue(':arbitro_partida', $data['arbitro_partida'] ?? null);
         $stmt->bindValue(':estimativa_participantes', $data['estimativa_participantes'] ?? null, PDO::PARAM_INT);
         $stmt->bindValue(':evento_aberto_publico', isset($data['evento_aberto_publico']) ? (int)$data['evento_aberto_publico'] : null, PDO::PARAM_INT);
@@ -260,7 +258,6 @@ class AgendamentoRepository
                     infraestrutura_adicional = :infraestrutura_adicional,
                     observacoes = :observacoes,
                     foi_editado = :foi_editado,
-                    data_edicao = :data_edicao,
                     status = 'pendente'
                 WHERE id = :id AND usuario_id = :user_id";
 
@@ -282,7 +279,6 @@ class AgendamentoRepository
         $stmt->bindValue(':infraestrutura_adicional', $data['infraestrutura_adicional'] ?? null);
         $stmt->bindValue(':observacoes', $data['observacoes'] ?? null);
         $stmt->bindValue(':foi_editado', $data['foi_editado'] ?? false, PDO::PARAM_BOOL);
-        $stmt->bindValue(':data_edicao', $data['data_edicao'] ?? null);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         return $stmt->execute();
@@ -292,7 +288,7 @@ class AgendamentoRepository
     {
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo,
                        a.data_agendamento, a.periodo, u.nome as solicitante,
-                       a.foi_editado, a.data_edicao
+                       a.foi_editado
                 FROM agendamentos a 
                 JOIN usuarios u ON a.usuario_id = u.id
                 WHERE a.status = 'pendente' 
@@ -349,7 +345,7 @@ class AgendamentoRepository
     {
         // Buscar próximo evento esportivo
         $sqlEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                                 a.status, u.nome as responsavel, a.quantidade_pessoas,
+                                 a.status, u.nome as responsavel,
                                  CASE 
                                      WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
                                      WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
@@ -359,9 +355,8 @@ class AgendamentoRepository
                           JOIN usuarios u ON a.usuario_id = u.id
                           JOIN presencas p ON a.id = p.agendamento_id
                           WHERE p.usuario_id = :usuario_id 
-                          AND a.status = 'aprovado'
-                          AND a.data_agendamento >= CURDATE()
                           AND a.tipo_agendamento = 'esportivo'
+                          AND DATE(a.data_agendamento) >= CURDATE()
                           ORDER BY a.data_agendamento ASC, a.periodo ASC
                           LIMIT 1";
 
@@ -372,21 +367,20 @@ class AgendamentoRepository
 
         // Buscar próximo evento não esportivo
         $sqlNaoEsportivos = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                                    a.status, u.nome as responsavel, a.quantidade_pessoas,
-                                    CASE 
-                                        WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
-                                        WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
-                                        ELSE a.periodo
-                                    END as horario_periodo
-                             FROM agendamentos a
-                             JOIN usuarios u ON a.usuario_id = u.id
-                             JOIN presencas p ON a.id = p.agendamento_id
-                             WHERE p.usuario_id = :usuario_id 
-                             AND a.status = 'aprovado'
-                             AND a.data_agendamento >= CURDATE()
-                             AND a.tipo_agendamento = 'nao_esportivo'
-                             ORDER BY a.data_agendamento ASC, a.periodo ASC
-                             LIMIT 1";
+                                   a.status, u.nome as responsavel,
+                                   CASE 
+                                       WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
+                                       WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
+                                       ELSE a.periodo
+                                   END as horario_periodo
+                            FROM agendamentos a
+                            JOIN usuarios u ON a.usuario_id = u.id
+                            JOIN presencas p ON a.id = p.agendamento_id
+                            WHERE p.usuario_id = :usuario_id 
+                            AND a.tipo_agendamento = 'nao_esportivo'
+                            AND DATE(a.data_agendamento) >= CURDATE()
+                            ORDER BY a.data_agendamento ASC, a.periodo ASC
+                            LIMIT 1";
 
         $stmt = $this->pdo->prepare($sqlNaoEsportivos);
         $stmt->bindValue(':usuario_id', $userId, PDO::PARAM_INT);
@@ -401,7 +395,7 @@ class AgendamentoRepository
     {
         // Buscar TODOS os eventos futuros com presença marcada (do mais próximo ao mais distante)
         $sql = "SELECT a.id, a.titulo, a.tipo_agendamento, a.esporte_tipo, a.data_agendamento, a.periodo, 
-                       a.status, u.nome as responsavel, a.quantidade_pessoas,
+                       a.status, u.nome as responsavel,
                        CASE 
                            WHEN a.periodo = 'primeiro' THEN '19:15 - 20:55'
                            WHEN a.periodo = 'segundo' THEN '21:10 - 22:50'
@@ -411,8 +405,7 @@ class AgendamentoRepository
                 JOIN usuarios u ON a.usuario_id = u.id
                 JOIN presencas p ON a.id = p.agendamento_id
                 WHERE p.usuario_id = :usuario_id 
-                AND a.status = 'aprovado'
-                AND a.data_agendamento >= CURDATE()
+                AND DATE(a.data_agendamento) >= CURDATE()
                 ORDER BY a.data_agendamento ASC, 
                          CASE 
                             WHEN a.periodo = 'primeiro' THEN 1
@@ -495,12 +488,10 @@ class AgendamentoRepository
                            u.ra as criador_ra,
                            u.tipo_usuario_detalhado as criador_tipo,
                            at.nome as atletica_nome,
-                           at_conf.nome as atletica_confirmada_nome,
                            (SELECT COUNT(*) FROM presencas p WHERE p.agendamento_id = a.id) as total_presencas
                     FROM agendamentos a
                     JOIN usuarios u ON a.usuario_id = u.id
                     LEFT JOIN atleticas at ON u.atletica_id = at.id
-                    LEFT JOIN atleticas at_conf ON a.atletica_id_confirmada = at_conf.id
                     WHERE a.id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);

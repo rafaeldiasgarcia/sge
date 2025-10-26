@@ -1,172 +1,167 @@
 <?php
 use Application\Core\Auth;
 
-// Em páginas de autenticação, não renderizamos navbar
+// não renderiza em páginas de login/registro
 if (!empty($isAuthPage)) { return; }
 
-$isGuest = !Auth::check();
+$isGuest    = !Auth::check();
 $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
 ?>
-<nav class="navbar navbar-expand-lg navbar-light bg-white p-1" role="navigation" aria-label="Barra principal">
-  <div class="container d-flex justify-content-between align-items-center">
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm" role="navigation">
+  <div class="container">
 
-    <!-- Left: Logo -->
-    <div class="header-left">
-      <a class="navbar-brand" href="/" aria-label="Página inicial">
-        <img src="/img/logo-quadra.webp" alt="Logo Quadra" class="logo-header" width="120" height="50">
-      </a>
-    </div>
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/" aria-label="Página inicial">
+      <img src="/img/logo-quadra.webp" alt="Logo Quadra" class="logo-header" width="120" height="50">
+    </a>
 
-    <!-- Center (reservado) -->
-    <div class="header-center" aria-hidden="true"></div>
+    <!-- Toggler -->
+    <button class="navbar-toggler border-0" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#<?= $collapseId ?>"
+            aria-controls="<?= $collapseId ?>"
+            aria-expanded="false"
+            aria-label="Alternar navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- Right -->
-    <div class="header-right d-flex align-items-center">
-      <?php if (!$isGuest): ?>
-        <!-- ===== LOGADO ===== -->
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#<?= $collapseId ?>"
-                aria-controls="<?= $collapseId ?>"
-                aria-expanded="false"
-                aria-label="Abrir menu">
-          <span class="navbar-toggler-icon" aria-hidden="true"></span>
-        </button>
+    <?php if (!$isGuest): ?>
+      <!-- ===== LOGADO ===== -->
+      <div class="collapse navbar-collapse" id="<?= $collapseId ?>">
+        <ul class="navbar-nav ms-auto align-items-center nav-animated">
 
-        <div class="collapse navbar-collapse" id="<?= $collapseId ?>">
-          <!-- animação só aqui -->
-          <ul class="navbar-nav ms-auto nav-animated">
+          <!-- Painel -->
+          <li class="nav-item">
+            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/dashboard">
+              <i class="bi bi-house fs-5"></i>
+              <span class="d-lg-none ms-1">Painel</span>
+            </a>
+          </li>
 
+          <!-- Agenda -->
+          <li class="nav-item">
+            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agenda">
+              <i class="bi bi-calendar-week fs-5"></i>
+              <span class="d-lg-none ms-1">Agenda</span>
+            </a>
+          </li>
+
+          <!-- Itens por função -->
+          <?php if (Auth::role() === 'superadmin'): ?>
             <li class="nav-item">
-              <a class="nav-link" href="/dashboard">
-                <i class="bi bi-house" aria-hidden="true"></i> <span>Meu Painel</span>
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/dashboard">
+                <i class="bi bi-gear fs-5"></i>
+                <span class="d-lg-none ms-1">Admin</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+                <i class="bi bi-calendar-plus fs-5"></i>
+                <span class="d-lg-none ms-1">Agendar</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/relatorios">
+                <i class="bi bi-file-earmark-bar-graph fs-5"></i>
+                <span class="d-lg-none ms-1">Relatórios</span>
               </a>
             </li>
 
+          <?php elseif (Auth::role() === 'admin'): ?>
             <li class="nav-item">
-              <a class="nav-link" href="/agenda">
-                <i class="bi bi-calendar-week" aria-hidden="true"></i> <span>Agenda</span>
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/admin/atletica/dashboard">
+                <i class="bi bi-trophy fs-5"></i>
+                <span class="d-lg-none ms-1">Atlética</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+                <i class="bi bi-calendar-plus fs-5"></i>
+                <span class="d-lg-none ms-1">Agendar</span>
               </a>
             </li>
 
-            <?php if (Auth::role() === 'superadmin'): ?>
+          <?php else: ?>
+            <?php $is_coordenador = Auth::get('is_coordenador'); ?>
+            <?php if ((int)$is_coordenador === 1): ?>
               <li class="nav-item">
-                <a class="nav-link" href="/superadmin/dashboard">
-                  <i class="bi bi-gear" aria-hidden="true"></i> <span>Painel Admin</span>
+                <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+                  <i class="bi bi-calendar-plus fs-5"></i>
+                  <span class="d-lg-none ms-1">Agendar</span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/agendar-evento">
-                  <i class="bi bi-calendar-plus" aria-hidden="true"></i> <span>Agendar</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/superadmin/relatorios">
-                  <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> <span>Relatórios</span>
-                </a>
-              </li>
-            <?php elseif (Auth::role() === 'admin'): ?>
-              <li class="nav-item">
-                <a class="nav-link" href="/admin/atletica/dashboard">
-                  <i class="bi bi-trophy" aria-hidden="true"></i> <span>Painel Atlética</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/agendar-evento">
-                  <i class="bi bi-calendar-plus" aria-hidden="true"></i> <span>Agendar Evento</span>
-                </a>
-              </li>
-            <?php else: ?>
-              <?php $is_coordenador = Auth::get('is_coordenador'); ?>
-              <?php if ((int)$is_coordenador === 1): ?>
-                <li class="nav-item">
-                  <a class="nav-link" href="/agendar-evento">
-                    <i class="bi bi-calendar-plus" aria-hidden="true"></i> <span>Agendar Event.</span>
-                  </a>
-                </li>
-              <?php endif; ?>
             <?php endif; ?>
+          <?php endif; ?>
 
-            <!-- Notificações -->
-            <?php
-              // IDs estáveis para relação ARIA
-              $notifToggleId = 'notification-bell';
-              $notifMenuId   = 'notification-menu';
-            ?>
-            <li class="nav-item dropdown me-2 notifications">
-              <a class="nav-link" href="#" id="<?= $notifToggleId ?>" data-bs-toggle="dropdown" role="button"
-                 aria-haspopup="true" aria-expanded="false" aria-controls="<?= $notifMenuId ?>">
-                <i class="bi bi-bell fs-5" aria-hidden="true"></i> <span>Notificações</span>
-                <span class="notification-badge" id="notification-badge" aria-live="polite"></span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end notification-dropdown"
-                   id="<?= $notifMenuId ?>" aria-labelledby="<?= $notifToggleId ?>" role="menu">
-                <h6 class="dropdown-header d-grid justify-content-between align-items-center">
-                  <span>Notificações</span>
-                </h6>
-                <div id="notification-list" style="max-height: 400px; overflow-y: auto;"
-                     role="status" aria-live="polite" aria-atomic="true">
-                  <div class="notification-empty">Carregando...</div>
-                </div>
+          <!-- Notificações -->
+          <?php
+            $notifToggleId = 'notification-bell';
+            $notifMenuId   = 'notification-menu';
+          ?>
+          <li class="nav-item dropdown notifications">
+            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center"
+               href="#" id="<?= $notifToggleId ?>"
+               data-bs-toggle="dropdown" role="button"
+               aria-haspopup="true" aria-expanded="false"
+               aria-controls="<?= $notifMenuId ?>">
+              <i class="bi bi-bell fs-5"></i>
+              <span class="position-relative">
+                <span class="visually-hidden">Notificações</span>
+                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"></span>
+              </span>
+              <span class="d-lg-none ms-1">Notificações</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end p-0" id="<?= $notifMenuId ?>" aria-labelledby="<?= $notifToggleId ?>" role="menu" style="min-width:360px; max-width:420px;">
+              <h6 class="dropdown-header">Notificações</h6>
+              <div id="notification-list" class="px-2 pb-2" style="max-height: 400px; overflow-y:auto;" role="status" aria-live="polite">
+                <div class="text-center text-muted py-3 notification-empty">Carregando...</div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <!-- Usuário -->
-            <?php
-              $userToggleId = 'user-menu-toggle';
-              $userMenuId   = 'user-menu';
-            ?>
-            <li class="nav-item dropdown user-menu-item">
-              <!-- Mantemos <a> por compat com estilos .nav-link; JS previne navegação -->
-              <a class="nav-link dropdown-toggle" href="#"
-                 id="<?= $userToggleId ?>"
-                 data-bs-toggle="dropdown" role="button"
-                 aria-haspopup="true" aria-expanded="false"
-                 aria-controls="<?= $userMenuId ?>">
-                <i class="bi bi-person-circle" aria-hidden="true"></i><span> Perfil</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end"
-                  id="<?= $userMenuId ?>" aria-labelledby="<?= $userToggleId ?>" role="menu">
-                <?php if (Auth::role() === 'admin'): ?>
-                  <li><a class="dropdown-item" href="/admin/atletica/dashboard" role="menuitem"><span>Meu Painel</span></a></li>
-                <?php elseif (Auth::role() === 'superadmin'): ?>
-                  <li><a class="dropdown-item" href="/superadmin/dashboard" role="menuitem"><span>Meu Painel</span></a></li>
-                <?php endif; ?>
-                <li><a class="dropdown-item" href="/perfil" role="menuitem"><span>Editar Perfil</span></a></li>
-                <li><hr class="dropdown-divider" role="separator" aria-hidden="true"></li>
-                <li><a class="dropdown-item" href="/logout" role="menuitem"><span>Sair</span></a></li>
-              </ul>
-            </li>
+          <!-- Usuário -->
+          <?php
+            $userToggleId = 'user-menu-toggle';
+            $userMenuId   = 'user-menu';
+          ?>
+          <li class="nav-item dropdown user-menu-item">
+            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center"
+               href="#" id="<?= $userToggleId ?>"
+               data-bs-toggle="dropdown" role="button"
+               aria-haspopup="true" aria-expanded="false"
+               aria-controls="<?= $userMenuId ?>">
+              <i class="bi bi-person-circle fs-5"></i>
+              <span class="d-lg-none ms-1">Perfil</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" id="<?= $userMenuId ?>" aria-labelledby="<?= $userToggleId ?>" role="menu">
+              <?php if (Auth::role() === 'admin'): ?>
+                <li><a class="dropdown-item" href="/admin/atletica/dashboard" role="menuitem">Meu Painel</a></li>
+              <?php elseif (Auth::role() === 'superadmin'): ?>
+                <li><a class="dropdown-item" href="/superadmin/dashboard" role="menuitem">Meu Painel</a></li>
+              <?php endif; ?>
+              <li><a class="dropdown-item" href="/perfil" role="menuitem">Editar Perfil</a></li>
+              <li><hr class="dropdown-divider" role="separator"></li>
+              <li><a class="dropdown-item" href="/logout" role="menuitem">Sair</a></li>
+            </ul>
+          </li>
 
-          </ul>
+        </ul>
+      </div>
+
+    <?php else: ?>
+      <!-- ===== DESLOGADO ===== -->
+      <div class="collapse navbar-collapse" id="<?= $collapseId ?>">
+        <ul class="navbar-nav ms-auto d-lg-none">
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/registro">Cadastrar</a></li>
+        </ul>
+
+        <div class="ms-auto d-none d-lg-flex gap-2">
+          <a href="/login" class="btn btn-outline-primary">Login</a>
+          <a href="/registro" class="btn btn-primary">Cadastrar</a>
         </div>
+      </div>
+    <?php endif; ?>
 
-      <?php else: ?>
-        <!-- ===== DESLOGADO ===== -->
-        <button class="navbar-toggler d-lg-none" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#<?= $collapseId ?>"
-                aria-controls="<?= $collapseId ?>"
-                aria-expanded="false"
-                aria-label="Abrir menu">
-          <span class="navbar-toggler-icon" aria-hidden="true"></span>
-        </button>
-
-        <!-- Um ÚNICO collapse para mobile e desktop -->
-        <div class="collapse navbar-collapse" id="<?= $collapseId ?>">
-          <!-- Mobile (< lg): links simples -->
-          <ul class="navbar-nav ms-auto d-lg-none">
-            <li class="nav-item"><a class="nav-link" href="/login"><span>Login</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/registro"><span>Cadastrar</span></a></li>
-          </ul>
-
-          <!-- Desktop (>= lg): botões -->
-          <div class="ms-auto d-none d-lg-flex gap-2">
-            <a href="/login" class="btn btn-outline-primary">Login</a>
-            <a href="/registro" class="btn btn-primary">Cadastrar</a>
-          </div>
-        </div>
-      <?php endif; ?>
-    </div>
   </div>
 </nav>
