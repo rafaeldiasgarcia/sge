@@ -545,14 +545,14 @@ class EventPopup {
             `;
         }
 
-        // Atlética confirmada
-        if (evento.atletica_confirmada && evento.atletica_confirmada_nome) {
+        // Atlética do solicitante (se aplicável)
+        if (evento.atletica_nome) {
             conteudo += `
                 <div class="event-info-full">
-                    <label>Atlética Confirmada</label>
+                    <label>Atlética do Solicitante</label>
                     <div class="value">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        ${this.escapeHtml(evento.atletica_confirmada_nome)} (${evento.quantidade_atletica} pessoas)
+                        <i class="bi bi-people-fill"></i>
+                        ${this.escapeHtml(evento.atletica_nome)}
                     </div>
                 </div>
             `;

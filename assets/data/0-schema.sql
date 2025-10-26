@@ -83,17 +83,12 @@ CREATE TABLE `agendamentos` (
   `status` enum('aprovado','pendente','rejeitado','cancelado','finalizado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendente',
   `motivo_rejeicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `atletica_confirmada` tinyint(1) NOT NULL DEFAULT '0',
-  `atletica_id_confirmada` int DEFAULT NULL,
-  `quantidade_atletica` int DEFAULT '0',
-  `quantidade_pessoas` int DEFAULT '0',
   `subtipo_evento` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'treino/campeonato para esportivos, palestra/workshop/formatura para nao_esportivos',
   `responsavel_evento` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `possui_materiais` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
   `materiais_necessarios` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `responsabiliza_devolucao` tinyint(1) DEFAULT NULL,
   `lista_participantes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `arquivo_participantes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `arbitro_partida` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `estimativa_participantes` int DEFAULT NULL,
   `evento_aberto_publico` tinyint(1) DEFAULT NULL COMMENT '1=sim, 0=não',
@@ -101,13 +96,7 @@ CREATE TABLE `agendamentos` (
   `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `foi_editado` tinyint(1) DEFAULT 0 COMMENT 'Indica se o agendamento foi editado após criação',
-  `data_edicao` datetime DEFAULT NULL COMMENT 'Data e hora da última edição',
-  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento',
-  `data_ultima_alteracao` datetime DEFAULT NULL COMMENT 'Data da última alteração feita pelo admin',
-  `alterado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi alterado por um admin',
-  `data_cancelamento` datetime DEFAULT NULL COMMENT 'Data do cancelamento pelo admin',
-  `cancelado_por_admin` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado por um admin',
-  `cancelado_por_campeonato` tinyint(1) DEFAULT 0 COMMENT 'Indica se foi cancelado devido à aprovação de um campeonato'
+  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -260,8 +249,7 @@ CREATE TABLE `solicitacoes_troca_curso` (
 --
 ALTER TABLE `agendamentos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `atletica_id_confirmada` (`atletica_id_confirmada`);
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- Índices de tabela `atleticas`
@@ -410,8 +398,7 @@ ALTER TABLE `solicitacoes_troca_curso`
 -- Restrições para tabelas `agendamentos`
 --
 ALTER TABLE `agendamentos`
-  ADD CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `agendamentos_ibfk_2` FOREIGN KEY (`atletica_id_confirmada`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `cursos`

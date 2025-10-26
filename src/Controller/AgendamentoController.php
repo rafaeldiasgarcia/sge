@@ -163,7 +163,8 @@ class AgendamentoController extends BaseController
             'materiais_necessarios' => trim($post['materiais_necessarios'] ?? ''),
             'responsabiliza_devolucao' => isset($post['responsabiliza_devolucao']) ? 1 : 0,
             'lista_participantes' => trim($post['lista_participantes'] ?? ''),
-            'arbitro_partida' => trim($post['arbitro_partida'] ?? '')
+            'arbitro_partida' => trim($post['arbitro_partida'] ?? ''),
+            'estimativa_participantes' => (int)($post['estimativa_participantes'] ?? 0)
         ]);
     }
 
@@ -520,7 +521,6 @@ class AgendamentoController extends BaseController
 
         // Marcar que foi editado
         $data['foi_editado'] = true;
-        $data['data_edicao'] = date('Y-m-d H:i:s');
 
         if ($agendamentoRepo->updateAgendamento($id, Auth::id(), $data)) {
             // Enviar notificação ao super admin sobre a edição
