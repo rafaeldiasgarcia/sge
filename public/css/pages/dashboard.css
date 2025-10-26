@@ -1,0 +1,24 @@
+/**
+ * DASHBOARD.CSS
+ * Estilos para a página do dashboard do usuário
+ */
+
+.dashboard-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover) !important;
+}
+
+.event-card-clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.event-card-clickable:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+

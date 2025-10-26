@@ -689,7 +689,9 @@ let eventPopup;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         eventPopup = new EventPopup();
+        window.eventPopup = eventPopup; // Expor globalmente para usar no perfil
     });
 } else {
     eventPopup = new EventPopup();
+    window.eventPopup = eventPopup; // Expor globalmente para usar no perfil
 }

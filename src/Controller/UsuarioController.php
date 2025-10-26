@@ -62,6 +62,7 @@ class UsuarioController extends BaseController
         $this->requireAuth();
 
         $userData = [
+            'id' => Auth::id(),
             'nome' => Auth::name(),
             'role' => Auth::role(),
             'tipo_usuario' => Auth::get('tipo_usuario_detalhado'),
@@ -118,6 +119,7 @@ class UsuarioController extends BaseController
             'eventos_presenca' => $eventosComPresenca,
             'todos_eventos' => $todosEventosAprovados,
             'dataMes' => $dataMes,
+            'additional_styles' => ['/css/components/event-popup.css'],
             'additional_scripts' => [
                 '/js/modules/events/event-popup.js',
                 '/js/modules/_partials/dashboard-calendar.js'
@@ -158,7 +160,12 @@ class UsuarioController extends BaseController
                 'cursos' => $cursos,
                 'atletica_info' => $atleticaInfo,
                 'meus_eventos' => $meusEventos,
-                'additional_scripts' => ['/js/modules/users/profile.js', '/js/modules/users/perfil-page.js']
+                'additional_styles' => ['/css/components/event-popup.css'],
+                'additional_scripts' => [
+                    '/js/modules/users/profile.js', 
+                    '/js/modules/users/perfil-page.js',
+                    '/js/modules/events/event-popup.js'
+                ]
             ]);
         } catch (\Exception $e) {
             $this->setErrorAndRedirect("Ocorreu um erro ao carregar seu perfil.", '/dashboard');

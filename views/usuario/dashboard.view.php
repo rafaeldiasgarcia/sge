@@ -141,7 +141,7 @@
                   <div class="text-muted small">Nenhum evento esportivo confirmado</div>
                 <?php else: ?>
                   <?php foreach ($eventosEsportivos as $evento): ?>
-                    <div class="card mb-3 border-primary shadow-sm" style="cursor:pointer;">
+                    <div class="card mb-3 border-primary shadow-sm event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
                       <div class="card-body">
                         <h6 class="card-title mb-1"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                         <?php if (!empty($evento['esporte_tipo'])): ?>
@@ -154,6 +154,15 @@
                           <strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo']); ?><br>
                           <strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel']); ?>
                         </p>
+                        <div class="mt-2" onclick="event.stopPropagation();">
+                          <form action="/agenda/presenca" method="post" class="d-inline" onsubmit="return confirm('Deseja desmarcar sua presença neste evento?');">
+                            <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
+                            <input type="hidden" name="action" value="desmarcar">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                              <i class="bi bi-x-circle"></i> Desmarcar Presença
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -176,7 +185,7 @@
                   <div class="text-muted small">Nenhum evento não esportivo confirmado</div>
                 <?php else: ?>
                   <?php foreach ($eventosNaoEsportivos as $evento): ?>
-                    <div class="card mb-3 border-warning shadow-sm" style="cursor:pointer;">
+                    <div class="card mb-3 border-warning shadow-sm event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
                       <div class="card-body">
                         <h6 class="card-title mb-1"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                         <p class="card-text mb-0">
@@ -184,6 +193,15 @@
                           <strong>Horário:</strong> <?php echo htmlspecialchars($evento['horario_periodo']); ?><br>
                           <strong>Responsável:</strong> <?php echo htmlspecialchars($evento['responsavel']); ?>
                         </p>
+                        <div class="mt-2" onclick="event.stopPropagation();">
+                          <form action="/agenda/presenca" method="post" class="d-inline" onsubmit="return confirm('Deseja desmarcar sua presença neste evento?');">
+                            <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
+                            <input type="hidden" name="action" value="desmarcar">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                              <i class="bi bi-x-circle"></i> Desmarcar Presença
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   <?php endforeach; ?>

@@ -190,10 +190,10 @@
               </span>
             </div>
             <div class="event-actions" onclick="event.stopPropagation();">
-              <button class="btn-details" onclick="document.querySelector('[data-event-id=&quot;<?php echo $evento['id']; ?>&quot;]').click();">
+              <button class="btn-details" onclick="if(window.eventPopup) { event.stopPropagation(); window.eventPopup.open(<?php echo $evento['id']; ?>); }">
                 Ver Detalhes
               </button>
-              <?php if ($evento['status'] === 'aprovado'): ?>
+              <?php if (in_array($evento['status'], ['aprovado', 'finalizado'])): ?>
                 <form action="/agenda/presenca" method="post" class="d-inline"
                       onsubmit="return confirm('Tem certeza que deseja cancelar sua presença neste evento?');">
                   <input type="hidden" name="agendamento_id" value="<?php echo $evento['id']; ?>">
