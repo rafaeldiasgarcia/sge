@@ -24,5 +24,12 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Copy the rest of the application
 COPY . .
 
+# Copy and setup entrypoint
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
