@@ -1,629 +1,722 @@
-body{
-    animation: fadeInUp 1s ease;
-}
+/* ============================================================================
+   DASHBOARD.CSS - ESTILIZAÇÃO DA PÁGINA PRINCIPAL DO DASHBOARD
+   ============================================================================
+   
+   ESTRUTURA DO ARQUIVO:
+   1. ANIMAÇÕES E KEYFRAMES
+   2. ELEMENTOS BASE E CONFIGURAÇÕES GLOBAIS
+   3. SEÇÃO DE BOAS-VINDAS
+   4. CARROSSEL E SLIDES
+   5. DASHBOARD - ATALHOS E CARDS
+   6. CALENDÁRIO WIDGET
+   7. EVENTOS E CATEGORIAS  
+   8. MELHORIAS VISUAIS GERAIS
+   9. RESPONSIVIDADE (Mobile → Tablets → Desktop)
+   
+   ============================================================================ */
 
-/* DASHBOARD SHORTCUTS - GRID DE ATALHOS */
-.dashboard-shortcuts {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    margin-bottom: 32px;
-}
-.shortcut-row {
-    display: flex;
-    gap: 24px;
-}
-.shortcut-card {
-    flex: 1;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: var(--shadow-card);
-    padding: 32px 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-width: 0;
-    transition: box-shadow 0.3s;
-}
-.shortcut-card:hover {
-    box-shadow: var(--shadow-card-hover);
-}
-.shortcut-card .card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.shortcut-card .card-text {
-    font-size: 1rem;
-    margin-bottom: 18px;
-    color: #444;
-}
-.shortcut-card .btn {
-    font-size: 1rem;
-    font-weight: 600;
-    display: inline-block;
-    min-width: unset;
-    width: auto;
-    padding-left: 32px;
-    padding-right: 32px;
-}
 
-.trofeu-icon{
-    color: var(--blue-color);
-}
+/* ============================================================================
+   1. ANIMAÇÕES E KEYFRAMES
+   ============================================================================ */
 
-.agenda-icon{
-    color: var(--orange-color);
-}
-
-.borda-card{
-    border-color: var(--orange-color) !important;
-}
-
-.borda-card:hover{
-    background: var(--orange-color-opacity) !important;
-}
-
-@media (max-width: 900px) {
-    .shortcut-row {
-        gap: 16px;
+/* FADE IN UP - Cria efeito de entrada suave dos elementos */
+@keyframes fadeInUp {
+    from {
+        opacity: 0; /* Elemento invisível */
+        transform: translateY(20px); /* Posicionado 20px abaixo */
     }
-    .shortcut-card {
-        padding: 24px 12px;
-    }
-    
-    .calendar-card {
-        padding: 30px 35px; /* Padding intermediário */
+    to {
+        opacity: 1; /* Elemento totalmente visível */
+        transform: translateY(0); /* Posição final normal */
     }
 }
-@media (max-width: 768px) {
-    .dashboard-shortcuts {
-        gap: 16px;
-    }
-    .shortcut-row {
-        flex-direction: column;
-        gap: 16px;
-    }
-    .shortcut-card {
-        padding: 18px 8px;
-        text-align: center;
-    }
-    .shortcut-card .card-title,
-    .shortcut-card .card-text {
-        text-align: center;
-    }
-    .shortcut-card .card-title {
-        justify-content: center;
-    }
-    .shortcut-card .btn {
-        margin: 0 auto;
-    }
-}
-/* Welcome Section */
-.welcome-section {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 60px 40px;
-    background: transparent;
-}
 
-.welcome-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 0px;
-}
-
-.welcome-title {
-    font-family: Montserrat;
-    font-size: 74px;
-    font-style: normal;
-    font-weight: 900;
-    /* Gradiente animado - MANTIDO */
-    background: linear-gradient(270deg, #3a00ff, #a000ff, #ff6a00, #3a00ff);
-    background-size: 400% 400%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0;
-    line-height: 0.8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    animation: gradientMove 10s ease infinite;
-}
-
+/* GRADIENTE ANIMADO - Move o gradiente da frase de boas-vindas */
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+    0% { background-position: 0% 50%; } /* Gradiente começa à esquerda */
+    50% { background-position: 100% 50%; } /* Gradiente move para direita */
+    100% { background-position: 0% 50%; } /* Gradiente volta à esquerda */
 }
 
-/* Permite que o conteúdo (a imagem 3D) vaze para fora sem ser cortado */
-.carousel {
-    margin-bottom: 60px; /* Dá espaço abaixo para a sombra da imagem que vaza */
-}
-.carousel-inner {
-    overflow: visible; /* A regra mais importante! */
-}
-
-/* Controlar overflow em mobile para evitar scroll horizontal */
-@media (max-width: 768px) {
-    .carousel-inner {
-        overflow: hidden; /* Evitar scroll horizontal em mobile */
+/* MODAL SLIDE IN - Animação de entrada dos modais/popups */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0; /* Modal invisível */
+        transform: scale(0.8) translateY(-20px); /* Modal menor e acima */
+    }
+    to {
+        opacity: 1; /* Modal totalmente visível */
+        transform: scale(1) translateY(0); /* Modal tamanho normal na posição final */
     }
 }
 
-/* ===================================== */
-/* ANIMAÇÕES DO CARROSSEL FADE */
-/* ===================================== */
 
-/* Configuração base para carousel-fade */
+/* ============================================================================
+   2. ELEMENTOS BASE E CONFIGURAÇÕES GLOBAIS
+   ============================================================================ */
+
+/* BODY - Configuração base da página com animação de entrada */
+body {
+    animation: fadeInUp 1s ease; /* Aplica animação de fade in ao carregar a página */
+}
+
+/* HTML - Configuração global de rolagem */
+html {
+    scroll-behavior: smooth; /* Ativa rolagem suave para navegação por âncoras */
+}
+
+
+/* ============================================================================
+   5. DASHBOARD - ATALHOS E CARDS
+   ============================================================================ */
+
+/* CONTAINER PRINCIPAL - Organiza os atalhos do dashboard em grid flexível */
+.dashboard-shortcuts {
+    display: flex; /* Ativa layout flexível */
+    flex-direction: column; /* Organiza linhas verticalmente */
+    gap: 24px; /* Espaçamento entre linhas de atalhos */
+    margin-bottom: 32px; /* Margem inferior para separar de outros elementos */
+}
+
+/* LINHA DE ATALHOS - Organiza cards horizontalmente */
+    .shortcut-row {
+    display: flex; /* Cards lado a lado */
+    gap: 24px; /* Espaçamento entre cards */
+    }
+
+/* CARD DE ATALHO - Estrutura individual de cada atalho */
+    .shortcut-card {
+    flex: 1; /* Ocupa espaço igual entre cards */
+    background: #fff; /* Fundo branco */
+    border-radius: 12px; /* Bordas arredondadas */
+    box-shadow: var(--shadow-card); /* Sombra sutil */
+    padding: 32px 24px; /* Espaçamento interno */
+    display: flex; /* Layout flexível interno */
+    flex-direction: column; /* Conteúdo empilhado verticalmente */
+    justify-content: space-between; /* Distribui conteúdo */
+    min-width: 0; /* Permite quebra de texto */
+    transition: box-shadow 0.3s; /* Transição suave da sombra */
+}
+
+/* HOVER DO CARD - Efeito visual ao passar o mouse */
+.shortcut-card:hover {
+    box-shadow: var(--shadow-card-hover); /* Sombra mais intensa no hover */
+}
+/* TÍTULO DO CARD - Estilização do cabeçalho de cada atalho */
+.shortcut-card .card-title {
+    font-size: 1.25rem; /* Tamanho de fonte grande */
+    font-weight: 700; /* Peso da fonte bold */
+    margin-bottom: 12px; /* Espaço abaixo do título */
+    display: flex; /* Layout flexível para ícone + texto */
+    align-items: center; /* Alinha ícone e texto verticalmente */
+    gap: 8px; /* Espaço entre ícone e texto */
+}
+
+/* TEXTO DO CARD - Descrição de cada atalho */
+.shortcut-card .card-text {
+    font-size: 1rem; /* Tamanho de fonte padrão */
+    margin-bottom: 18px; /* Espaço abaixo do texto */
+    color: #444; /* Cor cinza para texto secundário */
+}
+
+/* BOTÃO DO CARD - Estilização do botão de ação */
+.shortcut-card .btn {
+    font-size: 1rem; /* Tamanho de fonte do botão */
+    font-weight: 600; /* Peso da fonte semi-bold */
+    display: inline-block; /* Permite largura automática */
+    min-width: unset; /* Remove largura mínima */
+    width: auto; /* Largura baseada no conteúdo */
+    padding-left: 32px; /* Padding horizontal esquerdo */
+    padding-right: 32px; /* Padding horizontal direito */
+}
+
+/* ÍCONE TROFÉU - Cor azul para ícones de conquistas */
+.trofeu-icon{
+    color: var(--blue-color); /* Aplica cor azul do tema */
+}
+
+/* ÍCONE AGENDA - Cor laranja para ícones de eventos */
+.agenda-icon{
+    color: var(--orange-color); /* Aplica cor laranja do tema */
+}
+
+/* BORDA ESPECIAL - Destaca cards importantes com borda laranja */
+.borda-card{
+    border-color: var(--orange-color) !important; /* Força cor laranja na borda */
+}
+
+/* HOVER BORDA ESPECIAL - Efeito de fundo ao passar o mouse */
+.borda-card:hover{
+    background: var(--orange-color-opacity) !important; /* Aplica fundo laranja transparente */
+}
+
+/* SEÇÃO DE BOAS-VINDAS - Container principal da mensagem de boas-vindas */
+.welcome-section {
+    text-align: center; /* Centraliza todo o conteúdo */
+    margin-bottom: 40px; /* Espaço abaixo da seção */
+    padding: 60px 40px; /* Espaçamento interno generoso */
+    background: transparent; /* Fundo transparente */
+}
+
+/* CONTAINER DO TEXTO - Organiza o título de boas-vindas */
+.welcome-text {
+    display: flex; /* Layout flexível */
+    flex-direction: column; /* Empilha elementos verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    width: 100%; /* Ocupa toda largura disponível */
+    gap: 0px; /* Sem espaçamento entre elementos */
+}
+
+/* TÍTULO PRINCIPAL - Frase de boas-vindas com gradiente animado */
+.welcome-title {
+    font-family: Montserrat; /* Fonte personalizada */
+    font-size: 74px; /* Tamanho grande para impacto visual */
+    font-style: normal; /* Estilo normal da fonte */
+    font-weight: 900; /* Peso extra-bold para destaque */
+    /* GRADIENTE ANIMADO - Cria efeito de cores em movimento */
+    background: linear-gradient(270deg, #3a00ff, #a000ff, #ff6a00, #3a00ff); /* Gradiente com 4 cores */
+    background-size: 400% 400%; /* Tamanho do gradiente para animação */
+    -webkit-background-clip: text; /* Aplica gradiente apenas ao texto (WebKit) */
+    background-clip: text; /* Aplica gradiente apenas ao texto (padrão) */
+    -webkit-text-fill-color: transparent; /* Remove cor do texto para mostrar gradiente (WebKit) */
+    margin: 0; /* Remove margens padrão */
+    line-height: 0.8; /* Altura de linha compacta */
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde texto que vaza */
+    text-overflow: ellipsis; /* Adiciona "..." se texto for muito longo */
+    animation: gradientMove 10s ease infinite; /* Aplica animação do gradiente */
+}
+
+
+/* ============================================================================
+   3. SEÇÃO DE BOAS-VINDAS
+   ============================================================================ */
+
+/* (Estilos já definidos nas linhas 105-208) */
+
+
+/* ============================================================================
+   4. CARROSSEL E SLIDES
+   ============================================================================ */
+
+/* --------------------------------------------------------------------------
+   4.1. CONFIGURAÇÃO BASE DO CARROSSEL
+   -------------------------------------------------------------------------- */
+
+/* CONTAINER PRINCIPAL - Define o carrossel com espaço para efeitos 3D */
+.carousel {
+    margin-bottom: 60px; /* Espaço inferior para imagens que vazam do card */
+}
+
+/* INNER DO CARROSSEL - Permite que elementos vazem para fora dos limites */
+    .carousel-inner {
+    overflow: visible; /* CRÍTICO: Permite que imagens vazem para criar efeito 3D */
+}
+
+
+/* --------------------------------------------------------------------------
+   4.2. ANIMAÇÕES DO CARROSSEL (EFEITO FADE)
+   -------------------------------------------------------------------------- */
+
+/* ITEM DO CARROSSEL - Configuração base para efeito fade */
 .carousel-fade .carousel-item {
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: block;
+    opacity: 0; /* Invisível por padrão */
+    transition: opacity 0.1s ease-in-out; /* Transição suave de opacidade */
+    position: absolute; /* Posicionamento absoluto para sobreposição */
+    top: 0; /* Alinhamento superior */
+    left: 0; /* Alinhamento esquerdo */
+    width: 100%; /* Largura total */
+    display: block; /* Exibe como bloco */
 }
 
+/* PRIMEIRO ITEM - Posicionamento relativo para não sobrepor */
 .carousel-fade .carousel-item:first-child {
-    position: relative;
+    position: relative; /* Posicionamento normal para o primeiro slide */
 }
 
+/* ITEM ATIVO - Slide visível no momento */
 .carousel-fade .carousel-item.active {
-    opacity: 1;
-    position: relative;
+    opacity: 1; /* Totalmente visível */
+    position: relative; /* Posicionamento normal */
 }
 
-/* Animação suave para imagens dos personagens */
+/* IMAGENS DOS PERSONAGENS - Animação de entrada suave */
 .carousel-item .character-image-container img {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 0; /* Invisível inicialmente */
+    transform: scale(0.9); /* Ligeiramente menor */
+    transition: opacity 0.4s ease, transform 0.4s ease; /* Transição suave */
 }
 
+/* IMAGENS ATIVAS - Personagens visíveis no slide ativo */
 .carousel-item.active .character-image-container img {
-    opacity: 1;
-    transform: scale(1);
+    opacity: 1; /* Totalmente visível */
+    transform: scale(1); /* Tamanho normal */
 }
 
-/* Animação de entrada para o calendário */
+/* CARD DO CALENDÁRIO - Animação de entrada do slide laranja */
 .carousel-item .calendar-card {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0; /* Invisível inicialmente */
+    transform: translateY(30px) scale(0.95); /* Posicionado abaixo e menor */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Transição suave */
 }
 
+/* CARD ATIVO - Calendário visível no slide ativo */
 .carousel-item.active .calendar-card {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    opacity: 1; /* Totalmente visível */
+    transform: translateY(0) scale(1); /* Posição e tamanho normais */
 }
 
-/* Animação de entrada para o card branco */
+/* CARD BRANCO - Animação de entrada do slide branco */
 .carousel-item .custom-card {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0; /* Invisível inicialmente */
+    transform: translateY(30px) scale(0.95); /* Posicionado abaixo e menor */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Transição suave */
 }
 
+/* CARD ATIVO - Card branco visível no slide ativo */
 .carousel-item.active .custom-card {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    opacity: 1; /* Totalmente visível */
+    transform: translateY(0) scale(1); /* Posição e tamanho normais */
 }
 
-/* Animação de entrada para o texto do calendário */
+/* TEXTO DO CALENDÁRIO - Animação de entrada lateral */
 .carousel-item .calendar-text {
-    opacity: 0;
-    transform: translateX(-30px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    transition-delay: 0.05s;
+    opacity: 0; /* Invisível inicialmente */
+    transform: translateX(-30px); /* Posicionado à esquerda */
+    transition: opacity 0.4s ease, transform 0.4s ease; /* Transição suave */
+    transition-delay: 0.05s; /* Pequeno atraso para efeito escalonado */
 }
 
+/* TEXTO ATIVO - Texto do calendário visível no slide ativo */
 .carousel-item.active .calendar-text {
-    opacity: 1;
-    transform: translateX(0);
+    opacity: 1; /* Totalmente visível */
+    transform: translateX(0); /* Posição normal */
 }
 
-/* Animação de entrada para o widget do calendário */
+/* WIDGET DO CALENDÁRIO - Animação de entrada da direita */
 .carousel-item .calendar-widget {
-    opacity: 0;
-    transform: translateX(30px) scale(0.9);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    transition-delay: 0.1s;
+    opacity: 0; /* Invisível inicialmente */
+    transform: translateX(30px) scale(0.9); /* Posicionado à direita e menor */
+    transition: opacity 0.4s ease, transform 0.4s ease; /* Transição suave */
+    transition-delay: 0.1s; /* Atraso para efeito escalonado */
 }
 
+/* WIDGET ATIVO - Widget do calendário visível no slide ativo */
 .carousel-item.active .calendar-widget {
-    opacity: 1;
-    transform: translateX(0) scale(1);
+    opacity: 1; /* Totalmente visível */
+    transform: translateX(0) scale(1); /* Posição e tamanho normais */
 }
 
 
-/* BASE DO NOSSO CARD CUSTOMIZADO */
+/* --------------------------------------------------------------------------
+   4.3. CARDS BASE DO CARROSSEL
+   -------------------------------------------------------------------------- */
+
+/* CARD BASE - Estrutura principal para todos os slides do carrossel */
 .custom-card {
-    height: 450px; /* Altura fixa igual ao calendário */
-    width: 90%;   /* Ocupa 90% da largura do carrossel */
-    margin: 0 auto; /* Centraliza o card no slide */
-    border-radius: 10px;
-    box-shadow: var(--shadow-carousel);
-    padding: 30px 40px;
-    display: flex;
-    align-items: center;
-    position: relative; /* ESSENCIAL: para o posicionamento da imagem */
-    box-sizing: border-box;
+    height: 450px; /* Altura fixa para manter consistência visual */
+    width: 90%; /* Ocupa 90% da largura disponível */
+    margin: 0 auto; /* Centraliza o card horizontalmente */
+    border-radius: 10px; /* Bordas arredondadas para design moderno */
+    box-shadow: var(--shadow-carousel); /* Aplica sombra definida nas variáveis */
+    padding: 30px 40px; /* Espaçamento interno generoso */
+    display: flex; /* Ativa layout flexível para organizar conteúdo */
+    align-items: center; /* Centraliza conteúdo verticalmente */
+    position: relative; /* ESSENCIAL: Permite posicionamento absoluto das imagens 3D */
+    box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
 }
 
-/* Cores e estilos específicos dos cards */
+/* CARD LARANJA - Slide do calendário com fundo laranja */
+.orange-card {
+    background-color: var(--orange-color); /* Aplica cor laranja do tema */
+    color: white; /* Texto branco para contraste com fundo laranja */
+}
 
-/* Pretas no carrossel */
+/* CARD BRANCO - Slide branco com fundo neutro */
+.white-card {
+    background-color: #fff; /* Fundo branco limpo */
+    color: #333; /* Texto escuro para contraste com fundo branco */
+}
+
+/* CARD AZUL - Slide azul com fundo da cor secundária */
+.blue-card {
+    background: var(--blue-color); /* Aplica cor azul do tema */
+    color: white; /* Texto branco para contraste com fundo azul */
+}
+
+/* --------------------------------------------------------------------------
+   4.4. CONTROLES DO CARROSSEL (SETAS DE NAVEGAÇÃO)
+   -------------------------------------------------------------------------- */
+
+/* ÍCONES DAS SETAS - Configuração de cor padrão */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  filter: invert(100%);
+    filter: invert(100%); /* Inverte cores para criar setas pretas por padrão */
 }
 
-/* Brancas apenas quando estiver sobre fundo laranja */
+/* SETAS EM CARD LARANJA - Ajuste de contraste para fundo laranja */
 .orange-card .carousel-control-prev-icon,
 .orange-card .carousel-control-next-icon {
-  filter: invert(0%);
+    filter: invert(0%); /* Remove inversão para manter setas brancas no fundo laranja */
 }
 
-/* Posicionar as setas do carrossel para fora do bloco */
+/* CONTROLES DE NAVEGAÇÃO - Área clicável das setas */
 .carousel-control-prev,
 .carousel-control-next {
-  width: 60px;
-  opacity: 1;
+    width: 60px; /* Define largura da área clicável */
+    opacity: 1; /* Mantém setas sempre visíveis */
 }
 
+/* SETA ESQUERDA - Posicionamento à esquerda do card */
 .carousel-control-prev {
-  left: -60px; /* Move a seta esquerda para fora do slide */
+    left: -60px; /* Posiciona 60px à esquerda do card (fora da área do card) */
 }
 
+/* SETA DIREITA - Posicionamento à direita do card */
 .carousel-control-next {
-  right: -60px; /* Move a seta direita para fora do slide */
+    right: -60px; /* Posiciona 60px à direita do card (fora da área do card) */
 }
 
-/* Ajuste para tablet */
-@media (max-width: 1024px) {
-  .carousel-control-prev {
-    left: -50px; /* Move a seta esquerda para fora do slide */
-  }
-  
-  .carousel-control-next {
-    right: -50px; /* Move a seta direita para fora do slide */
-  }
-}
 
-/* Ajuste para mobile - mantém o mesmo estilo */
-@media (max-width: 768px) {
-  .carousel-control-prev {
-    left: -40px; /* Move a seta esquerda para fora do slide */
-  }
-  
-  .carousel-control-next {
-    right: -40px; /* Move a seta direita para fora do slide */
-  }
-}
 
-.orange-card {
-    background-color: var(--orange-color);
-    color: white;
-}
-.white-card {
-    background-color: #fff;
-    color: #333;
-}
-.blue-card {
-    background: var(--blue-color);
-    color: white;
-}
 
+
+/* --------------------------------------------------------------------------
+   4.5. CONTEÚDO DOS SLIDES (TEXTOS E IMAGENS)
+   -------------------------------------------------------------------------- */
+
+/* Texto principal do card (títulos e destaque) */
 .text-content {
-    font-weight: 900;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-    flex-basis: 60%;
-    font-size: 3rem;
+    font-weight: 900; /* Negrito extra para impacto */
+    text-transform: uppercase; /* Todas maiúsculas */
+    position: relative; /* Para empilhamento com z-index */
+    z-index: 1; /* Fica ATRÁS da imagem (z-index: 2) */
+    flex-basis: 60%; /* Ocupa 60% da largura do card */
+    font-size: 3rem; /* Tamanho grande para destaque */
 }
 
+/* Parágrafo dentro do texto do card */
 .text-content p {
-    font-weight: 700;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-    flex-basis: 60%;
-    font-size: 1.5rem;
-    margin: 0;
+    font-weight: 700; /* Negrito */
+    text-transform: uppercase; /* Maiúsculas */
+    position: relative; /* Permite posicionamento com z-index */
+    z-index: 1; /* Atrás da imagem */
+    flex-basis: 60%; /* Ocupa 60% da largura do container */
+    font-size: 1.5rem; /* Menor que o título */
+    margin: 0; /* Remove margem padrão */
 }
 
+/* Título h2 dentro do card */
 .text-content h2 {
-    font-weight: 900;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-    flex-basis: 60%;
-    font-size: 3rem;
-    margin-top: 30px;
+    font-weight: 900; /* Negrito extra */
+    text-transform: uppercase; /* Maiúsculas */
+    position: relative; /* Permite posicionamento com z-index */
+    z-index: 1; /* Atrás da imagem */
+    flex-basis: 60%; /* Ocupa 60% da largura do container */
+    font-size: 3rem; /* Tamanho grande */
+    margin-top: 30px; /* Espaço acima */
 }
 
+/* Texto em destaque (palavra específica maior) */
 .highlight-text {
-    font-size: 4rem;
-    color: var(--blue-color);
-    margin-left: 30px;
+    font-size: 4rem; /* Muito grande para destaque */
+    color: var(--blue-color); /* Cor azul para contraste */
+    margin-left: 30px; /* Desloca para direita */
 }
 
-/* --- A MÁGICA DO EFEITO 3D ACONTECE AQUI --- */
+/* --------------------------------------------------------------------------
+   4.6. EFEITO 3D - IMAGENS QUE VAZAM DO CARD
+   --------------------------------------------------------------------------
+   
+   TÉCNICA USADA:
+   1. Card tem position: relative (linha 344)
+   2. Imagem tem position: absolute (libera do fluxo)
+   3. Imagem tem z-index: 2 (fica NA FRENTE do texto que é z-index: 1)
+   4. Valores negativos (top: -80px) fazem imagem vazar PARA FORA
+   
+   RESULTADO: Efeito 3D onde imagem "sai" do card
+   -------------------------------------------------------------------------- */
 
+/* Container da imagem - libera do fluxo normal */
 .character-image-container {
-    position: absolute; /* Libera o elemento do fluxo normal */
-    z-index: 2; /* Coloca a imagem NA FRENTE do texto */
+    position: absolute; /* CRÍTICO: remove do fluxo, permite posicionar livremente */
+    z-index: 2; /* FICA NA FRENTE do texto (z-index: 1) */
 }
 
-/* Estilo para a imagem que fica DENTRO do card (card laranja) */
+/* Imagem ESTÁTICA - fica DENTRO do card (Slide 2 - Laranja) */
 .static-character {
-    bottom: 0;
-    right: 40px;
-    width: 320px;
+    bottom: 0; /* Alinhado ao fundo do card */
+    right: 40px; /* 40px da borda direita */
+    width: 320px; /* Largura da imagem */
 }
 
-/* Responsividade para imagens estáticas */
-@media (max-width: 1200px) {
-    .static-character {
-        width: 300px;
-        right: 30px;
-    }
-}
 
-@media (max-width: 1000px) {
-    .static-character {
-        width: 280px;
-        right: 20px;
-    }
-}
 .static-character img {
-    width: 100%;
-    filter: drop-shadow(5px 15px 20px rgba(0, 0, 0, 0.6));
-    transition: transform 0.3s ease-in-out;
+    width: 100%; /* Ocupa toda largura do container */
+    filter: drop-shadow(5px 15px 20px rgba(0, 0, 0, 0.6)); /* Sombra realista embaixo */
+    transition: transform 0.3s ease-in-out; /* Transição suave para hover */
 }
 
-/* Estilo para a imagem que VAZA do card (card branco) */
+/* Imagem POPUP - VAZA do card (Slide 1 - Branco) - EFEITO 3D PRINCIPAL */
 .popup-character {
-    width: 390px; /* Tamanho da imagem */
-    top: -80px;   /* Move 60px PARA CIMA (fora do card) */
-    right: -40px; /* Move 40px PARA A DIREITA (fora do card) */
+    width: 390px; /* Largura da imagem */
+    top: -80px; /* VALOR NEGATIVO: move 80px PARA CIMA (sai do card) ← EFEITO 3D */
+    right: -40px; /* VALOR NEGATIVO: move 40px PARA DIREITA (sai do card) ← EFEITO 3D */
 }
 
-/* Responsividade para imagens popup */
-@media (max-width: 1200px) {
-    .popup-character {
-        width: 360px;
-        right: -30px;
-    }
-}
 
-@media (max-width: 1000px) {
-    .popup-character {
-        width: 330px;
-        right: -20px;
-        top: -70px;
-    }
-}
 .popup-character img {
-    width: 100%;
-    /* Sombra que segue o contorno da imagem transparente */
-    filter: drop-shadow(5px 10px 15px rgba(0, 0, 0, 0.3));
-    transition: transform 0.3s ease-in-out;
+    width: 100%; /* Ocupa toda largura do container */
+    filter: drop-shadow(5px 10px 15px rgba(0, 0, 0, 0.3)); /* Sombra suave que segue contorno (PNG transparente) */
+    transition: transform 0.3s ease-in-out; /* Transição suave */
 }
 
 .popup-character img:hover {
-    transform: scale(1.025); /* Move a imagem 10px para cima ao passar o mouse */
+    transform: scale(1.025); /* Aumenta 2.5% no hover para interatividade */
 }
 
-/* Estilos do texto do card branco (para ficar igual à imagem) */
-.card-text-body { 
-    font-size: 1.5rem; 
-    line-height: 1.3; 
-    margin-top: 20px; /* Desce o texto */
-}
-.text-orange { color: var(--orange-color); }
-.text-blue { color: var(--blue-color); }
-.gradient-text-orange { background: linear-gradient(90deg, #F28100, #c86c00); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.gradient-text-blue { background: linear-gradient(90deg, #0900FF, #004386); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-/* ===================================== */
-/* SEÇÃO DE EVENTOS - DASHBOARD USUÁRIO */
-/* ===================================== */
-
-
-.card-events-presence{
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: var(--shadow-card);
+/* Texto do corpo do card (menor que o título) */
+.card-text-body {
+    font-size: 1.5rem; /* Tamanho intermediário */
+    line-height: 1.3; /* Altura de linha para legibilidade */
+    margin-top: 20px; /* Espaço acima para separar do título */
 }
 
-.card-header{
-    background: var(--orange-color);
-    color: white;
+/* Classes utilitárias de cores para texto */
+.text-orange { 
+    color: var(--orange-color); /* Cor laranja da marca */
 }
 
-.card-events{
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: var(--shadow-card);
+.text-blue { 
+    color: var(--blue-color); /* Cor azul da marca */
 }
 
+/* Gradientes para texto (efeito especial) */
+.gradient-text-orange { 
+    background: linear-gradient(90deg, #F28100, #c86c00); /* Gradiente laranja */
+    -webkit-background-clip: text; /* Webkit: clipa fundo ao texto */
+    background-clip: text; /* Padrão: clipa fundo ao texto */
+    color: transparent; /* Texto transparente para ver gradiente */
+}
+
+.gradient-text-blue { 
+    background: linear-gradient(90deg, #0900FF, #004386); /* Gradiente azul */
+    -webkit-background-clip: text; /* Webkit */
+    background-clip: text; /* Padrão */
+    color: transparent; /* Texto transparente */
+}
+
+
+/* ============================================================================
+   7. EVENTOS E CATEGORIAS
+   ============================================================================ */
+
+/* --------------------------------------------------------------------------
+   7.1. CARDS DE EVENTOS COM PRESENÇA MARCADA
+   -------------------------------------------------------------------------- */
+
+
+/* Card de eventos onde o usuário marcou presença */
+.card-events-presence {
+    width: 100%; /* Largura total do container */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: var(--shadow-card); /* Sombra padrão */
+}
+
+/* Cabeçalho do card de eventos - cor laranja */
+.card-header {
+    background: var(--orange-color); /* Fundo laranja (cor da marca) */
+    color: white; /* Texto branco para contraste */
+}
+
+/* Card genérico de eventos */
+.card-events {
+    width: 100%; /* Largura total */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: var(--shadow-card); /* Sombra padrão */
+}
+
+/* Badge do usuário (tipo de conta, role, etc) */
 .user-badge {
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 10px 20px; /* Espaçamento interno */
+    border-radius: 20px; /* Bordas bem arredondadas (pill shape) */
 }
 
+/* Título da seção de eventos com ícone */
 .event-section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    font-weight: 700;
-    font-size: 1.3rem;
+    display: flex; /* Layout flexível */
+    align-items: center; /* Alinha ícone e texto verticalmente */
+    gap: 10px; /* Espaço entre ícone e texto */
+    margin-bottom: 20px; /* Espaço abaixo */
+    font-weight: 700; /* Negrito */
+    font-size: 1.3rem; /* Tamanho do texto */
 }
 
 .event-section-title i {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Ícone um pouco maior que o texto */
 }
 
 /* Cards de eventos clicáveis com hover effect */
 .event-clickable {
-    transition: all 0.3s ease;
-    border-width: 2px !important;
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
+    border-width: 2px !important; /* Borda mais espessa para destaque */
 }
 
 .event-clickable:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-5px); /* Move 5px para cima no hover */
+    box-shadow: var(--shadow-card-hover); /* Intensifica a sombra no hover */
 }
 
 /* Cards esportivos - tema verde/laranja */
 .event-clickable.border-success {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); /* Gradiente verde claro */
 }
 
 .event-clickable.border-success:hover {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    border-color: var(--orange-color) !important;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); /* Gradiente verde mais intenso */
+    border-color: var(--orange-color) !important; /* Borda laranja no hover */
 }
 
 /* Cards não esportivos - tema azul */
 .event-clickable.border-primary {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%); /* Gradiente azul claro */
 }
 
 .event-clickable.border-primary:hover {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    border-color: var(--blue-color) !important;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); /* Gradiente azul mais intenso */
+    border-color: var(--blue-color) !important; /* Borda azul no hover */
 }
 
 /* ===================================== */
 /* SEÇÕES DE CATEGORIAS - PÁGINA INICIAL */
 /* ===================================== */
 
+/* SEÇÃO DE CATEGORIA - Container principal das categorias de eventos */
 .category-section {
-    background: white;
-    border-radius: 15px;
-    padding: 40px;
-    margin-bottom: 30px;
-    box-shadow: var(--shadow-card);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    background: white; /* Fundo branco para contraste */
+    border-radius: 15px; /* Bordas arredondadas */
+    padding: 40px; /* Espaçamento interno generoso */
+    margin-bottom: 30px; /* Espaço entre seções */
+    box-shadow: var(--shadow-card); /* Sombra sutil */
+    transition: all 0.3s ease; /* Transições suaves */
+    position: relative; /* Permite posicionamento absoluto dos pseudo-elementos */
+    overflow: hidden; /* Esconde elementos que vazam */
 }
 
+/* BARRA LATERAL - Pseudo-elemento decorativo da categoria */
 .category-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 5px;
-    height: 100%;
-    transition: width 0.3s ease;
+    content: ''; /* Cria elemento vazio */
+    position: absolute; /* Posicionamento absoluto */
+    top: 0; /* Alinhamento superior */
+    left: 0; /* Alinhamento esquerdo */
+    width: 5px; /* Largura inicial da barra */
+    height: 100%; /* Altura total da seção */
+    transition: width 0.3s ease; /* Transição suave da largura */
 }
 
+/* HOVER DA SEÇÃO - Efeito de elevação ao passar o mouse */
 .category-section:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-5px); /* Move 5px para cima */
+    box-shadow: var(--shadow-card-hover); /* Intensifica a sombra */
 }
 
+/* HOVER DA BARRA - Expande a barra lateral no hover */
 .category-section:hover::before {
-    width: 10px;
+    width: 10px; /* Dobra a largura da barra */
 }
 
-/* Seção de Eventos Esportivos - Laranja */
+/* CATEGORIA ESPORTIVA - Seção de eventos esportivos com tema laranja */
 .category-section.sports {
-    border-left: 5px solid var(--orange-color);
+    border-left: 5px solid var(--orange-color); /* Borda esquerda laranja para identificação */
 }
 
+/* BARRA LATERAL ESPORTIVA - Pseudo-elemento da categoria esportiva */
 .category-section.sports::before {
-    background: var(--orange-color);
+    background: var(--orange-color); /* Cor laranja para a barra lateral */
 }
 
+/* ÍCONE DA CATEGORIA ESPORTIVA - Ícone circular com gradiente laranja */
 .category-section.sports .category-icon {
-    background: linear-gradient(135deg, var(--orange-color), #ff9800);
-    color: white;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin: 0 auto 20px;
-    box-shadow: var(--shadow-light);
+    background: linear-gradient(135deg, var(--orange-color), #ff9800); /* Gradiente laranja */
+    color: white; /* Texto branco para contraste */
+    width: 80px; /* Largura fixa */
+    height: 80px; /* Altura fixa */
+    border-radius: 50%; /* Formato circular */
+    display: flex; /* Layout flexível */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    font-size: 2.5rem; /* Tamanho grande do ícone */
+    margin: 0 auto 20px; /* Centraliza e adiciona espaço abaixo */
+    box-shadow: var(--shadow-light); /* Sombra sutil */
 }
 
-/* Seção de Eventos Não Esportivos - Azul */
+/* CATEGORIA NÃO ESPORTIVA - Seção de eventos não esportivos com tema azul */
 .category-section.non-sports {
-    border-left: 5px solid var(--blue-color);
+    border-left: 5px solid var(--blue-color); /* Borda esquerda azul para identificação */
 }
 
+/* BARRA LATERAL NÃO ESPORTIVA - Pseudo-elemento da categoria não esportiva */
 .category-section.non-sports::before {
-    background: var(--blue-color);
+    background: var(--blue-color); /* Cor azul para a barra lateral */
 }
 
+/* ÍCONE DA CATEGORIA NÃO ESPORTIVA - Ícone circular com gradiente azul */
 .category-section.non-sports .category-icon {
-    background: linear-gradient(135deg, var(--blue-color), #2196f3);
-    color: white;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin: 0 auto 20px;
-    box-shadow: var(--shadow-light);
+    background: linear-gradient(135deg, var(--blue-color), #2196f3); /* Gradiente azul */
+    color: white; /* Texto branco para contraste */
+    width: 80px; /* Largura fixa */
+    height: 80px; /* Altura fixa */
+    border-radius: 50%; /* Formato circular */
+    display: flex; /* Layout flexível */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    font-size: 2.5rem; /* Tamanho grande do ícone */
+    margin: 0 auto 20px; /* Centraliza e adiciona espaço abaixo */
+    box-shadow: var(--shadow-light); /* Sombra sutil */
 }
 
-/* Seção de Regulamentos - Roxo */
+/* CATEGORIA REGULAMENTOS - Seção de regulamentos com tema roxo */
 .category-section.regulations {
-    border-left: 5px solid #9c27b0;
+    border-left: 5px solid #9c27b0; /* Borda esquerda roxa para identificação */
 }
 
+/* BARRA LATERAL REGULAMENTOS - Pseudo-elemento da categoria regulamentos */
 .category-section.regulations::before {
-    background: #9c27b0;
+    background: #9c27b0; /* Cor roxa para a barra lateral */
 }
 
+/* ÍCONE DA CATEGORIA REGULAMENTOS - Ícone circular com gradiente roxo */
 .category-section.regulations .category-icon {
-    background: linear-gradient(135deg, #9c27b0, #ba68c8);
-    color: white;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin: 0 auto 20px;
-    box-shadow: var(--shadow-light);
+    background: linear-gradient(135deg, #9c27b0, #ba68c8); /* Gradiente roxo */
+    color: white; /* Texto branco para contraste */
+    width: 80px; /* Largura fixa */
+    height: 80px; /* Altura fixa */
+    border-radius: 50%; /* Formato circular */
+    display: flex; /* Layout flexível */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    font-size: 2.5rem; /* Tamanho grande do ícone */
+    margin: 0 auto 20px; /* Centraliza e adiciona espaço abaixo */
+    box-shadow: var(--shadow-light); /* Sombra sutil */
 }
 
+/* TÍTULO DA CATEGORIA - Nome da categoria de eventos */
 .category-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    text-align: center;
-    margin-bottom: 15px;
-    text-transform: uppercase;
+    font-size: 1.8rem; /* Tamanho grande para destaque */
+    font-weight: 800; /* Peso extra-bold */
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 15px; /* Espaço abaixo do título */
+    text-transform: uppercase; /* Converte para maiúsculas */
 }
 
+/* DESCRIÇÃO DA CATEGORIA - Texto explicativo da categoria */
 .category-description {
-    text-align: center;
-    color: #666;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    text-align: center; /* Centraliza o texto */
+    color: #666; /* Cor cinza para texto secundário */
+    font-size: 1.1rem; /* Tamanho de fonte legível */
+    line-height: 1.6; /* Altura de linha para boa legibilidade */
 }
 
 /* ===================================== */
@@ -631,219 +724,212 @@ body{
 /* ===================================== */
 
 .dashboard-shortcut-card {
-    border: none;
-    border-radius: 15px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    position: relative;
+    border: none; /* Remove borda padrão */
+    border-radius: 15px; /* Bordas bem arredondadas */
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
+    overflow: hidden; /* Esconde elementos que vazam */
+    position: relative; /* Permite posicionamento absoluto dos pseudo-elementos */
 }
 
 .dashboard-shortcut-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+    content: ''; /* Cria elemento vazio para efeito de brilho */
+    position: absolute; /* Posicionamento absoluto */
+    top: 0; /* Alinhamento superior */
+    left: -100%; /* Posicionado fora da área visível */
+    width: 100%; /* Largura total do card */
+    height: 100%; /* Altura total do card */
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); /* Gradiente de brilho */
+    transition: left 0.5s ease; /* Transição suave do movimento */
 }
 
 .dashboard-shortcut-card:hover::before {
-    left: 100%;
+    left: 100%; /* Move o brilho da esquerda para direita */
 }
 
 .dashboard-shortcut-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-10px) scale(1.02); /* Move para cima e aumenta ligeiramente */
+    box-shadow: var(--shadow-card-hover); /* Intensifica a sombra */
 }
 
 .dashboard-shortcut-card .card-title i {
-    font-size: 1.5rem;
-    margin-right: 10px;
+    font-size: 1.5rem; /* Tamanho do ícone no título */
+    margin-right: 10px; /* Espaço entre ícone e texto */
 }
 
 .dashboard-shortcut-card .btn {
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-weight: 600; /* Peso semi-bold do botão */
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
 }
 
 .dashboard-shortcut-card:hover .btn {
-    transform: scale(1.05);
+    transform: scale(1.05); /* Aumenta 5% no hover */
 }
 
 /* ===================================== */
 /* CALENDÁRIO MINI NO CAROUSEL */
 /* ===================================== */
 
+/* CONTAINER DO MINI-CALENDÁRIO - Widget flutuante no slide do calendário */
 .mini-calendar-container {
-    position: absolute;
-    right: 40px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: white;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: var(--shadow-card);
-    width: 300px;
-    max-height: 320px;
-    transition: all 0.4s ease;
-    z-index: 3;
-    color: #000;
+    position: absolute; /* Posicionamento absoluto para flutuar sobre o card */
+    right: 40px; /* Distância da borda direita do card */
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%); /* Ajuste fino para centralização perfeita */
+    background: white; /* Fundo branco para contraste */
+    border-radius: 12px; /* Bordas arredondadas */
+    padding: 12px; /* Espaçamento interno */
+    box-shadow: var(--shadow-card); /* Sombra sutil */
+    width: 300px; /* Largura fixa */
+    max-height: 320px; /* Altura máxima para evitar overflow */
+    transition: all 0.4s ease; /* Transições suaves para hover */
+    z-index: 3; /* Camada acima de outros elementos */
+    color: #000; /* Texto preto para contraste */
 }
 
-/* Responsividade para mini-calendar */
-@media (max-width: 1200px) {
-    .mini-calendar-container {
-        width: 280px;
-        right: 30px;
-    }
-}
 
-@media (max-width: 1000px) {
-    .mini-calendar-container {
-        width: 260px;
-        right: 20px;
-    }
-}
 
+/* HOVER DO MINI-CALENDÁRIO - Efeito de escala ao passar o mouse */
 .mini-calendar-container:hover {
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-50%) scale(1.05); /* Aumenta ligeiramente o tamanho */
+    box-shadow: var(--shadow-card-hover); /* Intensifica a sombra */
 }
 
+/* CLICK DO MINI-CALENDÁRIO - Efeito de pressão ao clicar */
 .mini-calendar-container:active {
-    transform: translateY(-50%) scale(1.02);
+    transform: translateY(-50%) scale(1.02); /* Efeito de "pressionado" */
 }
 
+/* CABEÇALHO DO CALENDÁRIO - Área com título e navegação */
 .mini-calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e9ecef;
+    display: flex; /* Layout flexível */
+    justify-content: space-between; /* Título à esquerda, botões à direita */
+    align-items: center; /* Alinha verticalmente */
+    margin-bottom: 10px; /* Espaço abaixo */
+    padding-bottom: 8px; /* Espaço interno inferior */
+    border-bottom: 1px solid #e9ecef; /* Linha separadora sutil */
 }
 
+/* TÍTULO DO CALENDÁRIO - Nome do mês/ano */
 .mini-calendar-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--blue-color);
-    text-transform: capitalize;
+    font-size: 0.9rem; /* Tamanho pequeno */
+    font-weight: 700; /* Peso bold */
+    color: var(--blue-color); /* Cor azul do tema */
+    text-transform: capitalize; /* Primeira letra maiúscula */
 }
 
+/* BOTÕES DE NAVEGAÇÃO - Setas para mudar mês */
 .mini-calendar-nav-btn {
-    background: #f0f0f0;
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #666;
-    font-size: 0.85rem;
+    background: #f0f0f0; /* Fundo cinza claro */
+    border: none; /* Remove borda padrão */
+    width: 28px; /* Largura fixa */
+    height: 28px; /* Altura fixa */
+    border-radius: 50%; /* Formato circular */
+    display: flex; /* Layout flexível para centralizar ícone */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    cursor: pointer; /* Cursor de clique */
+    transition: all 0.3s ease; /* Transição suave */
+    color: #666; /* Cor cinza para o ícone */
+    font-size: 0.85rem; /* Tamanho pequeno do ícone */
 }
 
 .mini-calendar-nav-btn:hover {
-    background: var(--blue-color);
-    color: white;
-    transform: scale(1.1);
+    background: var(--blue-color); /* Fundo azul no hover */
+    color: white; /* Texto branco no hover */
+    transform: scale(1.1); /* Aumenta 10% no hover */
 }
 
 .mini-calendar-weekdays {
-    text-align: center;
-    font-weight: 600;
-    color: #666;
-    font-size: 0.65rem;
-    margin-bottom: 8px;
+    text-align: center; /* Centraliza os dias da semana */
+    font-weight: 600; /* Peso semi-bold */
+    color: #666; /* Cor cinza para texto secundário */
+    font-size: 0.65rem; /* Tamanho pequeno */
+    margin-bottom: 8px; /* Espaço abaixo */
 }
 
 .mini-calendar-days {
-    cursor: pointer;
+    cursor: pointer; /* Cursor de clique para interatividade */
 }
 
 .mini-calendar-cell {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 3px;
-    min-height: 32px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease;
+    background: #fff; /* Fundo branco */
+    border: 1px solid #e9ecef; /* Borda sutil */
+    border-radius: 6px; /* Bordas arredondadas */
+    padding: 3px; /* Espaçamento interno mínimo */
+    min-height: 32px; /* Altura mínima para consistência */
+    display: flex; /* Layout flexível */
+    flex-direction: column; /* Organiza conteúdo verticalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    transition: all 0.2s ease; /* Transição suave para hover */
 }
 
 .mini-calendar-cell.empty-cell {
-    background: transparent;
-    border: none;
+    background: transparent; /* Fundo transparente para células vazias */
+    border: none; /* Remove borda para células vazias */
 }
 
 .mini-calendar-day-number {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 2px;
+    font-size: 0.75rem; /* Tamanho pequeno do número do dia */
+    font-weight: 700; /* Peso bold */
+    color: #000; /* Cor preta */
+    margin-bottom: 2px; /* Espaço abaixo do número */
 }
 
 .mini-calendar-day-badge {
-    text-align: center;
+    text-align: center; /* Centraliza o badge */
 }
 
 .mini-calendar-day-badge .badge {
-    padding: 2px 6px;
-    font-size: 0.5rem;
-    border-radius: 8px;
+    padding: 2px 6px; /* Espaçamento interno do badge */
+    font-size: 0.5rem; /* Tamanho muito pequeno */
+    border-radius: 8px; /* Bordas arredondadas */
 }
 
 .mini-calendar-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid #e9ecef;
-    font-size: 0.7rem;
-    color: #000;
+    display: flex; /* Layout flexível */
+    flex-direction: column; /* Organiza itens verticalmente */
+    gap: 5px; /* Espaçamento entre itens */
+    margin-top: 10px; /* Espaço acima */
+    padding-top: 8px; /* Espaçamento interno superior */
+    border-top: 1px solid #e9ecef; /* Linha separadora */
+    font-size: 0.7rem; /* Tamanho pequeno */
+    color: #000; /* Cor preta */
 }
 
 .mini-calendar-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; /* Layout flexível */
+    align-items: center; /* Centraliza verticalmente */
+    gap: 6px; /* Espaçamento entre ícone e texto */
 }
 
 .mini-calendar-badge {
-    padding: 3px 6px;
-    border-radius: 4px;
+    padding: 3px 6px; /* Espaçamento interno do badge */
+    border-radius: 4px; /* Bordas arredondadas */
 }
 
 /* Indicador de clique para o mini calendar */
 .mini-calendar-container::after {
-    content: '👆 Clique para ver a agenda completa';
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+    content: '👆 Clique para ver a agenda completa'; /* Texto do indicador */
+    position: absolute; /* Posicionamento absoluto */
+    bottom: -25px; /* 25px abaixo do container */
+    left: 50%; /* Centraliza horizontalmente */
+    transform: translateX(-50%); /* Ajuste fino para centralização */
+    background: rgba(0, 0, 0, 0.8); /* Fundo preto semi-transparente */
+    color: white; /* Texto branco */
+    padding: 5px 15px; /* Espaçamento interno */
+    border-radius: 20px; /* Bordas bem arredondadas */
+    font-size: 0.7rem; /* Tamanho pequeno */
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde texto que vaza */
+    text-overflow: ellipsis; /* Adiciona "..." se texto for muito longo */
+    opacity: 0; /* Invisível por padrão */
+    transition: opacity 0.3s ease; /* Transição suave da opacidade */
+    pointer-events: none; /* Não interfere com cliques */
 }
 
 .mini-calendar-container:hover::after {
-    opacity: 1;
+    opacity: 1; /* Torna visível no hover */
 }
 
 /* ===================================== */
@@ -852,267 +938,639 @@ body{
 
 /* Smooth scroll behavior */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: smooth; /* Rolagem suave para navegação por âncoras */
 }
 
 /* Transição suave para todos os botões */
 .btn {
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
 }
 
 .btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Move 2px para cima no hover */
 }
 
 /* Cards com sombra suave */
 .card {
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
 }
 
 /* Efeito de brilho nos badges */
 .badge {
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
 }
 
 .badge:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-light);
+    transform: scale(1.05); /* Aumenta 5% no hover */
+    box-shadow: var(--shadow-light); /* Adiciona sombra sutil */
 }
 
 /* Melhoria visual dos inputs em foco */
 .form-control:focus {
-    transform: scale(1.01);
+    transform: scale(1.01); /* Aumenta ligeiramente no foco */
 }
 
 /* Transição suave para imagens */
 img {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Transição suave para transformações */
 }
 
 /* ===================================== */
 /* RESPONSIVIDADE MOBILE */
 /* ===================================== */
 
-@media (max-width: 768px) {
-    /* Welcome Section - Mobile */
-    .welcome-section {
-        padding: 40px 20px;
-        margin-bottom: 30px;
+
+/* ============================================================================
+   9.5. IPAD MINI (768px exato)
+   ============================================================================
+   
+   DISPOSITIVO: iPad Mini (768px × 1024px)
+   ESTRATÉGIA: Breakpoint específico para este dispositivo
+   MOTIVO: Precisa de tamanhos menores que iPad Air (820px)
+   
+   ============================================================================ */
+
+@media (min-width: 768px) and (max-width: 768px) {
+    
+    /* --- FRASE DE BOAS-VINDAS --- */
+    .welcome-title {
+        font-size: clamp(48px, 6vw, 52px) !important; /* MENOR que iPad Air (54-62px) */
+        line-height: 1.15 !important; /* Altura de linha confortável */
+        word-spacing: -2px !important; /* Reduz espaço entre palavras para caber */
+        letter-spacing: -0.4px !important; /* Reduz espaço entre letras */
     }
     
-    .welcome-title {
-        font-size: 36px;
-        white-space: nowrap;
+    /* --- SLIDE 2 (CALENDÁRIO LARANJA) --- */
+    /* Textos do calendário - proporcionais ao título menor */
+    .calendar-text-container .text-line {
+        font-size: 22px !important; /* Menor que iPad Air (24px) */
+        line-height: 1.2; /* Altura de linha */
     }
-
-    /* Cards do carousel */
-    .custom-card {
-        height: 300px;
-        width: 95%;
-        padding: 20px 25px;
+    
+    .calendar-text-final .highlight {
+        font-size: 34px !important; /* Palavra "NADA" - Menor que iPad Air (36px) */
     }
-
-    .text-content {
-        font-size: 2rem;
-        flex-basis: 100%;
-    }
-
-    .text-content h2 {
-        font-size: 2rem;
-    }
-
-    .text-content p {
-        font-size: 1.2rem;
-    }
-
-    .highlight-text {
-        font-size: 2.5rem;
-        margin-left: -10px;
-    }
-
-    /* Imagens 3D - ajuste para mobile */
+    
+    /* --- IMAGENS 3D --- */
+    /* Imagem estática (fica dentro do card laranja) */
     .static-character {
-        width: 200px;
-        right: -40px;
-        bottom: -10px;
+        width: 300px !important; /* Menor que iPad Air (310px) */
+        right: 25px; /* Posição ajustada */
     }
-
+    
+    /* Imagem popup (vaza do card branco) */
     .popup-character {
-        width: 220px;
-        top: -100px;
-        right: -40px;
+        width: 350px !important; /* Menor que iPad Air (360px) */
+        right: -25px; /* Vaza para direita */
+        top: -75px; /* Vaza para cima */
     }
-
-    /* Seções de categoria */
-    .category-section {
-        padding: 25px;
+    
+    /* --- CALENDAR CARD --- */
+    .calendar-card {
+        padding: 30px 34px !important; /* Padding menor que iPad Air */
     }
-
-    .category-icon {
-        width: 60px !important;
-        height: 60px !important;
-        font-size: 2rem !important;
-    }
-
-    .category-title {
-        font-size: 1.4rem;
-    }
-
-    .category-description {
-        font-size: 1rem;
-    }
-
-    /* Cards de eventos */
-    .event-section-title {
-        font-size: 1.1rem;
-    }
-
-    .event-section-title i {
-        font-size: 1.3rem;
-    }
-
-    /* Cards de atalhos */
-    .dashboard-shortcut-card {
-        margin-bottom: 20px;
-    }
-
-    /* Calendário mini no carousel - mobile */
-    .mini-calendar-container {
-        width: 260px;
-        padding: 10px;
-        right: 10px;
-        max-height: 280px;
-    }
-
-    .mini-calendar-title {
-        font-size: 0.8rem;
-    }
-
-    .mini-calendar-nav-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 0.75rem;
-    }
-
-    .mini-calendar-cell {
-        min-height: 28px;
-        padding: 2px;
-    }
-
-    .mini-calendar-day-number {
-        font-size: 0.7rem;
-    }
-
-    .mini-calendar-weekdays {
-        font-size: 0.6rem;
-    }
-
-    .mini-calendar-legend {
-        font-size: 0.65rem;
-        gap: 4px;
+    
+    /* Calendar widget (mini calendário) */
+    .calendar-widget {
+        width: 310px !important; /* Menor que iPad Air (320px) */
+        right: 0px; /* Alinhado à direita */
     }
 }
 
-@media (max-width: 576px) {
-    .title-dashboard h1 {
-        font-size: 1.5rem;
+/* ============================================================================
+   9.6. TABLETS PEQUENOS (769-900px)
+   ============================================================================
+   
+   DISPOSITIVOS: iPad Air (820px), Tablets Android similares
+   ESTRATÉGIA: Overrides específicos para evitar interferência de breakpoints maiores
+   CONFLITOS RESOLVIDOS:
+   - max-width: 1024px tentaria aplicar font-size: 20px → forçamos 24px
+   - max-width: 1000px tentaria aplicar width: 280px → forçamos 310px
+   - max-width: 900px tentaria aplicar padding: 30px → forçamos 32px
+   
+   ============================================================================ */
+
+@media (min-width: 769px) and (max-width: 900px) {
+    
+    /* --- FRASE DE BOAS-VINDAS --- */
+    .welcome-title {
+        font-size: clamp(54px, 6.6vw, 62px) !important; /* MAIOR que iPad Mini (48-52px) */
+        line-height: 1.15 !important; /* Altura de linha confortável */
+        word-spacing: -2px !important; /* Reduz espaço entre palavras */
+        letter-spacing: -0.4px !important; /* Reduz espaço entre letras */
+    }
+    
+    /* --- SLIDE 2 (CALENDÁRIO LARANJA) --- */
+    /* Textos do calendário - OVERRIDE para evitar 20px do breakpoint 1024px */
+    .calendar-text-container .text-line {
+        font-size: 24px !important; /* SEM override: seria 20px - COM override: 24px ✅ */
+        line-height: 1.2; /* Altura de linha */
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: 36px !important; /* Palavra "NADA" - SEM override: 28px - COM override: 36px ✅ */
+    }
+    
+    /* --- IMAGENS 3D --- */
+    /* OVERRIDE para evitar 280px do breakpoint 1000px */
+    .static-character {
+        width: 310px !important; /* SEM override: 280px - COM override: 310px ✅ */
+        right: 25px; /* Posição ajustada */
+    }
+    
+    /* OVERRIDE para evitar 330px do breakpoint 1000px */
+    .popup-character {
+        width: 360px !important; /* SEM override: 330px - COM override: 360px ✅ */
+        right: -25px; /* Vaza para direita */
+        top: -75px; /* Vaza para cima */
+    }
+    
+    /* --- CALENDAR CARD --- */
+    /* OVERRIDE para evitar padding 30px 35px do breakpoint 900px */
+    .calendar-card {
+        padding: 32px 36px !important; /* SEM override: 30px 35px - COM override: 32px 36px ✅ */
+    }
+    
+    /* OVERRIDE para evitar width 300px do breakpoint 900px */
+    .calendar-widget {
+        width: 320px !important; /* SEM override: 300px - COM override: 320px ✅ */
+        right: 0px; /* Alinhado à direita */
+    }
+}
+
+/* ============================================================================
+   9.8. TABLETS MÉDIOS (901-1023px)
+   ============================================================================
+   
+   DISPOSITIVOS: iPad Air portrait (901px), Tablets intermediários
+   ESTRATÉGIA: Tamanho intermediário entre tablets pequenos e iPad Pro
+   
+   ============================================================================ */
+
+@media (min-width: 901px) and (max-width: 1023px) {
+    
+    /* --- FRASE DE BOAS-VINDAS --- */
+    .welcome-title {
+        font-size: clamp(50px, 5.4vw, 58px) !important; /* Intermediário: menor que tablets pequenos */
+        line-height: 1.15 !important; /* Altura de linha confortável */
+        word-spacing: -2px !important; /* Reduz espaço entre palavras */
+        letter-spacing: -0.4px !important; /* Reduz espaço entre letras */
+    }
+}
+
+/* ============================================================================
+   9.11. IPAD PRO / TABLETS GRANDES (1024-1400px)
+   ============================================================================
+   
+   DISPOSITIVOS: iPad Pro (1024px × 1366px), Surface Pro, Tablets grandes
+   ESTRATÉGIA: Forçar estilos de DESKTOP para evitar aplicação de breakpoints intermediários
+   CONFLITOS RESOLVIDOS:
+   - max-width: 1024px tentaria aplicar:
+     * calendar-text: 20px → forçamos 34px (desktop)
+     * highlight: 28px → forçamos 50px (desktop)
+     * setas: -50px → forçamos -60px (desktop)
+   
+   IMPORTANTE: iPad Pro deve ter aparência de desktop, não de tablet!
+   
+   ============================================================================ */
+
+@media (min-width: 1024px) and (max-width: 1400px) {
+    
+    /* --- FRASE DE BOAS-VINDAS --- */
+    .welcome-title {
+        font-size: clamp(62px, 5.6vw, 72px) !important; /* MUITO PRÓXIMO do desktop (74px) */
+        line-height: 1.1 !important; /* Altura de linha compacta */
+        word-spacing: -2.5px !important; /* Reduz espaço entre palavras */
+        letter-spacing: -0.5px !important; /* Reduz espaço entre letras */
+    }
+    
+    /* --- OVERRIDES PARA FORÇAR ESTILOS DE DESKTOP --- */
+    /* Sem esses overrides, o breakpoint max-width: 1024px aplicaria valores menores */
+    
+    .calendar-text-container .text-line {
+        font-size: 34px !important; /* Desktop (não 20px do 1024px) ✅ */
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: 50px !important; /* Desktop (não 28px do 1024px) ✅ */
+    }
+    
+    .carousel-control-prev {
+        left: -60px !important; /* Desktop (não -50px do 1024px) ✅ */
+    }
+    
+    .carousel-control-next {
+        right: -60px !important; /* Desktop (não -50px do 1024px) ✅ */
+    }
+}
+
+/* ============================================================================
+   9.4. MOBILE LARGE / TABLET PORTRAIT (≤767px) - BREAKPOINT PRINCIPAL
+   ============================================================================
+   
+   DISPOSITIVOS: iPhone (390px), Samsung (412px), e todos dispositivos ≤767px
+   ESTRATÉGIA: Layout vertical, textos menores, imagens reduzidas
+   OBJETIVO: Fazer mobile ser uma "miniatura" perfeita do desktop
+   
+   SEÇÕES AFETADAS:
+   - Cards do carrossel (altura de 450px → 300px)
+   - Slide 1 (Card Branco): textos e imagens reduzidos
+   - Slide 2 (Calendário): layout vertical, widget posicionado relativo
+   - Dashboard shortcuts: layout de coluna
+   - Categorias: ícones e textos menores
+   
+   ============================================================================ */
+
+@media (max-width: 767px) {
+    
+    /* --- SEÇÃO DE BOAS-VINDAS --- */
+    .welcome-section {
+        padding: 40px 20px; /* Padding reduzido para mobile */
+        margin-bottom: 30px; /* Margem inferior reduzida para mobile */
+    }
+    
+    /* Frase de boas-vindas - Tipografia fluida com técnica full-bleed */
+    .welcome-title {
+        font-size: clamp(20px, 6.4vw, 29px) !important; /* Escala entre 20-29px baseado na viewport */
+        line-height: 1.1 !important; /* Era 0.8 - AUMENTADO para legibilidade */
+        white-space: nowrap !important; /* CRÍTICO: Não quebra linha (2 linhas exatas no HTML) */
+        overflow: visible !important; /* Permite texto vazar (não corta) */
+        text-overflow: clip !important; /* Não adiciona "..." */
+        word-spacing: -3px !important; /* Reduz espaço entre palavras para caber */
+        letter-spacing: -0.5px !important; /* Reduz espaço entre letras */
+        max-width: 100% !important; /* Largura máxima */
+        padding: 0 10px !important; /* Padding lateral de segurança */
     }
 
+    /* Técnica FULL-BLEED - título escapa dos limites do .container */
+    .welcome-text {
+        width: 100vw !important; /* OCUPA TODA A VIEWPORT (não só o container) */
+        margin-left: calc(50% - 50vw) !important; /* DESLOCA para esquerda escapando do container */
+        padding: 0 12px !important; /* Margem de segurança nas bordas */
+        box-sizing: border-box; /* Inclui padding na largura */
+    }
+    
+    /* --- CARDS DO CARROSSEL (BASE) --- */
     .custom-card {
-        height: 350px;
-        padding: 15px 20px;
+        height: 300px; /* Altura reduzida para mobile (era 450px desktop) */
+        width: 95%; /* Largura aumentada para aproveitar espaço mobile */
+        padding: 20px 25px; /* Padding reduzido para mobile */
+    }
+
+    /* --- SLIDE 1 (CARD BRANCO) - TEXTOS --- */
+    /* CONTEÚDO DE TEXTO - Área principal de texto do slide */
+    .text-content {
+        font-size: clamp(0.85rem, 2.5vw, 1.1rem) !important; /* Tipografia fluida que escala entre 13.6-17.6px */
+        flex-basis: 100%; /* Ocupa toda largura disponível em mobile */
+    }
+
+    /* TÍTULO DO TEXTO - Cabeçalho principal do slide */
+    .text-content h2 {
+        font-size: clamp(1rem, 2.8vw, 1.2rem) !important; /* Tipografia fluida para títulos */
+        margin-top: 8px !important; /* Espaço reduzido acima do título */
+    }
+
+    /* PARÁGRAFO DO TEXTO - Texto descritivo do slide */
+    .text-content p {
+        font-size: clamp(0.7rem, 2vw, 0.9rem) !important; /* Tipografia fluida para parágrafos */
+    }
+
+    /* TEXTO DESTACADO - Elemento de destaque principal */
+    .highlight-text {
+        font-size: clamp(1.5rem, 3vw, 2rem) !important; /* Tipografia fluida para texto em destaque */
+        margin-left: -10px; /* Ajuste fino de alinhamento */
+    }
+
+    /* CORPO DO TEXTO - Texto principal do card */
+    .card-text-body {
+        font-size: clamp(0.7rem, 2vw, 0.85rem) !important; /* Tipografia fluida para corpo do texto */
+        line-height: 1.3; /* Altura de linha otimizada para legibilidade */
+    }
+
+    /* --- IMAGENS 3D - PERSONAGENS DO SLIDE BRANCO --- */
+    /* PERSONAGEM ESTÁTICO - Imagem de fundo do slide */
+    .static-character {
+        width: 120px !important; /* Tamanho reduzido para mobile (era 320px desktop) */
+        right: -15px; /* Posição ajustada para telas pequenas */
+        bottom: -10px; /* Alinhamento na parte inferior do card */
+    }
+
+    /* PERSONAGEM POPUP - Imagem que aparece no hover */
+    .popup-character {
+        width: 110px !important; /* Tamanho reduzido para mobile (era 390px desktop) */
+        top: -40px; /* Posição ajustada para menos vazamento em mobile */
+        right: -15px; /* Posição ajustada para telas pequenas */
+    }
+    
+    /* --- CARROSSEL - CONTROLES E OVERFLOW --- */
+    /* INNER DO CARROSSEL - Previne scroll horizontal em mobile */
+    .carousel-inner {
+        overflow: hidden !important; /* CRÍTICO: Evita scroll horizontal em dispositivos móveis */
+    }
+    
+    /* SETA ESQUERDA - Posicionamento ajustado para mobile */
+    .carousel-control-prev {
+        left: -40px; /* Posição ajustada para telas pequenas (era -60px desktop) */
+    }
+    
+    /* SETA DIREITA - Posicionamento ajustado para mobile */
+    .carousel-control-next {
+        right: -40px; /* Posição ajustada para telas pequenas (era -60px desktop) */
+    }
+    
+    /* --- DASHBOARD SHORTCUTS - ATALHOS DO DASHBOARD --- */
+    /* CONTAINER PRINCIPAL - Organização dos atalhos em mobile */
+    .dashboard-shortcuts {
+        gap: 16px; /* Espaçamento reduzido entre linhas de atalhos */
+    }
+    
+    /* LINHA DE ATALHOS - Layout vertical em mobile */
+    .shortcut-row {
+        flex-direction: column; /* Muda de horizontal (row) para vertical (column) */
+        gap: 16px; /* Espaçamento reduzido entre cards */
+    }
+    
+    /* CARD DE ATALHO - Estrutura individual em mobile */
+    .shortcut-card {
+        padding: 18px 8px; /* Padding reduzido para telas pequenas */
+        text-align: center; /* Centraliza todo o conteúdo do card */
+    }
+    
+    /* TÍTULO E TEXTO - Centralização em mobile */
+    .shortcut-card .card-title,
+    .shortcut-card .card-text {
+        text-align: center; /* Centraliza título e descrição */
+    }
+    
+    /* TÍTULO COM ÍCONE - Alinhamento centralizado */
+    .shortcut-card .card-title {
+        justify-content: center; /* Centraliza título junto com ícone */
+    }
+    
+    /* BOTÃO DE AÇÃO - Centralização automática */
+    .shortcut-card .btn {
+        margin: 0 auto; /* Centraliza botão automaticamente */
+    }
+
+    /* --- CATEGORIAS - SEÇÕES DE EVENTOS --- */
+    /* SEÇÃO DE CATEGORIA - Container das categorias de eventos */
+    .category-section {
+        padding: 25px; /* Padding reduzido para telas pequenas */
+    }
+
+    /* ÍCONE DA CATEGORIA - Ícone circular das categorias */
+    .category-icon {
+        width: 60px !important; /* Tamanho reduzido para mobile */
+        height: 60px !important; /* Tamanho reduzido para mobile */
+        font-size: 2rem !important; /* Tamanho de ícone reduzido */
+    }
+
+    /* TÍTULO DA CATEGORIA - Nome da categoria de eventos */
+    .category-title {
+        font-size: 1.4rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    /* DESCRIÇÃO DA CATEGORIA - Texto explicativo da categoria */
+    .category-description {
+        font-size: 1rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    /* --- EVENTOS - LISTA DE EVENTOS --- */
+    /* TÍTULO DA SEÇÃO DE EVENTOS - Cabeçalho da lista */
+    .event-section-title {
+        font-size: 1.1rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    /* ÍCONE DO TÍTULO - Ícone ao lado do título */
+    .event-section-title i {
+        font-size: 1.3rem; /* Tamanho de ícone reduzido para mobile */
+    }
+
+    /* --- CARDS DE ATALHOS - CARDS INDIVIDUAIS --- */
+    /* CARD DE ATALHO INDIVIDUAL - Estrutura de cada atalho */
+    .dashboard-shortcut-card {
+        margin-bottom: 20px; /* Espaço entre cards individuais */
+    }
+
+    /* --- MINI-CALENDÁRIO - WIDGET DO CARROSSEL --- */
+    /* CONTAINER DO MINI-CALENDÁRIO - Widget flutuante reduzido */
+    .mini-calendar-container {
+        width: 260px; /* Largura reduzida para mobile */
+        padding: 10px; /* Padding reduzido para mobile */
+        right: 10px; /* Posição ajustada para telas pequenas */
+        max-height: 280px; /* Altura máxima reduzida para mobile */
+    }
+
+    .mini-calendar-title {
+        font-size: 0.8rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    .mini-calendar-nav-btn {
+        width: 24px; /* Largura reduzida para mobile */
+        height: 24px; /* Altura reduzida para mobile */
+        font-size: 0.75rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    .mini-calendar-cell {
+        min-height: 28px; /* Altura mínima reduzida para mobile */
+        padding: 2px; /* Padding reduzido para mobile */
+    }
+
+    .mini-calendar-day-number {
+        font-size: 0.7rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    .mini-calendar-weekdays {
+        font-size: 0.6rem; /* Tamanho de fonte reduzido para mobile */
+    }
+
+    .mini-calendar-legend {
+        font-size: 0.65rem; /* Tamanho de fonte reduzido para mobile */
+        gap: 4px; /* Espaço entre items da legenda */
+    }
+    
+    /* --- SLIDE 2 (CALENDÁRIO LARANJA) - CARD E TEXTOS --- */
+    .calendar-card {
+        overflow: hidden !important; /* IMPORTANTE: Evita vazamento em mobile */
+        height: 260px !important; /* Altura reduzida para mobile (era 450px desktop) */
+        width: 95%; /* Largura aumentada para aproveitar espaço mobile */
+        padding: 12px 15px !important; /* Padding reduzido para mobile */
+    }
+    
+    /* Textos do calendário - tipografia fluida */
+    .calendar-text-container .text-line {
+        font-size: clamp(10px, 2.6vw, 12px) !important; /* Tipografia fluida reduzida para mobile */
+        line-height: 1.25 !important; /* Legibilidade */
+        white-space: normal !important; /* Permite quebra de linha em mobile */
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: clamp(12px, 3vw, 16px) !important; /* Tipografia fluida para texto destacado */
+    }
+    
+    /* Estatísticas do calendário */
+    .calendar-stats {
+        gap: 10px !important; /* Espaçamento reduzido para mobile */
+        flex-wrap: wrap; /* Permite quebra em múltiplas linhas */
+        justify-content: center; /* Centraliza */
+    }
+    
+    .stat-number {
+        font-size: clamp(12px, 3.3vw, 16px) !important; /* Tipografia fluida para números */
+    }
+    
+    .stat-label {
+        font-size: clamp(8px, 2.2vw, 10px) !important; /* Tipografia fluida para labels */
+    }
+    
+    /* --- CALENDÁRIO - PERSONAGEM --- */
+    .calendar-character {
+        overflow: hidden !important; /* Evita vazamento em mobile */
+        flex-direction: column; /* Layout vertical */
+        gap: 20px; /* Espaço entre elementos */
+    }
+    
+    /* --- CALENDÁRIO - LAYOUT E POSICIONAMENTO --- */
+    .calendar-content {
+        flex-direction: column; /* Layout vertical (era horizontal) */
+        text-align: center; /* Centraliza conteúdo */
+    }
+    
+    .calendar-text {
+        max-width: 100%; /* Era 40% - AUMENTADO para mobile */
+        margin-bottom: 30px; /* Espaço abaixo */
+        align-items: center; /* Centraliza */
+        text-align: center; /* Texto centralizado */
+    }
+    
+    /* Calendar widget - muda de absoluto para relativo em mobile */
+    .calendar-widget {
+        position: relative; /* ERA ABSOLUTO - mudou para relativo */
+        top: auto; /* Remove posicionamento absoluto */
+        right: auto; /* Remove posicionamento absoluto */
+        margin-top: 10px; /* Espaço acima */
+        width: 100%; /* Largura total */
+        max-width: 260px !important; /* Largura máxima reduzida para mobile */
+        padding: 10px !important; /* Padding reduzido para mobile */
+        transform: none; /* Remove transformações */
+    }
+    
+    /* Imagem do jogador/personagem */
+    .player-image {
+        position: relative; /* ERA ABSOLUTO - mudou para relativo */
+        left: auto; /* Remove calc(35%) */
+        top: auto; /* Remove 40% */
+        transform: none; /* Remove transforms complexos */
+        width: 50% !important; /* Largura reduzida para mobile */
+        max-height: 120px !important; /* Limite de altura */
+    }
+}
+
+/* ============================================================================
+   9.3. MOBILE (≤576px)
+   ============================================================================
+   
+   DISPOSITIVOS: Smartphones pequenos (iPhone SE, etc) ≤576px
+   ESTRATÉGIA: REDUZIR ainda mais os elementos (vão além do 767px)
+   CORREÇÃO CRÍTICA: Altura dos cards DIMINUI (não aumenta)
+   
+   ============================================================================ */
+
+@media (max-width: 576px) {
+    
+    /* --- TÍTULO DO DASHBOARD --- */
+    .title-dashboard h1 {
+        font-size: 1.5rem; /* Título menor para mobile */
+    }
+
+    /* --- CARDS DO CARROSSEL - REDUÇÃO CRÍTICA --- */
+    /* IMPORTANTE: Breakpoint 576px DIMINUI altura (lógica estava invertida antes) */
+    .custom-card {
+        height: 220px !important; /* Altura reduzida para mobile pequeno */
+        padding: 10px 12px !important; /* Padding mínimo */
     }
     
     .calendar-card {
-        height: 350px; /* Mesma altura do custom-card */
-        padding: 15px 20px; /* Mesmo padding do custom-card */
+        height: 240px !important; /* Altura reduzida para mobile pequeno */
+        padding: 10px 12px !important; /* Padding mínimo */
     }
 
+    /* --- SLIDE 1 (CARD BRANCO) - TEXTOS AINDA MENORES --- */
     .text-content h2 {
-        font-size: 1.5rem;
+        font-size: 0.85rem !important; /* Tamanho de fonte reduzido para mobile pequeno */
     }
 
     .text-content p {
-        font-size: 1rem;
+        font-size: 0.7rem !important; /* Tamanho de fonte reduzido para mobile pequeno */
     }
 
     .highlight-text {
-        font-size: 2rem;
+        font-size: 1.5rem !important; /* Tamanho de fonte reduzido para mobile pequeno */
     }
 
+    /* --- IMAGENS 3D - AINDA MENORES --- */
     .static-character {
-        width: 150px;
+        width: 120px !important; /* Mantém do 767px (já era pequeno) */
     }
 
     .popup-character {
-        width: 170px;
-        top: -30px;
+        width: 95px !important; /* Largura reduzida para mobile pequeno */
+        top: -35px; /* Posição ajustada para menos vazamento */
+        right: -15px; /* Mantém posição */
     }
 
     .card-text-body {
-        font-size: 1.2rem !important;
+        font-size: 0.65rem !important; /* Tamanho de fonte reduzido para mobile pequeno */
     }
 
     /* Calendário mini no carousel - mobile pequeno */
     .mini-calendar-container {
-        width: 230px;
-        padding: 8px;
-        right: 5px;
-        max-height: 260px;
+        width: 230px; /* Largura reduzida para mobile pequeno */
+        padding: 8px; /* Padding mínimo para economizar espaço */
+        right: 5px; /* Posição ajustada para mobile pequeno */
+        max-height: 260px; /* Altura máxima reduzida */
     }
 
     .mini-calendar-container:hover {
-        transform: translateY(-50%) scale(1.02);
+        transform: translateY(-50%) scale(1.02); /* Efeito de hover mantido mas menor */
     }
 
     .mini-calendar-title {
-        font-size: 0.75rem;
+        font-size: 0.75rem; /* Título menor para mobile pequeno */
     }
 
     .mini-calendar-nav-btn {
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
+        width: 22px; /* Botões de navegação menores */
+        height: 22px; /* Altura reduzida para mobile pequeno */
+        font-size: 0.7rem; /* Ícones menores */
     }
 
     .mini-calendar-cell {
-        min-height: 26px;
-        padding: 2px;
+        min-height: 26px; /* Altura mínima reduzida para células */
+        padding: 2px; /* Padding mínimo para economizar espaço */
     }
 
     .mini-calendar-day-number {
-        font-size: 0.65rem;
+        font-size: 0.65rem; /* Números dos dias menores */
     }
 
     .mini-calendar-weekdays {
-        font-size: 0.55rem;
-        margin-bottom: 6px;
+        font-size: 0.55rem; /* Dias da semana menores */
+        margin-bottom: 6px; /* Espaçamento reduzido */
     }
 
     .mini-calendar-legend {
-        font-size: 0.6rem;
-        gap: 3px;
-        margin-top: 8px;
-        padding-top: 6px;
+        font-size: 0.6rem; /* Legenda menor */
+        gap: 3px; /* Espaçamento reduzido entre itens */
+        margin-top: 8px; /* Margem superior reduzida */
+        padding-top: 6px; /* Padding superior reduzido */
     }
 
     .mini-calendar-badge {
-        padding: 2px 4px;
+        padding: 2px 4px; /* Padding mínimo para badges */
     }
 }
 
-/* Mobile pequeno (480px) */
-@media (max-width: 480px) {
-    .welcome-section {
-        padding: 30px 15px;
-        margin-bottom: 20px;
-    }
-    
-    .welcome-title {
-        font-size: 28px;
-        white-space: nowrap;
-    }
-}
 
 /* ===================================== */
 /* CALENDAR CONTAINER - SEGUNDO SLIDE */
@@ -1120,590 +1578,713 @@ img {
 
 
 .calendar-card {
-    border-radius: 20px;
-    background: var(--orange-color);
-    box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.5);
-    padding: 40px;
-    position: relative;
-    overflow: visible;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; /* Bordas bem arredondadas para design moderno */
+    background: var(--orange-color); /* Fundo laranja da marca */
+    box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.5); /* Sombra profunda para efeito 3D */
+    padding: 40px; /* Espaçamento interno generoso */
+    position: relative; /* Permite posicionamento absoluto dos elementos filhos */
+    overflow: visible; /* Permite que elementos vazem do card (efeito 3D) */
+    border: 2px solid rgba(255, 255, 255, 0.1); /* Borda branca semi-transparente */
     width: 90%; /* Mesma largura do custom-card */
     height: 450px; /* Altura fixa igual ao custom-card */
     margin: 0 auto; /* Centraliza o card no slide */
-    max-width: 1200px;
+    max-width: 1200px; /* Largura máxima para telas grandes */
 }
 
-/* Controlar overflow em mobile */
-@media (max-width: 768px) {
-    .calendar-card {
-        overflow: hidden; /* Evitar vazamento em mobile */
-        height: 350px; /* Mesma altura do custom-card em mobile */
-        width: 95%; /* Mesma largura do custom-card */
-        padding: 20px 25px; /* Mesmo padding do custom-card */
-    }
-}
 
 .calendar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    z-index: 2;
+    display: flex; /* Layout flexível para organizar texto e widget */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: space-between; /* Distribui espaço entre elementos */
+    position: relative; /* Permite posicionamento com z-index */
+    z-index: 2; /* Camada acima de outros elementos */
 }
 
 .calendar-text {
-    flex: 1;
-    max-width: 40%;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    flex: 1; /* Ocupa espaço disponível */
+    max-width: 40%; /* Limita largura para não competir com widget */
+    z-index: 2; /* Camada acima de outros elementos */
+    display: flex; /* Layout flexível interno */
+    flex-direction: column; /* Organiza conteúdo verticalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: flex-start; /* Alinha à esquerda */
 }
 
 /* Container do texto principal */
 .calendar-text-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 5px;
+    display: flex; /* Layout flexível para organizar linhas de texto */
+    flex-direction: column; /* Empilha linhas verticalmente */
+    gap: 4px; /* Espaçamento entre linhas de texto */
+    margin-bottom: 5px; /* Espaço abaixo do container */
 }
 
 /* Linhas de texto individuais */
 .calendar-text-container .text-line {
-    color: #FFF;
-    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40);
-    font-family: Montserrat;
-    font-size: 34px !important;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1.2;
-    margin: 0;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #FFF; /* Texto branco para contraste com fundo laranja */
+    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40); /* Sombra de texto para profundidade */
+    font-family: Montserrat; /* Fonte personalizada */
+    font-size: 34px !important; /* Tamanho grande para impacto visual */
+    font-style: normal; /* Estilo normal da fonte */
+    font-weight: 700; /* Peso bold para destaque */
+    line-height: 1.2; /* Altura de linha compacta */
+    margin: 0; /* Remove margens padrão */
+    text-align: center; /* Centraliza o texto */
+    white-space: nowrap; /* Impede quebra de linha */
+    overflow: hidden; /* Esconde texto que vaza */
+    text-overflow: ellipsis; /* Adiciona "..." se texto for muito longo */
 }
 
 /* Bloco separado para "NADA" */
 .calendar-text-final {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    margin-left: 100px;
+    display: flex; /* Layout flexível para centralizar */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    margin-bottom: 20px; /* Espaço abaixo */
+    margin-left: 100px; /* Desloca para direita para posicionamento */
 }
 
 .calendar-text-final .highlight {
-    font-size: 50px !important;
-    font-weight: 900;
-    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40);
-    background: linear-gradient(90deg, #000 0%, #0900FF 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 50px !important; /* Tamanho extra grande para destaque */
+    font-weight: 900; /* Peso extra-bold */
+    text-shadow: 6px 6px 10px rgba(0, 0, 0, 0.40); /* Sombra de texto para profundidade */
+    background: linear-gradient(90deg, #000 0%, #0900FF 100%); /* Gradiente preto para azul */
+    background-clip: text; /* Aplica gradiente apenas ao texto */
+    -webkit-background-clip: text; /* Webkit: aplica gradiente apenas ao texto */
+    -webkit-text-fill-color: transparent; /* Remove cor do texto para mostrar gradiente */
 }
 
 /* Estatísticas do calendário */
 .calendar-stats {
-    display: flex;
-    gap: 30px;
-    margin-top: 20px;
+    display: flex; /* Layout flexível para organizar estatísticas */
+    gap: 30px; /* Espaçamento entre itens de estatística */
+    margin-top: 20px; /* Espaço acima */
 }
 
 .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 15px 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex; /* Layout flexível para organizar número e label */
+    flex-direction: column; /* Empilha número e label verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    background: rgba(255, 255, 255, 0.2); /* Fundo branco semi-transparente */
+    padding: 15px 20px; /* Espaçamento interno */
+    border-radius: 10px; /* Bordas arredondadas */
+    backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Borda branca semi-transparente */
 }
 
 .stat-number {
-    font-size: 28px;
-    font-weight: 800;
-    color: #FFF;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    line-height: 1;
+    font-size: 28px; /* Tamanho grande para o número */
+    font-weight: 800; /* Peso extra-bold */
+    color: #FFF; /* Texto branco */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra de texto sutil */
+    line-height: 1; /* Altura de linha compacta */
 }
 
 .stat-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #FFF;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    margin-top: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    text-align: center;
+    font-size: 12px; /* Tamanho pequeno para o label */
+    font-weight: 600; /* Peso semi-bold */
+    color: #FFF; /* Texto branco */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra de texto sutil */
+    margin-top: 5px; /* Espaço acima do label */
+    text-transform: uppercase; /* Converte para maiúsculas */
+    letter-spacing: 0.5px; /* Espaçamento entre letras */
+    white-space: nowrap; /* Impede quebra de linha */
+    text-align: center; /* Centraliza o texto */
 }
 
 /* Personagem do calendário */
 .calendar-character {
-    position: relative;
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 400px;
-    overflow: visible;
+    position: relative; /* Permite posicionamento absoluto da imagem */
+    flex: 1; /* Ocupa espaço disponível */
+    display: flex; /* Layout flexível para centralizar */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    height: 400px; /* Altura fixa para o container */
+    overflow: visible; /* Permite que imagem vaze do container */
 }
 
-/* Controlar overflow em mobile */
-@media (max-width: 768px) {
-    .calendar-character {
-        overflow: hidden; /* Evitar vazamento em mobile */
-    }
-}
 
 .player-image {
-    position: absolute;
-    left: calc(35%);
-    top: 40%;
-    z-index: 2;
-    width: 80%;
-    height: 120%;
-    object-fit: contain;
-    object-position: center center;
-    transform: translate(-50%, -50%) translateX(-60px) scale(1.0);
-    transition: all 0.3s ease;
+    position: absolute; /* Posicionamento absoluto para controle preciso */
+    left: calc(35%); /* Posição horizontal ajustada */
+    top: 40%; /* Posição vertical ajustada */
+    z-index: 2; /* Camada acima de outros elementos */
+    width: 80%; /* Largura da imagem */
+    height: 120%; /* Altura maior para efeito 3D */
+    object-fit: contain; /* Mantém proporção da imagem */
+    object-position: center center; /* Centraliza a imagem */
+    transform: translate(-50%, -50%) translateX(-60px) scale(1.0); /* Posicionamento e escala */
+    transition: all 0.3s ease; /* Transição suave para animações */
 }
 
 /* Widget do calendário */
 .calendar-widget {
-    position: absolute;
-    top: -30px;
-    right: 20px;
-    background: var(--background-color);
-    border-radius: 20px;
-    padding: 16px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-    z-index: 5;
-    width: 300px;
-    border: 3px solid var(--blue-color);
-    transform: translateY(-50%);
-    transition: all 0.3s ease;
+    position: absolute; /* Posicionamento absoluto para flutuar sobre o card */
+    top: -30px; /* 30px acima do card (vaza para fora) */
+    right: 20px; /* 20px da borda direita */
+    background: var(--background-color); /* Fundo branco */
+    border-radius: 20px; /* Bordas bem arredondadas */
+    padding: 16px; /* Espaçamento interno */
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25); /* Sombra profunda */
+    z-index: 5; /* Camada alta para ficar acima de outros elementos */
+    width: 300px; /* Largura fixa */
+    border: 3px solid var(--blue-color); /* Borda azul espessa */
+    transform: translateY(-50%); /* Centraliza verticalmente */
+    transition: all 0.3s ease; /* Transição suave para animações */
 }
 
 .calendar-widget:hover {
-    transform: translateY(-50%) scale(1.02);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    transform: translateY(-50%) scale(1.02); /* Aumenta ligeiramente no hover */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); /* Intensifica a sombra */
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    display: flex; /* Layout flexível para organizar título e navegação */
+    justify-content: space-between; /* Título à esquerda, botões à direita */
+    align-items: center; /* Centraliza verticalmente */
+    margin-bottom: 10px; /* Espaço abaixo */
 }
 
 .calendar-header h4 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--blue-color);
+    font-size: 18px; /* Tamanho do título */
+    font-weight: 600; /* Peso semi-bold */
+    color: var(--blue-color); /* Cor azul da marca */
 }
 
 .calendar-nav {
-    display: flex;
-    gap: 10px;
+    display: flex; /* Layout flexível para botões de navegação */
+    gap: 10px; /* Espaçamento entre botões */
 }
 
 .nav-btn {
-    background: white;
-    border: 2px solid var(--blue-color);
-    width: 28px;
-    height: 28px;
-    line-height: 24px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    color: var(--blue-color);
-    padding: 0;
-    transition: all 0.15s ease;
+    background: white; /* Fundo branco */
+    border: 2px solid var(--blue-color); /* Borda azul */
+    width: 28px; /* Largura fixa */
+    height: 28px; /* Altura fixa */
+    line-height: 24px; /* Centraliza verticalmente o ícone */
+    border-radius: 6px; /* Bordas arredondadas */
+    font-size: 16px; /* Tamanho do ícone */
+    cursor: pointer; /* Cursor de clique */
+    color: var(--blue-color); /* Cor azul do ícone */
+    padding: 0; /* Remove padding padrão */
+    transition: all 0.15s ease; /* Transição rápida para hover */
 }
 
 .nav-btn:hover {
-    background: var(--blue-color);
-    color: white;
+    background: var(--blue-color); /* Fundo azul no hover */
+    color: white; /* Texto branco no hover */
 }
 
 .calendar-month {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    text-align: center;
-    margin-bottom: 6px;
+    font-size: 14px; /* Tamanho do mês */
+    font-weight: 600; /* Peso semi-bold */
+    color: #374151; /* Cor cinza escura */
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 6px; /* Espaço abaixo */
 }
 
 .calendar-year {
-    font-size: 14px;
-    font-weight: 500;
-    color: #6b7280;
-    text-align: center;
-    margin-bottom: 10px;
+    font-size: 14px; /* Tamanho do ano */
+    font-weight: 500; /* Peso normal */
+    color: #6b7280; /* Cor cinza mais clara */
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 10px; /* Espaço abaixo */
 }
 
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
+    display: grid; /* Layout em grade para organizar dias */
+    grid-template-columns: repeat(7, 1fr); /* 7 colunas iguais (dias da semana) */
+    gap: 6px; /* Espaçamento entre células */
+    margin-bottom: 12px; /* Espaço abaixo */
+    position: relative; /* Permite posicionamento com z-index */
+    z-index: 1; /* Camada acima de outros elementos */
 }
 
 .calendar-day {
-    text-align: center;
-    padding: 4px 2px;
-    font-size: 11px;
-    font-weight: 500;
-    color: #6b7280;
+    text-align: center; /* Centraliza os dias da semana */
+    padding: 4px 2px; /* Espaçamento interno mínimo */
+    font-size: 11px; /* Tamanho pequeno */
+    font-weight: 500; /* Peso normal */
+    color: #6b7280; /* Cor cinza clara */
 }
 
 .calendar-date {
-    text-align: center;
-    padding: 6px 4px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #374151;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid transparent;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    position: relative;
-    user-select: none;
+    text-align: center; /* Centraliza os números dos dias */
+    padding: 6px 4px; /* Espaçamento interno */
+    font-size: 12px; /* Tamanho dos números */
+    font-weight: 500; /* Peso normal */
+    color: #374151; /* Cor cinza escura */
+    border-radius: 6px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor de clique */
+    transition: all 0.3s ease; /* Transição suave para hover */
+    aspect-ratio: 1 / 1; /* Mantém formato quadrado */
+    display: flex; /* Layout flexível para organizar número e badge */
+    flex-direction: column; /* Empilha número e badge verticalmente */
+    border: 1px solid transparent; /* Borda transparente por padrão */
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    min-height: 32px; /* Altura mínima para consistência */
+    position: relative; /* Permite posicionamento com z-index */
+    user-select: none; /* Impede seleção de texto */
 }
 
 .calendar-date:hover {
-    background-color: #f3f4f6;
-    transform: scale(1.05);
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f3f4f6; /* Fundo cinza claro no hover */
+    transform: scale(1.05); /* Aumenta 5% no hover */
+    z-index: 10; /* Camada alta para ficar acima */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
 
 .calendar-date.empty {
-    pointer-events: none;
-    opacity: 0.3;
-    cursor: default;
+    pointer-events: none; /* Não responde a cliques */
+    opacity: 0.3; /* Semi-transparente */
+    cursor: default; /* Cursor padrão */
 }
 
 .calendar-date.empty:hover {
-    transform: none;
-    background-color: transparent;
-    box-shadow: none;
+    transform: none; /* Remove transformação no hover */
+    background-color: transparent; /* Fundo transparente */
+    box-shadow: none; /* Remove sombra */
 }
 
 .calendar-date.today {
-    background: var(--blue-color);
-    color: white;
-    font-weight: 700;
-    border-radius: 50%;
+    background: var(--blue-color); /* Fundo azul para hoje */
+    color: white; /* Texto branco */
+    font-weight: 700; /* Peso bold */
+    border-radius: 50%; /* Formato circular */
 }
 
 .calendar-date.past {
-    background-color: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
+    background-color: #fef2f2; /* Fundo vermelho claro para datas passadas */
+    color: #dc2626; /* Texto vermelho */
+    border: 1px solid #fecaca; /* Borda vermelha clara */
 }
 
 
 .calendar-day-number {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: inherit;
-    margin-bottom: 2px;
+    font-size: 0.75rem; /* Tamanho do número do dia */
+    font-weight: 700; /* Peso bold */
+    color: inherit; /* Herda cor do elemento pai */
+    margin-bottom: 2px; /* Espaço abaixo do número */
 }
 
 .calendar-day-badge {
-    text-align: center;
+    text-align: center; /* Centraliza o badge */
 }
 
 .calendar-day-badge .badge {
-    padding: 2px 6px;
-    font-size: 0.5rem;
-    border-radius: 8px;
+    padding: 2px 6px; /* Espaçamento interno do badge */
+    font-size: 0.5rem; /* Tamanho muito pequeno */
+    border-radius: 8px; /* Bordas arredondadas */
 }
 
 .calendar-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
+    display: flex; /* Layout flexível para organizar itens */
+    flex-direction: column; /* Empilha itens verticalmente */
+    gap: 8px; /* Espaçamento entre itens */
+    margin-top: 10px; /* Espaço acima */
 }
 
 .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: #374151;
+    display: flex; /* Layout flexível para cor e texto */
+    align-items: center; /* Centraliza verticalmente */
+    gap: 8px; /* Espaço entre cor e texto */
+    font-size: 11px; /* Tamanho pequeno */
+    color: #374151; /* Cor cinza escura */
 }
 
 .legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
+    width: 12px; /* Largura do quadrado de cor */
+    height: 12px; /* Altura do quadrado de cor */
+    border-radius: 2px; /* Bordas ligeiramente arredondadas */
 }
 
 /* Cores dos dias do calendário baseadas na ocupação */
 .calendar-grid .calendar-date.dia-livre {
-    background-color: #dcfce7 !important; /* Verde claro */
-    border: 2px solid #16a34a !important;
-    color: #166534 !important;
-    border-radius: 8px !important;
+    background-color: #dcfce7 !important; /* Verde claro para dias livres */
+    border: 2px solid #16a34a !important; /* Borda verde */
+    color: #166534 !important; /* Texto verde escuro */
+    border-radius: 8px !important; /* Bordas arredondadas */
 }
 
 .calendar-grid .calendar-date.periodo-livre {
-    background-color: #fef3c7 !important; /* Amarelo claro */
-    border: 2px solid #d97706 !important;
-    color: #92400e !important;
-    border-radius: 8px !important;
+    background-color: #fef3c7 !important; /* Amarelo claro para períodos livres */
+    border: 2px solid #d97706 !important; /* Borda laranja */
+    color: #92400e !important; /* Texto laranja escuro */
+    border-radius: 8px !important; /* Bordas arredondadas */
 }
 
 .calendar-grid .calendar-date.dia-ocupado {
-    background-color: #fecaca !important; /* Vermelho claro */
-    border: 2px solid #dc2626 !important;
-    color: #991b1b !important;
-    border-radius: 8px !important;
+    background-color: #fecaca !important; /* Vermelho claro para dias ocupados */
+    border: 2px solid #dc2626 !important; /* Borda vermelha */
+    color: #991b1b !important; /* Texto vermelho escuro */
+    border-radius: 8px !important; /* Bordas arredondadas */
 }
 
 /* Hover states para as cores */
 .calendar-date.dia-livre:hover {
-    background-color: #bbf7d0;
-    transform: scale(1.05);
+    background-color: #bbf7d0; /* Verde mais intenso no hover */
+    transform: scale(1.05); /* Aumenta 5% no hover */
 }
 
 .calendar-date.periodo-livre:hover {
-    background-color: #fde68a;
-    transform: scale(1.05);
+    background-color: #fde68a; /* Amarelo mais intenso no hover */
+    transform: scale(1.05); /* Aumenta 5% no hover */
 }
 
 .calendar-date.dia-ocupado:hover {
-    background-color: #fca5a5;
-    transform: scale(1.05);
+    background-color: #fca5a5; /* Vermelho mais intenso no hover */
+    transform: scale(1.05); /* Aumenta 5% no hover */
 }
 
 /* Cores da legenda */
 .legend-red {
-    background-color: #dc2626;
+    background-color: #dc2626; /* Cor vermelha para legenda */
 }
 
 .legend-orange {
-    background-color: #d97706;
+    background-color: #d97706; /* Cor laranja para legenda */
 }
 
 .legend-green {
-    background-color: #16a34a;
+    background-color: #16a34a; /* Cor verde para legenda */
 }
 
 /* Modal de eventos do calendário */
 .event-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    backdrop-filter: blur(5px);
+    display: none; /* Oculto por padrão */
+    position: fixed; /* Posicionamento fixo na tela */
+    top: 0; /* Alinhamento superior */
+    left: 0; /* Alinhamento esquerdo */
+    width: 100%; /* Largura total da tela */
+    height: 100%; /* Altura total da tela */
+    background: rgba(0, 0, 0, 0.5); /* Fundo preto semi-transparente */
+    z-index: 1000; /* Camada alta para ficar acima de tudo */
+    backdrop-filter: blur(5px); /* Efeito de desfoque no fundo */
 }
 
 .event-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; /* Exibe como flex quando ativo */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
 }
 
 .modal-content {
-    background: white;
-    border-radius: 15px;
-    padding: 0;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: modalSlideIn 0.3s ease;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    background: white; /* Fundo branco do modal */
+    border-radius: 15px; /* Bordas arredondadas */
+    padding: 0; /* Remove padding padrão */
+    max-width: 500px; /* Largura máxima */
+    width: 90%; /* Largura responsiva */
+    max-height: 80vh; /* Altura máxima da viewport */
+    overflow: hidden; /* Esconde conteúdo que vaza */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); /* Sombra profunda */
+    animation: modalSlideIn 0.3s ease; /* Animação de entrada */
 }
 
 .modal-header {
-    background: var(--blue-color);
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: var(--blue-color); /* Fundo azul do cabeçalho */
+    color: white; /* Texto branco */
+    padding: 20px; /* Espaçamento interno */
+    display: flex; /* Layout flexível */
+    justify-content: space-between; /* Título à esquerda, botão à direita */
+    align-items: center; /* Centraliza verticalmente */
 }
 
 .modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    margin: 0; /* Remove margem padrão */
+    font-size: 18px; /* Tamanho do título */
+    font-weight: 600; /* Peso semi-bold */
 }
 
 .close-modal {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s;
+    background: none; /* Remove fundo padrão */
+    border: none; /* Remove borda padrão */
+    color: white; /* Cor branca do ícone */
+    font-size: 24px; /* Tamanho do ícone */
+    cursor: pointer; /* Cursor de clique */
+    padding: 0; /* Remove padding padrão */
+    width: 30px; /* Largura fixa */
+    height: 30px; /* Altura fixa */
+    display: flex; /* Layout flexível para centralizar */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    border-radius: 50%; /* Formato circular */
+    transition: background-color 0.2s; /* Transição suave do fundo */
 }
 
 .close-modal:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2); /* Fundo branco semi-transparente no hover */
 }
 
 .modal-body {
-    padding: 20px;
+    padding: 20px; /* Espaçamento interno do corpo */
 }
 
 .event-details p {
-    margin-bottom: 10px;
-    color: #374151;
+    margin-bottom: 10px; /* Espaço abaixo dos parágrafos */
+    color: #374151; /* Cor cinza escura */
 }
 
 .event-details strong {
-    color: var(--blue-color);
+    color: var(--blue-color); /* Cor azul para texto em negrito */
 }
 
-/* Responsividade para o container do calendário */
-@media (max-width: 1200px) {
-    .calendar-widget {
-        width: 280px;
-        right: 5px;
+
+
+
+
+
+/* ============================================================================
+   9. RESPONSIVIDADE - CONSOLIDAÇÃO COMPLETA
+   ============================================================================
+   
+   ESTRATÉGIA: Mobile-First
+   - Estilos base são para Desktop (>1400px)
+   - Media queries aplicam de menor para maior
+   - Cada breakpoint sobrescreve o anterior
+   
+   BREAKPOINTS USADOS:
+   9.1.  ≤400px  - Mobile Extra Small (setas no centro)
+   9.2.  ≤480px  - Mobile Small (ajustes finos)
+   9.3.  ≤576px  - Mobile (cards menores)
+   9.4.  ≤767px  - Mobile Large (layout vertical) ← PRINCIPAL MOBILE
+   9.5.  768px   - iPad Mini (específico)
+   9.6.  769-900px - Tablets Pequenos (iPad Air 820px)
+   9.7.  ≤900px  - Tablets (ajustes intermediários)
+   9.8.  901-1023px - Tablets Médios (iPad Air portrait)
+   9.9.  ≤1000px - Desktop Small (imagens)
+   9.10. ≤1024px - Desktop Small (textos)
+   9.11. 1024-1400px - iPad Pro / Tablets Grandes
+   9.12. ≤1200px - Desktop Medium
+   9.13. >1400px - Desktop Large (estilos base - sem media query)
+   
+   ============================================================================ */
+
+/* NOTA: Blocos @media espalhados foram consolidados aqui.
+   Esta seção é a ÚNICA fonte de responsividade (exceto blocos já organizados). */
+
+
+/* ============================================================================
+   9.1. MOBILE EXTRA SMALL (≤400px)
+   ============================================================================
+   
+   DISPOSITIVOS: Smartphones muito pequenos
+   AJUSTES: Setas do carrossel DENTRO da tela (não para fora)
+   
+   ============================================================================ */
+
+@media (max-width: 400px) {
+    
+    /* Setas do carrossel - DENTRO da tela */
+    .carousel-control-prev {
+        left: 0 !important; /* NO CANTO esquerdo da tela */
     }
     
-    .calendar-card {
-        padding: 35px 38px; /* Padding intermediário */
+    .carousel-control-next {
+        right: 0 !important; /* NO CANTO direito da tela */
     }
 }
 
-@media (max-width: 1024px) {
-    .calendar-widget {
-        width: 320px;
-        right: 0px;
-    }
-    
-    .calendar-card {
-        padding: 32px 36px; /* Padding intermediário */
-    }
-    
-    .calendar-text-container .text-line {
-        font-size: 20px !important;
-        line-height: 1.2;
-    }
-    
-    .calendar-text-final .highlight {
-        font-size: 28px !important;
-    }
-}
 
-@media (max-width: 900px) {
-    .calendar-widget {
-        width: 300px;
-        right: 0px;
-    }
-    
-    .calendar-card {
-        padding: 30px 35px; /* Padding intermediário */
-    }
-}
-
-@media (max-width: 768px) {
-    .calendar-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .calendar-text {
-        max-width: 100%;
-        margin-bottom: 30px;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .calendar-widget {
-        position: relative;
-        top: auto;
-        right: auto;
-        margin-top: 10px;
-        width: 100%;
-        max-width: 360px;
-        transform: none;
-    }
-    
-    .calendar-character {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .player-image {
-        position: relative;
-        left: auto;
-        top: auto;
-        transform: none;
-        width: 70%;
-        max-height: 200px;
-    }
-}
+/* ============================================================================
+   9.2. MOBILE SMALL (≤480px)
+   ============================================================================
+   
+   DISPOSITIVOS: Smartphones pequenos
+   AJUSTES: Setas menos para fora, welcome-section reduzido, calendar stats vertical
+   
+   ============================================================================ */
 
 @media (max-width: 480px) {
+    
+    /* --- SETAS DO CARROSSEL --- */
+    .carousel-control-prev {
+        left: -20px !important; /* Era -40px do 767px - MENOS para fora */
+    }
+    
+    .carousel-control-next {
+        right: -20px !important; /* Era -40px do 767px - MENOS para fora */
+    }
+    
+    /* --- SEÇÃO DE BOAS-VINDAS --- */
+    .welcome-section {
+        padding: 30px 15px; /* Padding reduzido para mobile pequeno */
+        margin-bottom: 20px; /* Margem inferior reduzida para mobile pequeno */
+    }
+    
+    /* --- CALENDÁRIO - TEXTOS --- */
     .calendar-text-container .text-line {
-        font-size: 12px !important;
-        line-height: 1.2;
+        font-size: 12px !important; /* Fixo (não clamp) - mais previsível */
+        line-height: 1.2; /* Altura de linha */
     }
     
     .calendar-text-final .highlight {
-        font-size: 18px !important;
+        font-size: 18px !important; /* Palavra "NADA" - fixo */
     }
     
+    /* --- CALENDÁRIO - ESTATÍSTICAS --- */
     .calendar-stats {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 15px;
+        flex-direction: column; /* Era row do 767px - VERTICAL */
+        gap: 15px; /* Era 10px - AUMENTADO para espaçar verticalmente */
+        margin-top: 15px; /* Espaço acima */
     }
     
     .stat-item {
-        padding: 10px 15px;
+        padding: 10px 15px; /* Padding reduzido para mobile pequeno */
     }
     
     .stat-number {
-        font-size: 20px;
+        font-size: 20px; /* Era clamp(12-16px) do 767px - FIXO */
     }
     
     .stat-label {
-        font-size: 10px;
-        white-space: nowrap;
-        text-align: center;
+        font-size: 10px; /* Era clamp(8-10px) - FIXO */
+        white-space: nowrap; /* Não quebra */
+        text-align: center; /* Centraliza */
     }
 }
+
+
+/* ============================================================================
+   9.12. DESKTOP MEDIUM (≤1200px)
+   ============================================================================
+   
+   DISPOSITIVOS: Desktops médios, Notebooks
+   AJUSTES: Redução sutil de imagens e calendar widget
+   
+   ============================================================================ */
+
+@media (max-width: 1200px) {
+    
+    /* --- IMAGENS 3D --- */
+    .static-character {
+        width: 300px; /* Largura reduzida para desktop médio */
+        right: 30px; /* Posição ajustada para desktop médio */
+    }
+    
+    .popup-character {
+        width: 360px; /* Largura reduzida para desktop médio */
+        right: -30px; /* Posição ajustada para desktop médio */
+    }
+    
+    /* --- CALENDÁRIO MINI --- */
+    .mini-calendar-container {
+        width: 280px; /* Largura reduzida para desktop médio */
+        right: 30px; /* Posição ajustada para desktop médio */
+    }
+    
+    /* --- CALENDAR WIDGET --- */
+    .calendar-widget {
+        width: 280px; /* Largura reduzida para desktop médio */
+        right: 5px; /* Posição ajustada para desktop médio */
+    }
+    
+    .calendar-card {
+        padding: 35px 38px; /* Padding reduzido para desktop médio */
+    }
+}
+
+
+/* ============================================================================
+   9.10. DESKTOP SMALL (≤1024px)
+   ============================================================================
+   
+   DISPOSITIVOS: Tablets grandes, Desktops pequenos
+   AJUSTES: Calendar textos intermediários, setas ajustadas
+   
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    
+    /* --- SETAS DO CARROSSEL --- */
+    .carousel-control-prev {
+        left: -50px; /* Posição ajustada para desktop pequeno */
+    }
+    
+    .carousel-control-next {
+        right: -50px; /* Posição ajustada para desktop pequeno */
+    }
+    
+    /* --- CALENDAR WIDGET E CARD --- */
+    .calendar-widget {
+        width: 320px; /* Largura ajustada para desktop pequeno */
+        right: 0px; /* Alinhado */
+    }
+    
+    .calendar-card {
+        padding: 32px 36px; /* Padding reduzido para desktop pequeno */
+    }
+    
+    /* --- CALENDAR TEXTOS --- */
+    .calendar-text-container .text-line {
+        font-size: 20px !important; /* Tamanho de fonte reduzido para desktop pequeno */
+        line-height: 1.2; /* Altura de linha */
+    }
+    
+    .calendar-text-final .highlight {
+        font-size: 28px !important; /* Tamanho de fonte reduzido para desktop pequeno */
+    }
+}
+
+
+/* ============================================================================
+   9.9. DESKTOP SMALL (≤1000px)
+   ============================================================================
+   
+   DISPOSITIVOS: Tablets, Desktops pequenos
+   AJUSTES: Imagens e mini-calendar reduzidos
+   
+   ============================================================================ */
+
+@media (max-width: 1000px) {
+    
+    /* --- IMAGENS 3D --- */
+    .static-character {
+        width: 280px; /* Largura reduzida para desktop pequeno */
+        right: 20px; /* Posição ajustada para desktop pequeno */
+    }
+    
+    .popup-character {
+        width: 330px; /* Largura reduzida para desktop pequeno */
+        right: -20px; /* Posição ajustada para desktop pequeno */
+        top: -70px; /* Posição ajustada para desktop pequeno */
+    }
+    
+    /* --- CALENDÁRIO MINI --- */
+    .mini-calendar-container {
+        width: 260px; /* Largura reduzida para desktop pequeno */
+        right: 20px; /* Posição ajustada para desktop pequeno */
+    }
+}
+
+
+/* ============================================================================
+   9.7. TABLETS (≤900px)
+   ============================================================================
+   
+   DISPOSITIVOS: Tablets médios
+   AJUSTES: Shortcuts e calendar intermediários
+   
+   ============================================================================ */
+
+@media (max-width: 900px) {
+    
+    /* --- DASHBOARD SHORTCUTS --- */
+    .shortcut-row {
+        gap: 16px; /* Espaçamento reduzido para tablets */
+    }
+    
+    .shortcut-card {
+        padding: 24px 12px; /* Padding reduzido para tablets */
+    }
+    
+    /* --- CALENDAR CARD E WIDGET --- */
+    .calendar-card {
+        padding: 30px 35px; /* Padding reduzido para tablets */
+    }
+    
+    .calendar-widget {
+        width: 300px; /* Largura mantida para tablets */
+        right: 0px; /* Alinhado */
+    }
+}
+

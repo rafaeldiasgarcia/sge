@@ -44,7 +44,7 @@
         <section class="welcome-section">
             <div class="welcome-text">
                 <h1 class="welcome-title">SEJA BEM-VINDO</h1>
-                <h1 class="welcome-title">A NOSSA SALA DE EVENTOS!!!</h1>
+                <h1 class="welcome-title">A NOSSA SALA DE EVENTOS</h1>
             </div>
         </section>
 
