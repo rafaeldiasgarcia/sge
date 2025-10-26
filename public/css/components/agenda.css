@@ -1,192 +1,144 @@
-.icon-calender{
-    color: var(--orange-color) !important;
+/* =============================================================================
+   AGENDA (CSS LIMPO)
+   - Mantém compatibilidade com o JS existente (IDs/classes não alterados)
+   - Usa variáveis de cor já definidas em :root (blue/orange/background)
+   ========================================================================== */
+
+/* Ícone do título */
+.icon-calender { color: var(--orange-color) !important; }
+
+/* Cabeçalho e botão "Não Esportivos" (laranja) */
+.title-nao-esportivos {
+  background: var(--orange-color) !important;
+  color: #fff !important;
 }
 
-.title-nao-esportivos{
-    background: var(--orange-color);
-    color: #ffff;
-}
+/* Títulos/listas (mantém nomes para não quebrar markup) */
+.title-eventos-nao-es,
+.description-eventos-nao-es { color: #000; }
+.description-eventos-nao-es:hover { color: #000; }
 
-.title-nao-esportivos:hover{
-    background: var(--orange-color);
-    color: #ffff;
-}
+/* Data em destaque (laranja) */
+.data-card { color: var(--orange-color); }
 
-.title-eventos-nao-es{
-    color: black;
-}
+/* Borda arredondada suave para cards/list-items quando presente */
+.border-radius-card { border-radius: 6px; }
 
-.text-presence{
-    color: var(--blue-color);
-}
+/* Destaque laranja na borda + hover com laranja translúcido */
+.borda-card { border-color: var(--orange-color) !important; }
+.borda-card:hover { background: var(--orange-color-opacity) !important; }
 
-.description-eventos-nao-es{
-    color: black;
-}
+/* -----------------------------------------------------------------------------
+   Botões de PRESENÇA
+   - Mantém seletor .presenca-btn[data-action] usado pelo JS
+   -------------------------------------------------------------------------- */
 
-.description-eventos-nao-es:hover{
-    color: black;
-}
-
-.bg-info{
-    background-color: var(--blue-color) !important;
-}
-
-.data-card{
-    color: var(--orange-color);
-}
-
-/* Botão Marcar Presença - Laranja */
+/* Marcar (laranja) */
 .presenca-btn[data-action="marcar"] {
-    background: var(--orange-color) !important;
-    border-color: var(--orange-color) !important;
-    color: #fff !important;
+  background: var(--orange-color) !important;
+  border-color: var(--orange-color) !important;
+  color: #fff !important;
 }
-
 .presenca-btn[data-action="marcar"]:hover {
-    background: #d87120 !important;
-    border-color: #d87120 !important;
-    color: #fff !important;
+  background: #d87120 !important;
+  border-color: #d87120 !important;
 }
-
 .presenca-btn[data-action="marcar"]:active,
 .presenca-btn[data-action="marcar"]:focus {
-    background: #c66519 !important;
-    border-color: #c66519 !important;
-    color: #fff !important;
-    box-shadow: 0 0 0 0.25rem rgba(244, 127, 32, 0.25) !important;
+  background: #c66519 !important;
+  border-color: #c66519 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 .25rem rgba(244, 127, 32, .25) !important;
 }
 
-/* Botão Desmarcar Presença - Azul */
+/* Desmarcar (vermelho) */
 .presenca-btn[data-action="desmarcar"] {
-    background: red !important;
-    border-color: red !important;
-    color: #fff !important;
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #fff !important;
 }
-
 .presenca-btn[data-action="desmarcar"]:hover {
-    background: red !important;
-    border-color: red !important;
-    color: #fff !important;
+  background: #bb2d3b !important;
+  border-color: #b02a37 !important;
 }
-
 .presenca-btn[data-action="desmarcar"]:active,
 .presenca-btn[data-action="desmarcar"]:focus {
-    background: #004494 !important;
-    border-color: #004494 !important;
-    color: #fff !important;
-    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25) !important;
+  background: #a52834 !important;
+  border-color: #a52834 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 .25rem rgba(220, 53, 69, .25) !important;
 }
 
-.border-radius-card{
-    border-radius: 5px;
-}
-/* Estado desabilitado durante loading */
-.presenca-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+/* Loading state */
+.presenca-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+/* -----------------------------------------------------------------------------
+   Contador de presenças
+   - Mantém .badge.bg-info (o JS localiza por esse seletor)
+   - Se preferir não afetar globalmente, restrinja com .agenda-page .bg-info
+   -------------------------------------------------------------------------- */
+.bg-info {
+  background-color: var(--blue-color) !important;
+  color: #fff !important;
 }
 
-.borda-card{
-    border-color: var(--orange-color) !important;
-}
-
-.borda-card:hover{
-    background: var(--orange-color-opacity) !important;
-}
-
-/* Container dos botões de toggle */
+/* -----------------------------------------------------------------------------
+   Toggle de abas (esportivos x não esportivos)
+   - Mantém classes e IDs consumidos pelo JS
+   -------------------------------------------------------------------------- */
 .btn-eventos-container {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Ajustes para botões de eventos */
 .btn-evento-toggle {
-    min-height: 60px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    white-space: nowrap;
+  min-height: 56px;
+  padding: .75rem 1rem;
+  font-size: 1rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+.btn-evento-toggle i { font-size: 1.1rem; }
+.btn-evento-toggle .badge { font-size: .875rem; }
 
-.btn-evento-toggle .badge {
-    font-size: 0.875rem;
-}
-
-/* Estilos específicos para o botão não esportivo (laranja) */
 .btn-evento-toggle.title-nao-esportivos {
-    background: var(--orange-color);
-    border-color: var(--orange-color);
-    color: #fff;
+  background: var(--orange-color);
+  border-color: var(--orange-color);
+  color: #fff;
 }
-
 .btn-evento-toggle.title-nao-esportivos:hover {
-    background: var(--orange-color);
-    border-color: var(--orange-color);
-    color: #fff;
-    opacity: 0.95;
+  opacity: .95;
 }
-
 .btn-evento-toggle.title-nao-esportivos:active,
 .btn-evento-toggle.title-nao-esportivos:focus,
 .btn-evento-toggle.title-nao-esportivos.active {
-    background: #d87120 !important;
-    border-color: #d87120 !important;
-    color: #fff !important;
+  background: #d87120 !important;
+  border-color: #d87120 !important;
+  color: #fff !important;
 }
 
-/* Estado pressed (quando segurar o botão) */
-.btn-evento-toggle.title-nao-esportivos:active:focus {
-    background: #c66519 !important;
-    border-color: #c66519 !important;
-}
-
-/* Responsividade para tablets */
+/* -----------------------------------------------------------------------------
+   Responsividade (apenas o necessário)
+   -------------------------------------------------------------------------- */
 @media (max-width: 992px) {
-    .btn-evento-toggle {
-        font-size: 0.95rem;
-        padding: 0.65rem 0.85rem;
-    }
-    
-    .btn-evento-toggle .badge {
-        font-size: 0.8rem;
-    }
+  .btn-evento-toggle { font-size: .95rem; padding: .65rem .85rem; }
+  .btn-evento-toggle .badge { font-size: .8rem; }
 }
 
-/* Responsividade para mobile */
 @media (max-width: 768px) {
-    .btn-eventos-container {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .btn-evento-toggle {
-        width: 100%;
-        font-size: 0.9rem;
-        min-height: 50px;
-        padding: 0.6rem 0.75rem;
-    }
-    
-    .btn-evento-toggle i {
-        font-size: 1.1rem;
-    }
-    
-    .btn-evento-toggle .badge {
-        font-size: 0.75rem;
-        padding: 0.25em 0.5em;
-    }
+  .btn-eventos-container { flex-direction: column; gap: .75rem; }
+  .btn-evento-toggle {
+    width: 100%;
+    min-height: 50px;
+    font-size: .9rem;
+    padding: .6rem .75rem;
+  }
+  .btn-evento-toggle .badge { font-size: .75rem; padding: .25em .5em; }
 }
 
-/* Mobile pequeno */
 @media (max-width: 480px) {
-    .btn-evento-toggle {
-        font-size: 0.85rem;
-        padding: 0.5rem 0.6rem;
-    }
-    
-    .btn-evento-toggle span:not(.badge) {
-        display: inline-block;
-    }
+  .btn-evento-toggle { font-size: .85rem; padding: .5rem .6rem; }
 }
-
