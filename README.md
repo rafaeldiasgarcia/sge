@@ -817,7 +817,7 @@ docker-compose up -d
 - Container `php` inicia na porta 80
 - Container `mysql` inicia na porta 3306
 - Container `phpmyadmin` inicia na porta 8080
-- Composer instala dependências automaticamente
+- ✅ Composer instala dependências automaticamente via `entrypoint.sh`
 - MySQL executa `assets/data/0-schema.sql` criando a estrutura
 
 #### 3. Popular o Banco de Dados
@@ -854,6 +854,8 @@ docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_popul
 
 1. Clique em **Code** → **Codespaces** → **Create codespace**
 2. Aguarde inicialização (containers sobem automaticamente)
+   - ✅ Composer instala dependências automaticamente via `entrypoint.sh`
+   - ✅ Não precisa rodar comandos manuais!
 3. **Popular banco** (obrigatório):
    ```bash
    docker exec -i mysql mysql -uroot -prootpass application < assets/seeds/db_populate.sql
