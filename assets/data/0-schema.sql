@@ -1,44 +1,3 @@
--- ============================================================================
--- SCHEMA DO BANCO DE DADOS - SGE UNIFIO
--- Sistema de Gerenciamento de Eventos da Quadra Poliesportiva
--- ============================================================================
---
--- Este arquivo contém a estrutura completa do banco de dados da aplicação.
--- 
--- IMPORTANTE: Execute este arquivo ANTES de popular o banco com dados.
--- Ordem de execução: 1º schema.sql, 2º db_populate.sql
--- 
--- Versão do MySQL: 9.4.0
--- Charset: UTF8MB4 (suporte completo a Unicode, incluindo emojis)
--- Collation: utf8mb4_unicode_ci (case-insensitive, melhor ordenação)
---
--- Estrutura do Banco:
--- - usuarios: Usuários do sistema (alunos, professores, admins)
--- - atleticas: Organizações estudantis esportivas
--- - cursos: Cursos de graduação da instituição
--- - modalidades: Esportes disponíveis (Futsal, Vôlei, etc)
--- - agendamentos: Solicitações de uso da quadra
--- - presencas: Confirmações de presença em eventos
--- - inscricoes_modalidade: Inscrições de alunos em modalidades
--- - inscricoes_eventos: Inscrições de atletas em eventos específicos
--- - notificacoes: Sistema de notificações para usuários
---
--- Relacionamentos Principais:
--- - Cursos pertencem a Atléticas (N:1)
--- - Usuários pertencem a Cursos (N:1)
--- - Usuários podem ser membros de Atléticas
--- - Agendamentos são criados por Usuários
--- - Usuários marcam Presenças em Agendamentos
--- - Usuários se inscrevem em Modalidades
---
--- ===================================================================
--- CONFIGURAÇÕES DE CHARSET E COLLATION
--- UTF8MB4 suporta todos os caracteres Unicode, incluindo:
--- - Acentos (á, é, í, ó, ú, ã, õ, ç, etc.)
--- - Emojis (😀, 🎉, ⚽, etc.)
--- - Caracteres especiais de diversos idiomas
--- ===================================================================
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -51,28 +10,75 @@ SET character_set_results = utf8mb4;
 SET collation_connection = utf8mb4_unicode_ci;
 SET time_zone = "+00:00";
 
--- Cria o banco de dados com UTF8MB4
 CREATE DATABASE IF NOT EXISTS `application`
   DEFAULT CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE `application`;
 
--- Garante que a conexão atual também use UTF8MB4
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
---
--- Banco de dados: `application`
---
+-- ============================================================================
+-- TABELAS DO SISTEMA DE GERENCIAMENTO DE EVENTOS (SGE)
+-- ============================================================================
 
--- --------------------------------------------------------
+-- Organizações estudantis esportivas da instituição
+CREATE TABLE `atleticas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Estrutura para tabela `agendamentos`
---
+-- Modalidades esportivas disponíveis para agendamento
+CREATE TABLE `modalidades` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Usuários do sistema (alunos, professores, administradores)
+CREATE TABLE `usuarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ra` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `curso_id` int DEFAULT NULL,
+  `role` enum('usuario','admin','superadmin') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'usuario',
+  `atletica_id` int DEFAULT NULL,
+  `tipo_usuario_detalhado` enum('Membro das Atleticas','Professor','Aluno','Comunidade Externa') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_coordenador` tinyint(1) NOT NULL DEFAULT '0',
+  `atletica_join_status` enum('none','pendente','aprovado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
+  `login_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login_code_expires` datetime DEFAULT NULL,
+  `reset_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `ra` (`ra`),
+  KEY `curso_id` (`curso_id`),
+  KEY `atletica_id` (`atletica_id`),
+  CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cursos de graduação vinculados às atléticas
+CREATE TABLE `cursos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `atletica_id` int DEFAULT NULL,
+  `coordenador_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `atletica_id` (`atletica_id`),
+  KEY `coordenador_id` (`coordenador_id`),
+  CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `cursos_ibfk_2` FOREIGN KEY (`coordenador_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Solicitações de uso da quadra poliesportiva
 CREATE TABLE `agendamentos` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo_agendamento` enum('esportivo','nao_esportivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -96,139 +102,81 @@ CREATE TABLE `agendamentos` (
   `infraestrutura_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `foi_editado` tinyint(1) DEFAULT 0 COMMENT 'Indica se o agendamento foi editado após criação',
-  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento'
+  `observacoes_admin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Observações adicionadas pelo admin ao editar o evento',
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `atleticas`
---
-
-CREATE TABLE `atleticas` (
-  `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `cursos`
---
-
-CREATE TABLE `cursos` (
-  `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `atletica_id` int DEFAULT NULL,
-  `coordenador_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `inscricoes_eventos`
---
-
+-- Inscrições de atletas em eventos específicos
 CREATE TABLE `inscricoes_eventos` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `aluno_id` int NOT NULL,
   `evento_id` int NOT NULL,
   `atletica_id` int NOT NULL,
   `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'aprovado',
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+  `observacoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `aluno_evento_unique` (`aluno_id`,`evento_id`),
+  KEY `idx_evento` (`evento_id`),
+  KEY `idx_atletica` (`atletica_id`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `fk_inscricoes_eventos_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_inscricoes_eventos_atletica` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_inscricoes_eventos_evento` FOREIGN KEY (`evento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `inscricoes_modalidade`
---
-
+-- Inscrições de alunos em modalidades esportivas
 CREATE TABLE `inscricoes_modalidade` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `aluno_id` int NOT NULL,
   `modalidade_id` int NOT NULL,
   `atletica_id` int NOT NULL,
   `status` enum('pendente','aprovado','recusado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendente',
-  `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `aluno_id` (`aluno_id`,`modalidade_id`),
+  KEY `modalidade_id` (`modalidade_id`),
+  KEY `atletica_id` (`atletica_id`),
+  CONSTRAINT `inscricoes_modalidade_ibfk_1` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `inscricoes_modalidade_ibfk_2` FOREIGN KEY (`modalidade_id`) REFERENCES `modalidades` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `inscricoes_modalidade_ibfk_3` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `modalidades`
---
-
-CREATE TABLE `modalidades` (
-  `id` int NOT NULL,
-  `nome` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `presencas`
---
-
+-- Confirmações de presença em eventos agendados
 CREATE TABLE `presencas` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `agendamento_id` int NOT NULL,
-  `data_presenca` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `data_presenca` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usuario_id` (`usuario_id`,`agendamento_id`),
+  KEY `agendamento_id` (`agendamento_id`),
+  CONSTRAINT `presencas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `presencas_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `usuarios`
---
-
-CREATE TABLE `usuarios` (
-  `id` int NOT NULL,
-  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `senha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ra` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `data_nascimento` date DEFAULT NULL,
-  `telefone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `curso_id` int DEFAULT NULL,
-  `role` enum('usuario','admin','superadmin') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'usuario',
-  `atletica_id` int DEFAULT NULL,
-  `tipo_usuario_detalhado` enum('Membro das Atleticas','Professor','Aluno','Comunidade Externa') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_coordenador` tinyint(1) NOT NULL DEFAULT '0',
-  `atletica_join_status` enum('none','pendente','aprovado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
-  `login_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `login_code_expires` datetime DEFAULT NULL,
-  `reset_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reset_token_expires` datetime DEFAULT NULL  
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `notificacoes`
---
-
+-- Sistema de notificações para usuários
 CREATE TABLE `notificacoes` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `titulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `mensagem` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo` enum('agendamento_aprovado','agendamento_rejeitado','agendamento_cancelado','agendamento_cancelado_admin','agendamento_editado','agendamento_alterado','presenca_confirmada','lembrete_evento','evento_cancelado_campeonato','info','aviso','sistema') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `agendamento_id` int DEFAULT NULL,
   `lida` tinyint(1) NOT NULL DEFAULT '0',
-  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `agendamento_id` (`agendamento_id`),
+  CONSTRAINT `notificacoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `notificacoes_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `solicitacoes_troca_curso`
---
-
+-- Solicitações de troca de curso pelos usuários
 CREATE TABLE `solicitacoes_troca_curso` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `curso_atual_id` int DEFAULT NULL,
   `curso_novo_id` int NOT NULL,
@@ -237,221 +185,22 @@ CREATE TABLE `solicitacoes_troca_curso` (
   `data_solicitacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_resposta` timestamp NULL DEFAULT NULL,
   `respondido_por` int DEFAULT NULL COMMENT 'ID do super admin que respondeu',
-  `justificativa_resposta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Justificativa do super admin para recusa'
+  `justificativa_resposta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Justificativa do super admin para recusa',
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `curso_atual_id` (`curso_atual_id`),
+  KEY `curso_novo_id` (`curso_novo_id`),
+  KEY `respondido_por` (`respondido_por`),
+  CONSTRAINT `solicitacoes_troca_curso_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `solicitacoes_troca_curso_ibfk_2` FOREIGN KEY (`curso_atual_id`) REFERENCES `cursos` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `solicitacoes_troca_curso_ibfk_3` FOREIGN KEY (`curso_novo_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `solicitacoes_troca_curso_ibfk_4` FOREIGN KEY (`respondido_por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Índices para tabelas despejadas
---
-
---
--- Índices de tabela `agendamentos`
---
-ALTER TABLE `agendamentos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`);
-
---
--- Índices de tabela `atleticas`
---
-ALTER TABLE `atleticas`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `cursos`
---
-ALTER TABLE `cursos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `atletica_id` (`atletica_id`),
-  ADD KEY `coordenador_id` (`coordenador_id`);
-
---
--- Índices de tabela `inscricoes_eventos`
---
-ALTER TABLE `inscricoes_eventos`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `aluno_evento_unique` (`aluno_id`,`evento_id`),
-  ADD KEY `idx_evento` (`evento_id`),
-  ADD KEY `idx_atletica` (`atletica_id`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Índices de tabela `inscricoes_modalidade`
---
-ALTER TABLE `inscricoes_modalidade`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `aluno_id` (`aluno_id`,`modalidade_id`),
-  ADD KEY `modalidade_id` (`modalidade_id`),
-  ADD KEY `atletica_id` (`atletica_id`);
-
---
--- Índices de tabela `modalidades`
---
-ALTER TABLE `modalidades`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `presencas`
---
-ALTER TABLE `presencas`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `usuario_id` (`usuario_id`,`agendamento_id`),
-  ADD KEY `agendamento_id` (`agendamento_id`);
-
---
--- Índices de tabela `usuarios`
---
+-- Constraint adicional para dependência circular
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `ra` (`ra`),
-  ADD KEY `curso_id` (`curso_id`),
-  ADD KEY `atletica_id` (`atletica_id`);
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`);
 
---
--- Índices de tabela `notificacoes`
---
-ALTER TABLE `notificacoes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `agendamento_id` (`agendamento_id`);
-
---
--- Índices de tabela `solicitacoes_troca_curso`
---
-ALTER TABLE `solicitacoes_troca_curso`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `curso_atual_id` (`curso_atual_id`),
-  ADD KEY `curso_novo_id` (`curso_novo_id`),
-  ADD KEY `respondido_por` (`respondido_por`);
-
---
--- AUTO_INCREMENT para tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `agendamentos`
---
-ALTER TABLE `agendamentos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `atleticas`
---
-ALTER TABLE `atleticas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de tabela `cursos`
---
-ALTER TABLE `cursos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de tabela `inscricoes_eventos`
---
-ALTER TABLE `inscricoes_eventos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `inscricoes_modalidade`
---
-ALTER TABLE `inscricoes_modalidade`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `modalidades`
---
-ALTER TABLE `modalidades`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `presencas`
---
-ALTER TABLE `presencas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `notificacoes`
---
-ALTER TABLE `notificacoes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `solicitacoes_troca_curso`
---
-ALTER TABLE `solicitacoes_troca_curso`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- Restrições para tabelas despejadas
---
-
---
--- Restrições para tabelas `agendamentos`
---
-ALTER TABLE `agendamentos`
-  ADD CONSTRAINT `agendamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `cursos`
---
-ALTER TABLE `cursos`
-  ADD CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `cursos_ibfk_2` FOREIGN KEY (`coordenador_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
-
---
--- Restrições para tabelas `inscricoes_eventos`
---
-ALTER TABLE `inscricoes_eventos`
-  ADD CONSTRAINT `fk_inscricoes_eventos_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_inscricoes_eventos_atletica` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_inscricoes_eventos_evento` FOREIGN KEY (`evento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `inscricoes_modalidade`
---
-ALTER TABLE `inscricoes_modalidade`
-  ADD CONSTRAINT `inscricoes_modalidade_ibfk_1` FOREIGN KEY (`aluno_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `inscricoes_modalidade_ibfk_2` FOREIGN KEY (`modalidade_id`) REFERENCES `modalidades` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `inscricoes_modalidade_ibfk_3` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `presencas`
---
-ALTER TABLE `presencas`
-  ADD CONSTRAINT `presencas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `presencas_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`),
-  ADD CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`atletica_id`) REFERENCES `atleticas` (`id`);
-
---
--- Restrições para tabelas `notificacoes`
---
-ALTER TABLE `notificacoes`
-  ADD CONSTRAINT `notificacoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `notificacoes_ibfk_2` FOREIGN KEY (`agendamento_id`) REFERENCES `agendamentos` (`id`) ON DELETE SET NULL;
-
---
--- Restrições para tabelas `solicitacoes_troca_curso`
---
-ALTER TABLE `solicitacoes_troca_curso`
-  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_2` FOREIGN KEY (`curso_atual_id`) REFERENCES `cursos` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_3` FOREIGN KEY (`curso_novo_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `solicitacoes_troca_curso_ibfk_4` FOREIGN KEY (`respondido_por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
