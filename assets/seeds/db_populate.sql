@@ -735,8 +735,8 @@ INSERT INTO `notificacoes` (`usuario_id`, `titulo`, `mensagem`, `tipo`, `agendam
 (13, 'Lembrete de Evento', 'Seu evento "Treino League of Legends - ALFA" começa em 1 hora.', 'lembrete_evento', 33, 0, '2025-11-05 18:15:00'),
 (12, 'Presença Confirmada', 'Sua presença no evento "Treino Vôlei Feminino - PREDADORA" foi registrada.', 'presenca_confirmada', 42, 0, '2025-11-04 22:55:00'),
 (17, 'Agendamento Rejeitado', 'Seu agendamento "Uso da quadra para Lazer" foi rejeitado. Motivo: Horário reservado para treinos oficiais.', 'agendamento_rejeitado', 39, 0, '2025-11-01 16:20:00'),
-(1, '⚠️ Agendamento Editado', 'O agendamento "Treino Futsal Masculino - FURIOSA" (anteriormente aprovado) foi editado por Admin Atletica Teste e retornou para análise.', 'agendamento_editado', 41, 0, '2025-11-03 14:30:00'),
-(1, '⚠️ Agendamento Editado', 'O agendamento "Amistoso Vôlei vs IMPÉRIO" (anteriormente pendente) foi editado por Professor Teste e retornou para análise.', 'agendamento_editado', 36, 0, '2025-11-02 16:45:00'),
+(1, '⚠️ Agendamento Editado', 'O agendamento "Treino Futsal Masculino - FURIOSA" (anteriormente aprovado) foi editado por Admin Atletica Teste e retornou para análise.', 'agendamento_editado', 41, 0, '2025-10-03 14:30:00'),
+(1, '⚠️ Agendamento Editado', 'O agendamento "Amistoso Vôlei vs IMPÉRIO" (anteriormente pendente) foi editado por Professor Teste e retornou para análise.', 'agendamento_editado', 36, 0, '2025-10-02 16:45:00'),
 
 -- Notificações Informativas Gerais
 (11, 'Aviso Importante', 'Os treinos de futsal serão intensificados devido à proximidade do Intercursos.', 'aviso', NULL, 0, '2025-11-02 09:00:00'),

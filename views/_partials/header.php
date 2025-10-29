@@ -32,7 +32,7 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
 
           <!-- Painel -->
           <li class="nav-item">
-            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/dashboard">
+            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/dashboard" title="Painel" aria-label="Painel">
               <i class="bi bi-house fs-5"></i>
               <span class="d-lg-none ms-1">Painel</span>
             </a>
@@ -40,7 +40,7 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
 
           <!-- Agenda -->
           <li class="nav-item">
-            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agenda">
+            <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agenda" title="Agenda" aria-label="Agenda">
               <i class="bi bi-calendar-week fs-5"></i>
               <span class="d-lg-none ms-1">Agenda</span>
             </a>
@@ -49,19 +49,19 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
           <!-- Itens por função -->
           <?php if (Auth::role() === 'superadmin'): ?>
             <li class="nav-item">
-              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/dashboard">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/dashboard" title="Admin" aria-label="Admin">
                 <i class="bi bi-gear fs-5"></i>
                 <span class="d-lg-none ms-1">Admin</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento" title="Agendar" aria-label="Agendar">
                 <i class="bi bi-calendar-plus fs-5"></i>
                 <span class="d-lg-none ms-1">Agendar</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/relatorios">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/superadmin/relatorios" title="Relatórios" aria-label="Relatórios">
                 <i class="bi bi-file-earmark-bar-graph fs-5"></i>
                 <span class="d-lg-none ms-1">Relatórios</span>
               </a>
@@ -69,13 +69,13 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
 
           <?php elseif (Auth::role() === 'admin'): ?>
             <li class="nav-item">
-              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/admin/atletica/dashboard">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/admin/atletica/dashboard" title="Atlética" aria-label="Atlética">
                 <i class="bi bi-trophy fs-5"></i>
                 <span class="d-lg-none ms-1">Atlética</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+              <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento" title="Agendar" aria-label="Agendar">
                 <i class="bi bi-calendar-plus fs-5"></i>
                 <span class="d-lg-none ms-1">Agendar</span>
               </a>
@@ -85,7 +85,7 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
             <?php $is_coordenador = Auth::get('is_coordenador'); ?>
             <?php if ((int)$is_coordenador === 1): ?>
               <li class="nav-item">
-                <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento">
+                <a class="nav-link d-flex flex-column flex-lg-row align-items-center justify-content-center" href="/agendar-evento" title="Agendar" aria-label="Agendar">
                   <i class="bi bi-calendar-plus fs-5"></i>
                   <span class="d-lg-none ms-1">Agendar</span>
                 </a>
@@ -99,16 +99,13 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
             $notifMenuId   = 'notification-menu';
           ?>
           <li class="nav-item dropdown notifications">
-            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center"
+            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center" title="Notificações" aria-label="Notificações"
                href="#" id="<?= $notifToggleId ?>"
                data-bs-toggle="dropdown" role="button"
                aria-haspopup="true" aria-expanded="false"
                aria-controls="<?= $notifMenuId ?>">
               <i class="bi bi-bell fs-5"></i>
-              <span class="position-relative">
-                <span class="visually-hidden">Notificações</span>
-                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"></span>
-              </span>
+              <span class="visually-hidden">Notificações</span>
               <span class="d-lg-none ms-1">Notificações</span>
             </a>
             <div class="dropdown-menu dropdown-menu-end p-0" id="<?= $notifMenuId ?>" aria-labelledby="<?= $notifToggleId ?>" role="menu" style="min-width:360px; max-width:420px;">
@@ -125,7 +122,7 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
             $userMenuId   = 'user-menu';
           ?>
           <li class="nav-item dropdown user-menu-item">
-            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center"
+            <a class="nav-link dropdown-toggle d-flex flex-column flex-lg-row align-items-center justify-content-center" title="Perfil" aria-label="Perfil"
                href="#" id="<?= $userToggleId ?>"
                data-bs-toggle="dropdown" role="button"
                aria-haspopup="true" aria-expanded="false"

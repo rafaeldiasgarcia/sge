@@ -52,6 +52,42 @@
       });
     }
 
+    function initHoverDropdown(dropdown, toggle, menu){
+      // Remover controle do Bootstrap para usar hover
+      toggle.removeAttribute('data-bs-toggle');
+      toggle.setAttribute('data-manual-dropdown','true');
+      
+      let hoverTimeout;
+      
+      // Hover para abrir
+      dropdown.addEventListener('mouseenter', function(){
+        if(!isDesktop()) return;
+        clearTimeout(hoverTimeout);
+        openDropdown(dropdown, {viaHover: true});
+      });
+      
+      // Mouse leave para fechar
+      dropdown.addEventListener('mouseleave', function(){
+        if(!isDesktop()) return;
+        hoverTimeout = setTimeout(() => {
+          closeDropdown(dropdown);
+        }, 100);
+      });
+      
+      // Click para toggle em mobile
+      toggle.addEventListener('click', function(e){
+        e.preventDefault();
+        if(isDesktop()) return;
+        
+        const isOpen = menu.classList.contains('show');
+        if(isOpen){
+          closeDropdown(dropdown);
+        } else {
+          openDropdown(dropdown);
+        }
+      });
+    }
+
     function takeOverFromBootstrap(toggle){
       if(toggle.hasAttribute('data-bs-toggle')){
         toggle.removeAttribute('data-bs-toggle');
@@ -82,6 +118,12 @@
         const menu=dropdown.querySelector('.dropdown-menu');
         const toggle=dropdown.querySelector('.dropdown-toggle, [data-bs-toggle="dropdown"]');
         if(!menu||!toggle)return;
+
+        // Configurar hover para notificações e perfil
+        if(dropdown.classList.contains('notifications') || dropdown.classList.contains('user-menu-item')){
+          initHoverDropdown(dropdown, toggle, menu);
+          return;
+        }
 
         takeOverFromBootstrap(toggle);
         ensureA11y(dropdown,toggle,menu);
@@ -138,24 +180,60 @@
       const navbarCollapse=document.querySelector('.navbar-collapse');
       const navbarToggler=document.querySelector('.navbar-toggler');
       if(!navbarCollapse||!navbarToggler)return;
-      navbarCollapse.addEventListener('show.bs.collapse',()=>document.body.classList.add('menu-open'));
-      navbarCollapse.addEventListener('hide.bs.collapse',()=>document.body.classList.remove('menu-open'));
+      
+      // Não adicionar classe no body para o menu compacto
       navbarCollapse.addEventListener('show.bs.collapse',function(){
         const eventPopup=document.querySelector('.event-popup-overlay');
         if(eventPopup&&eventPopup.classList.contains('active'))eventPopup.classList.remove('active');
       });
+      
+      // Fechar menu ao clicar em links
       navbarCollapse.querySelectorAll('a.nav-link:not(.dropdown-toggle),a.dropdown-item').forEach(link=>{
-        link.addEventListener('click',e=>{e.stopPropagation();},true);
+        link.addEventListener('click',function(e){
+          e.stopPropagation();
+          // Fechar menu após um pequeno delay para permitir navegação
+          setTimeout(() => {
+            if(navbarCollapse.classList.contains('show')){
+              navbarToggler.click();
+            }
+          }, 100);
+        },true);
       });
+      
+      // Fechar menu ao clicar fora dele
       document.addEventListener('click',function(e){
         if(navbarCollapse.classList.contains('show')){
           const isDropdownClick=e.target.closest('.nav-item.dropdown');
-          if(!navbarCollapse.contains(e.target)&&!navbarToggler.contains(e.target)&&!isDropdownClick){navbarToggler.click();}
+          if(!navbarCollapse.contains(e.target)&&!navbarToggler.contains(e.target)&&!isDropdownClick){
+            navbarToggler.click();
+          }
+        }
+      });
+      
+      // Fechar menu ao redimensionar a tela
+      window.addEventListener('resize', function() {
+        if(window.innerWidth > 991.98 && navbarCollapse.classList.contains('show')){
+          navbarToggler.click();
         }
       });
     }
 
+    function initTooltips() {
+      // Inicializar tooltips do Bootstrap apenas em desktop
+      if (window.innerWidth > 991.98) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl, {
+            placement: 'bottom',
+            trigger: 'hover',
+            delay: { show: 0, hide: 0 }
+          });
+        });
+      }
+    }
+
     initDropdowns();
     initMobileMenu();
+    initTooltips();
   });
 })();

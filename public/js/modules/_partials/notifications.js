@@ -1,16 +1,16 @@
 /**
- * Sistema de Notificações em Tempo Real
+ * Sistema de Notificações em Tempo Real - Versão Refatorada
  * 
  * Implementa um sistema de notificações assíncronas usando AJAX e polling.
  * As notificações são atualizadas automaticamente sem necessidade de recarregar a página.
  * 
  * Funcionalidades:
  * - Polling automático a cada 30 segundos
- * - Badge com contador de não lidas
- * - Dropdown com lista de notificações
- * - Marcar notificações como lidas individualmente ou em massa
- * - Ícones personalizados por tipo de notificação
- * - Som de notificação (opcional)
+ * - Badge laranja no sininho quando há notificações não lidas
+ * - Menu ordenado por data (mais nova primeiro)
+ * - Notificações não lidas destacadas visualmente
+ * - Marcar como lida ao passar o mouse (hover)
+ * - Persistência do estado de não lida até o hover
  * 
  * Tipos de Notificação Suportados:
  * - agendamento_aprovado: ✅ Seu agendamento foi aprovado
@@ -26,41 +26,37 @@
  * - POST /notifications/read - Marca como lida
  * 
  * @class SimpleNotifications
- * @version 2.0
+ * @version 3.0
  */
 
 class SimpleNotifications {
     constructor() {
-        this.badge = null;
         this.bell = null;
         this.dropdown = null;
         this.list = null;
         this.markAllBtn = null;
         this.isOpen = false;
         this.notificationContainer = null; // Container que engloba o sino e o dropdown
+        this.unreadCount = 0; // Contador de notificações não lidas
+        this.hoveredNotifications = new Set(); // IDs das notificações que foram hovered
 
         this.init();
     }
 
     init() {
         // Buscar elementos
-        this.badge = document.getElementById('notification-badge');
         this.bell = document.getElementById('notification-bell');
         this.dropdown = document.getElementById('notification-dropdown');
         this.list = document.getElementById('notification-list');
-    // botão removido do template — mantemos compatibilidade caso exista
-    this.markAllBtn = document.getElementById('mark-all-read');
+        // botão removido do template — mantemos compatibilidade caso exista
+        this.markAllBtn = document.getElementById('mark-all-read');
         this.notificationContainer = document.querySelector('.notifications'); // li.nav-item.notifications
 
-        if (!this.badge || !this.bell) {
+        if (!this.bell) {
             return;
         }
 
-        // Garantir que o badge inicie COMPLETAMENTE escondido
-        this.badge.classList.remove('show', 'active');
-        this.badge.style.display = 'none';
-        this.badge.style.visibility = 'hidden';
-        this.badge.style.opacity = '0';
+        // Não precisamos mais do badge - o ícone do sino mudará de cor
 
         // Configurar eventos
         this.setupEvents();
@@ -74,6 +70,22 @@ class SimpleNotifications {
         }, 30000);
     }
 
+    updateBellColor(count) {
+        this.unreadCount = count;
+        if (this.bell) {
+            const bellIcon = this.bell.querySelector('i');
+            if (bellIcon) {
+                if (count > 0) {
+                    // Adicionar classe para notificações não lidas
+                    bellIcon.classList.add('has-notifications');
+                } else {
+                    // Remover classe quando não há notificações não lidas
+                    bellIcon.classList.remove('has-notifications');
+                }
+            }
+        }
+    }
+
     setupEvents() {
         // Mouse entra na área das notificações (sino ou dropdown)
         if (this.notificationContainer) {
@@ -83,10 +95,7 @@ class SimpleNotifications {
 
             this.notificationContainer.addEventListener('mouseleave', () => {
                 this.closeDropdown();
-                // Marcar todas como lidas quando o mouse sair
-                if (this.badge && this.badge.classList.contains('active')) {
-                    this.markAllAsRead();
-                }
+                // NÃO marcar como lida automaticamente - apenas ao hover individual
             });
         }
 
@@ -161,25 +170,11 @@ class SimpleNotifications {
             const data = await response.json();
 
             if (data.success) {
-                this.updateBadge(data.unreadCount);
                 this.updateList(data.notifications);
+                this.updateBellColor(data.unreadCount || 0);
             }
         } catch (error) {
             console.error('Erro ao carregar notificações:', error);
-        }
-    }
-
-    updateBadge(count) {
-        if (!this.badge) return;
-
-        if (count > 0) {
-            // Mostrar badge com número usando a nova classe 'active'
-            this.badge.textContent = count > 99 ? '99+' : count.toString();
-            this.badge.classList.add('active');
-        } else {
-            // Esconder badge completamente
-            this.badge.classList.remove('active');
-            this.badge.textContent = '';
         }
     }
 
@@ -191,27 +186,52 @@ class SimpleNotifications {
             return;
         }
 
+        // As notificações já vêm ordenadas do backend por data_criacao DESC, id DESC
+        // Não precisamos reordenar no frontend
+        const sortedNotifications = notifications;
+
         let html = '';
-        notifications.forEach(notification => {
+        sortedNotifications.forEach(notification => {
             const isUnread = notification.lida == 0;
+            const wasHovered = this.hoveredNotifications.has(notification.id);
+            const shouldHighlight = isUnread && !wasHovered; // Destacar apenas se não lida E não foi hovered
             const timeAgo = this.getTimeAgo(notification.data_criacao);
 
             html += `
-                <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notification.id}">
-                    <h6>${this.escapeHtml(notification.titulo)}</h6>
-                    <p>${this.escapeHtml(notification.mensagem)}</p>
-                    <small>${timeAgo}</small>
-                    ${isUnread ? '<span class="badge bg-warning ms-2">Nova</span>' : ''}
+                <div class="notification-item ${shouldHighlight ? 'unread' : ''}" 
+                     data-id="${notification.id}" 
+                     data-unread="${isUnread ? 'true' : 'false'}">
+                    <div class="notification-content">
+                        <h6>${this.escapeHtml(notification.titulo)}</h6>
+                        <p>${this.escapeHtml(notification.mensagem)}</p>
+                        <small>${timeAgo}</small>
+                    </div>
+                    ${shouldHighlight ? '<span class="notification-indicator"></span>' : ''}
                 </div>
             `;
         });
 
         this.list.innerHTML = html;
 
-        // Adicionar eventos de clique
-        this.list.querySelectorAll('.notification-item.unread').forEach(item => {
-            item.addEventListener('click', () => {
-                this.markAsRead(item.dataset.id);
+        // Adicionar eventos de hover para marcar como lida
+        this.list.querySelectorAll('.notification-item[data-unread="true"]').forEach(item => {
+            const notificationId = item.dataset.id;
+            
+            item.addEventListener('mouseenter', () => {
+                // Marcar como hovered
+                this.hoveredNotifications.add(notificationId);
+                
+                // Remover destaque visual
+                item.classList.remove('unread');
+                
+                // Remover indicador visual
+                const indicator = item.querySelector('.notification-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+                
+                // Marcar como lida no backend
+                this.markAsRead(notificationId);
             });
         });
     }
@@ -281,10 +301,8 @@ class SimpleNotifications {
             this.dropdown.style.display = 'none';
             this.isOpen = false;
             
-            // Marcar todas como lidas quando o dropdown FECHAR
-            if (this.badge && this.badge.classList.contains('active')) {
-                this.markAllAsRead();
-            }
+            // NÃO marcar todas como lidas automaticamente
+            // As notificações só são marcadas como lidas ao passar o mouse sobre elas
         }
     }
 
@@ -297,7 +315,12 @@ class SimpleNotifications {
             });
 
             if (response.ok) {
-                // Recarregar notificações
+                // Atualizar contador local
+                if (this.unreadCount > 0) {
+                    this.updateBellColor(this.unreadCount - 1);
+                }
+                
+                // Recarregar notificações para sincronizar com o backend
                 this.loadNotifications();
             }
         } catch (error) {

@@ -46,7 +46,7 @@ class NotificationRepository
         $sql = "SELECT id, titulo, mensagem, tipo, data_criacao, lida
                 FROM notificacoes
                 WHERE usuario_id = :user_id 
-                ORDER BY data_criacao DESC
+                ORDER BY UNIX_TIMESTAMP(data_criacao) DESC, id DESC
                 LIMIT :limit_val";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
@@ -96,19 +96,22 @@ class NotificationRepository
 
     public function createForMultipleUsers(array $userIds, string $titulo, string $mensagem, string $tipo, int $agendamentoId = null): bool
     {
-        $placeholders = str_repeat('(?, ?, ?, ?, ?),', count($userIds));
+        $placeholders = str_repeat('(?, ?, ?, ?, ?, ?),', count($userIds));
         $placeholders = rtrim($placeholders, ',');
 
-        $sql = "INSERT INTO notificacoes (usuario_id, titulo, mensagem, tipo, agendamento_id) VALUES $placeholders";
+        $sql = "INSERT INTO notificacoes (usuario_id, titulo, mensagem, tipo, agendamento_id, data_criacao) VALUES $placeholders";
         $stmt = $this->pdo->prepare($sql);
 
         $values = [];
-        foreach ($userIds as $userId) {
+        $baseTime = time();
+        foreach ($userIds as $index => $userId) {
             $values[] = $userId;
             $values[] = $titulo;
             $values[] = $mensagem;
             $values[] = $tipo;
             $values[] = $agendamentoId;
+            // Adicionar microsegundos para garantir ordenação correta
+            $values[] = date('Y-m-d H:i:s', $baseTime + $index);
         }
 
         return $stmt->execute($values);
