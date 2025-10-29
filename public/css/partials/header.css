@@ -303,6 +303,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-direction: column; /* texto abaixo do ícone */
+    justify-content: center;
   }
 
   /* Mover o caret (setinha) para a esquerda no mobile */
@@ -329,7 +331,6 @@
     font-size: 1rem;
     font-weight: 300;
     -webkit-text-stroke: 0.2px transparent;
-    text-stroke: 0.2px transparent;
     filter: contrast(0.7) brightness(1.1);
   }
   
@@ -342,6 +343,8 @@
     display: block;
     font-size: 0.9rem;
     font-weight: 500;
+    margin-left: 0 !important; /* evitar empurrar para o lado em mobile */
+    margin-top: 0.15rem;
   }
   
   /* Dropdowns dentro do menu mobile - abrem para a esquerda */
