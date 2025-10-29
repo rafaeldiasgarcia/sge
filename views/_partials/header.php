@@ -105,10 +105,7 @@ $collapseId = $isGuest ? 'navbarNav-guest' : 'navbarNav-auth';
                aria-haspopup="true" aria-expanded="false"
                aria-controls="<?= $notifMenuId ?>">
               <i class="bi bi-bell fs-5"></i>
-              <span class="position-relative">
-                <span class="visually-hidden">Notificações</span>
-                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"></span>
-              </span>
+              <span class="visually-hidden">Notificações</span>
               <span class="d-lg-none ms-1">Notificações</span>
             </a>
             <div class="dropdown-menu dropdown-menu-end p-0" id="<?= $notifMenuId ?>" aria-labelledby="<?= $notifToggleId ?>" role="menu" style="min-width:360px; max-width:420px;">

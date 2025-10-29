@@ -61,7 +61,7 @@ class NotificationController extends BaseController
 
         $repo = $this->repository('NotificationRepository');
         $userId = (int) Auth::id();
-        $notifications = $repo->findByUserId($userId);
+        $notifications = $repo->findByUserId($userId, 20); // Aumentar limite para mostrar mais notificações
         $unreadCount = $repo->countUnread($userId);
 
         $this->jsonResponse([

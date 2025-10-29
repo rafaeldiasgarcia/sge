@@ -1,4 +1,4 @@
-/* ===== Notifications — CSS mínimo ===== */
+/* ===== Notifications — CSS Refatorado ===== */
 
 /* Dropdown das notificações (usa .dropdown-menu do Bootstrap) */
 .notification-dropdown {
@@ -18,21 +18,31 @@
   }
 }
 
-/* Badge do sino (usa o #notification-badge esperado pelo JS) */
-#notification-badge {
-  min-width: 18px;
+/* Badge laranja no sino */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #F28100 !important;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
   height: 18px;
-  padding: 0 4px;
-  font-size: 0.7rem;
-  border-radius: 999px;
-  display: inline-flex;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Esconde o badge quando vazio */
-#notification-badge:empty {
-  display: none;
+.notification-badge.show {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Itens da lista */
@@ -40,9 +50,13 @@
   padding: 12px 16px;
   border-bottom: 1px solid #e9ecef;
   cursor: pointer;
-  transition: background-color .15s ease-in-out;
+  transition: all 0.3s ease;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .notification-item:last-child {
@@ -53,10 +67,43 @@
   background-color: #f8f9fa;
 }
 
-/* Destaque para não lida */
+/* Destaque visual para não lidas */
 .notification-item.unread {
   background-color: #fff3cd;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #F28100;
+  font-weight: 500;
+}
+
+/* Conteúdo da notificação */
+.notification-content {
+  flex: 1;
+  min-width: 0; /* Permite que o texto quebre */
+}
+
+/* Indicador visual de nova notificação */
+.notification-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: #F28100;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Tipografia básica dentro do item */
@@ -67,10 +114,20 @@
   color: #333;
 }
 
+.notification-item.unread h6 {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
 .notification-item p {
   margin: 0 0 6px 0;
   font-size: 0.85rem;
   color: #666;
+  line-height: 1.4;
+}
+
+.notification-item.unread p {
+  color: #444;
 }
 
 .notification-item small {
@@ -100,4 +157,24 @@
   text-align: center;
   padding: 40px 20px;
   color: #6c757d;
+}
+
+/* Animação suave para mudanças de estado */
+.notification-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-item.unread {
+  animation: slideInHighlight 0.5s ease-out;
+}
+
+@keyframes slideInHighlight {
+  0% {
+    background-color: transparent;
+    border-left-color: transparent;
+  }
+  100% {
+    background-color: #fff3cd;
+    border-left-color: #F28100;
+  }
 }
