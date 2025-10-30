@@ -1,9 +1,12 @@
 {
-    "name": "SGE",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-    "postCreateCommand": "if [ ! -f vendor/autoload.php ]; then composer install --no-interaction; fi",
-    "forwardPorts": [80, 8080, 3306]
+  "name": "SGE Docker Codespace",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "postStartCommand": "docker-compose up -d && docker exec -it sge-php composer install",
+  "forwardPorts": [80, 3306, 8080],
+  "features": {
+    "docker-in-docker": "latest"
+  }
 }
