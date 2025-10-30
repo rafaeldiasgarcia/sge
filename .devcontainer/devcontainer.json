@@ -2,9 +2,9 @@
   "name": "SGE Docker Codespace",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": "."
+    "context": ".."
   },
-  "postStartCommand": "docker-compose up -d && docker exec -it sge-php composer install",
+  "postStartCommand": "docker-compose up -d && docker exec php composer install",
   "forwardPorts": [80, 3306, 8080],
   "features": {
     "docker-in-docker": "latest"
