@@ -21,8 +21,8 @@
 
     <!-- Título simples (opcional) -->
     <header class="mb-4 text-center text-md-start">
-      <h1 class="h3 fw-bold m-0">Bem-vindo(a) à Sala de Eventos</h1>
-      <p class="text-muted mb-0">Acesse os principais atalhos e acompanhe seus próximos eventos.</p>
+      <h1 class="h1 fw-bold m-0 text-center gradient-title">BEM-VINDO À NOSSA SALA DE EVENTOS</h1>
+      <p class="text-muted h5 fw-bold mb-0 text-center gradient-title">Acesse os principais atalhos e acompanhe seus próximos eventos.</p>
     </header>
 
     <?php
@@ -35,10 +35,10 @@
       <!-- Agenda dos Eventos (todos) -->
       <div class="col-12 col-md-6 col-xl-3">
         <div class="card h-100 shadow-sm border-0">
-          <div class="card-body d-flex flex-column">
+          <div class="card-body d-flex flex-column shadow-lg rounded card-config border-1">
             <h5 class="card-title d-flex align-items-center gap-2 mb-2">
               <i class="bi bi-calendar-check-fill text-primary"></i>
-              Agenda dos Eventos
+              AGENDA DOS EVENTOS
             </h5>
             <p class="card-text text-muted">Confira os próximos eventos e marque sua presença.</p>
             <a href="/agenda" class="btn btn-primary mt-auto">Ver Agenda</a>
@@ -109,9 +109,9 @@
     <!-- /Atalhos -->
 
     <!-- Próximos eventos com presença marcada -->
-    <div class="mt-4">
+    <div class="mt-4 borda-config">
       <div class="card border-0 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-text-config text-white">
           <h5 class="mb-0 d-flex align-items-center gap-2">
             <i class="bi bi-calendar-check"></i>
             Próximos Eventos (Presença Marcada)
@@ -128,7 +128,7 @@
               <!-- Esportivos -->
               <div class="col-12 col-lg-6">
                 <h6 class="fw-bold d-flex align-items-center gap-2 mb-3">
-                  <i class="bi bi-trophy text-success"></i>
+                  <i class="bi bi-trophy trophy-config"></i>
                   Próximo evento esportivo
                 </h6>
                 <?php
@@ -141,7 +141,7 @@
                   <div class="text-muted small">Nenhum evento esportivo confirmado</div>
                 <?php else: ?>
                   <?php foreach ($eventosEsportivos as $evento): ?>
-                    <div class="card mb-3 border-primary shadow-sm event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
+                    <div class="card mb-3 border-primary shadow-sm event-clickable card-presence-config" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
                       <div class="card-body">
                         <h6 class="card-title mb-1"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                         <?php if (!empty($evento['esporte_tipo'])): ?>
@@ -185,7 +185,7 @@
                   <div class="text-muted small">Nenhum evento não esportivo confirmado</div>
                 <?php else: ?>
                   <?php foreach ($eventosNaoEsportivos as $evento): ?>
-                    <div class="card mb-3 border-warning shadow-sm event-clickable" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
+                    <div class="card mb-3 border-warning shadow-sm event-clickable card-presence-config-naoesportivo" data-event-id="<?php echo $evento['id']; ?>" style="cursor:pointer;">
                       <div class="card-body">
                         <h6 class="card-title mb-1"><?php echo htmlspecialchars($evento['titulo']); ?></h6>
                         <p class="card-text mb-0">
