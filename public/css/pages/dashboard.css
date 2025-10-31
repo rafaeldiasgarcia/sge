@@ -3,6 +3,21 @@
  * Estilos para a página do dashboard do usuário
  */
 
+    /* ===== ANIMAÇÃO DE SURGIMENTO ===== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px); /* vem de baixo */
+        filter: blur(6px); /* sutil desfoque de entrada */
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+
 .dashboard-card {
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -22,3 +37,69 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
 
+/*CONFIGURAÇÕES ABAIXO APENAS PARA ESTILOS EM CSS*/
+/*CONFIGURAÇÕES ABAIXO APENAS PARA ESTILOS EM CSS*/
+/*CONFIGURAÇÕES ABAIXO APENAS PARA ESTILOS EM CSS*/
+
+.gradient-title{
+  background: var(--gradient-color-text);
+  background-size: 600% 600%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradienteAnimado 3s ease infinite;
+}
+
+@keyframes gradienteAnimado {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.color-orange-calendar {
+    color: #F28100 !important;
+}
+
+.card-config {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: 
+    transform 0.3s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    filter 0.4s ease;
+}
+
+.card-config:hover {
+  transform: translateY(-2px) scale(1.0009);
+  border-color: var(--blue-color);
+   box-shadow: var(--shadow-card-hover) !important;
+  filter: brightness(1.1); /* leve realce no conteúdo */
+}
+
+.bg-text-config{
+  background: var(--orange-color); 
+}
+.borda-config{
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: 
+    transform 0.3s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    filter 0.4s ease;
+}
+
+.borda-config:hover {
+  transform: translateY(-1px) scale(1.0009);
+  border-color: var(--orange-color);
+   box-shadow: var(--shadow-card-hover) !important;
+}
+.trophy-config {
+    color:var(--blue-color) !important;
+}
+.card-presence-config:hover{
+  background-color: var(--blue-color-opacity);
+}
+.card-presence-config-naoesportivo:hover{
+  background-color: var(--orange-color-opacity);
+}

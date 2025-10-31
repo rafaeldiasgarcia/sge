@@ -25,7 +25,7 @@
     --gradient-color-login: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(242, 129, 0, 1) 100%);
     --gradient-color-text: linear-gradient(90deg,rgba(9, 0, 255, 1) 0%, rgba(242, 129, 0, 1) 100%);
     --orange-color-opacity: rgba(242, 129, 0, 0.20);
-    --blue-color-opacity: rgba(9, 0, 255, 0.20);
+    --blue-color-opacity: rgba(0, 132, 255, 0.1);
     --shadow-carousel: 1px 10px 39px -8px rgba(0,0,0,0.75); /* Sombra forte do carrossel */
     --shadow-card: 0 4px 12px rgba(0,0,0,0.4); /* Sombra média para cards */
     --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.45); /* Sombra no hover */
@@ -36,4 +36,5 @@
 body {
     font-family: 'Montserrat', Arial, sans-serif;
     min-height: 100vh; /* Garante altura mínima da tela */
+    animation: fadeInUp 1s ease; /* Aplica animação de fade in ao carregar a página */
 }
