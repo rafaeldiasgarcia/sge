@@ -250,7 +250,8 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
             } else {
                 $p1disabled = $p1busy || $dateInvalid;
                 $p2disabled = $p2busy || $dateInvalid;
-                $dayDisabled = ($p1busy && $p2busy) || $dateInvalid;
+                // Dropdown só desabilitado se a data for inválida, não por períodos ocupados
+                $dayDisabled = $dateInvalid;
             }
             
             // Adiciona classe CSS especial para datas indisponíveis

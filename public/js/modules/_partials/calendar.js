@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // **NOVO: Ajustar posição do dropdown automaticamente baseado na posição**
         document.querySelectorAll('.calendar-day-btn').forEach(btn => {
+            // Configurar atributos do Bootstrap para controlar o Popper.js
+            btn.setAttribute('data-bs-display', 'static');
+            btn.setAttribute('data-bs-auto-close', 'true');
+
             btn.addEventListener('show.bs.dropdown', function(e) {
                 const dropdown = this.nextElementSibling; // O dropdown-menu
                 if (!dropdown) return;
@@ -67,11 +71,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
 
-                // Detectar se é mobile (largura < 768px)
-                const isMobile = window.innerWidth < 768;
+                // Detectar se é mobile/tablet (TODOS até 1024px devem se comportar como mobile)
+                const isMobile = window.innerWidth <= 1024 ||
+                                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
                 // Detectar se está na última linha com dias
                 const isLastRow = weekRow === lastRowWithDays;
+
+                // Detectar se está na penúltima linha com dias
+                const isSecondLastRow = weekRow === (lastRowWithDays - 1);
 
                 // Remover classes e estilos anteriores
                 dropdown.classList.remove('dropdown-menu-end', 'dropdown-menu-start');
@@ -83,28 +91,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropdown.style.removeProperty('marginTop');
                 dropdown.style.removeProperty('marginBottom');
 
-                // Aplicar posicionamento vertical (PARA CIMA se última linha)
-                if (isLastRow) {
-                    // Está na última linha: abre PARA CIMA
+                // TODOS OS DISPOSITIVOS: penúltima e última linha abrem PARA CIMA (comportamento idêntico ao iPhone 14 Pro Max)
+                if (isLastRow || isSecondLastRow) {
                     dropdown.style.top = 'auto';
                     dropdown.style.bottom = '100%';
                     dropdown.style.marginBottom = '8px';
+                    dropdown.setAttribute('data-popper-placement', 'top');
                 } else {
-                    // Está nas outras linhas: abre PARA BAIXO (padrão)
+                    // Outras linhas: abrem PARA BAIXO
                     dropdown.style.top = '100%';
                     dropdown.style.bottom = 'auto';
                     dropdown.style.marginTop = '8px';
+                    dropdown.setAttribute('data-popper-placement', 'bottom');
                 }
 
                 // Aplicar posicionamento horizontal
                 if (isMobile) {
                     // MOBILE: alinhamento horizontal baseado na posição do dia
                     if (dayOfWeek <= 2) {
-                        // Primeiros dias: alinha à esquerda
+                        // Primeiros dias (ESQUERDA): dropdown abre para a DIREITA (start)
+                        dropdown.classList.add('dropdown-menu-start');
                         dropdown.style.left = '0';
                         dropdown.style.right = 'auto';
                     } else if (dayOfWeek >= 4) {
-                        // Últimos dias: alinha à direita
+                        // Últimos dias (DIREITA): dropdown abre para a ESQUERDA (end)
+                        dropdown.classList.add('dropdown-menu-end');
                         dropdown.style.left = 'auto';
                         dropdown.style.right = '0';
                     } else {
@@ -117,8 +128,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     // DESKTOP: alinhamento horizontal baseado na posição do dia
                     if (dayOfWeek <= 2) {
                         dropdown.classList.add('dropdown-menu-start');
+                        dropdown.style.left = '0';
+                        dropdown.style.right = 'auto';
                     } else if (dayOfWeek >= 4) {
                         dropdown.classList.add('dropdown-menu-end');
+                        dropdown.style.left = 'auto';
+                        dropdown.style.right = '0';
+                    } else {
+                        // Meio no desktop: centraliza
+                        dropdown.style.left = '50%';
+                        dropdown.style.right = 'auto';
+                        dropdown.style.transform = 'translateX(-50%)';
                     }
                 }
             });
@@ -194,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const dayBtn = dayWrapper.querySelector('.calendar-day-btn');
                     if (dayBtn) {
                         dayBtn.classList.add('selected');
-                        dayBtn.textContent = item.dataset.periodo === 'P1' ? '19:15-20:55' : '21:10-22:50';
+                        dayBtn.textContent = item.dataset.periodo === 'P1' ? '19:15' : '21:10';
                     }
                 }
 

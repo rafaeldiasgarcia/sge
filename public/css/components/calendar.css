@@ -177,18 +177,70 @@
     font-size: 0.85rem;
     z-index: 1050 !important;
     position: absolute !important;
+    /* Desabilitar transições que causam o "salto" visual */
+    transition: none !important;
+}
+
+/* Forçar posicionamento em TODOS os dispositivos (comportamento unificado igual ao iPhone 14 Pro Max) */
+.calendar-day-wrapper .dropdown-menu {
+    transform: none !important;
+    will-change: auto !important;
+    inset: auto !important;
+}
+
+.calendar-day-wrapper .dropdown-menu[data-popper-placement] {
     transform: none !important;
 }
 
-/* Garantir que o dropdown possa abrir para cima ou para baixo SEM sobrepor o botão */
-.calendar-day-wrapper .dropdown-menu[style*="bottom: 100%"] {
+/* Forçar centralização dos dias do meio sem transição */
+.calendar-day-wrapper .dropdown-menu[style*="translateX(-50%)"] {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+/* TODOS OS DISPOSITIVOS: dropdowns com data-popper-placement="top" abrem para CIMA (última e penúltima linha) */
+.calendar-day-wrapper .dropdown-menu[data-popper-placement="top"] {
+    bottom: 100% !important;
     top: auto !important;
+    margin-bottom: 8px !important;
+    margin-top: 0 !important;
+}
+
+/* TODOS OS DISPOSITIVOS: dropdowns com data-popper-placement="bottom" abrem para BAIXO (outras linhas) */
+.calendar-day-wrapper .dropdown-menu[data-popper-placement="bottom"] {
+    top: 100% !important;
+    bottom: auto !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+}
+
+/* Posicionamento horizontal baseado na posição do dia */
+.calendar-day-wrapper .dropdown-menu.dropdown-menu-start {
+    left: 0 !important;
+    right: auto !important;
+}
+
+.calendar-day-wrapper .dropdown-menu.dropdown-menu-end {
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* Garantir que o dropdown possa abrir para cima ou para baixo SEM sobrepor o botão */
+.calendar-day-wrapper .dropdown-menu[style*="bottom: 100%"],
+.calendar-day-wrapper .dropdown-menu[data-popper-placement="top"] {
+    bottom: 100% !important;
+    top: auto !important;
+    margin-bottom: 8px !important;
     margin-top: 0 !important;
 }
 
 /* Garantir que dropdowns para baixo também tenham espaçamento */
-.calendar-day-wrapper .dropdown-menu[style*="top: 100%"] {
+.calendar-day-wrapper .dropdown-menu[style*="top: 100%"],
+.calendar-day-wrapper .dropdown-menu[data-popper-placement="bottom"] {
+    top: 100% !important;
     bottom: auto !important;
+    margin-top: 8px !important;
     margin-bottom: 0 !important;
 }
 
@@ -525,11 +577,9 @@
 }
 
 /* ===== Dropdown aberto em mobile ===== */
-@media (max-width: 576px) {
+@media (max-width: 1024px) {
     .calendar-day-wrapper .dropdown-menu {
-        left: auto !important;
-        right: 0 !important;
-        transform: none !important;
+        /* Não forçar alinhamento específico - deixar o JS decidir baseado na posição */
     }
 }
 
