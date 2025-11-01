@@ -159,10 +159,11 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
 </h5>
 
 <!-- Legenda de cores do calendário -->
-<div class="d-flex flex-wrap align-items-center gap-2 small mb-3 calendar-legend">
-    <span><span class="badge bg-success me-1 legend-badge"></span> Livre</span>
-    <span><span class="badge bg-warning text-dark me-1 legend-badge"></span> 1 ocupado</span>
-    <span><span class="badge bg-danger me-1 legend-badge"></span> Indisponível</span>
+<div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 small mb-3 calendar-legend">
+    <span><span class="badge bg-success me-1 legend-badge">&nbsp;</span> Ambos livres</span>
+    <span><span class="badge bg-warning text-dark me-1 legend-badge">&nbsp;</span> Um ocupado</span>
+    <span><span class="badge bg-danger me-1 legend-badge">&nbsp;</span> Ambos ocupados</span>
+    <span><span class="badge bg-light border text-dark me-1 legend-badge">&nbsp;</span> Data inválida</span>
 </div>
 
 <!-- ========================================================================
@@ -266,7 +267,7 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
                     <!-- Cabeçalho do dia com número e badge -->
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="calendar-day-number"><?= $dia ?></span>
-                        <span class="badge <?= $badge ?> calendar-badge"></span>
+                        <span class="badge <?= $badge ?> calendar-badge">&nbsp;</span>
                     </div>
 
                     <!-- Botão dropdown para selecionar horário -->
@@ -288,15 +289,15 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
                                    href="#"
                                    data-date="<?= $ymd ?>"
                                    data-periodo="P1"
-                                   <?= $p1disabled ? 'aria-disabled="true"' : '' ?>>
+                                   <?= $p1disabled ? 'onclick="return false;"' : '' ?>>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span>
                                             <i class="bi bi-clock"></i> 19:15 - 20:55
                                         </span>
                                         <?php if ($p1busy): ?>
-                                            <span class="badge bg-danger">Ocupado</span>
+                                            <span class="badge bg-danger text-white">Ocupado</span>
                                         <?php else: ?>
-                                            <span class="badge bg-success">Livre</span>
+                                            <span class="badge bg-success text-white">Livre</span>
                                         <?php endif; ?>
                                     </div>
                                 </a>
@@ -310,15 +311,15 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
                                    href="#"
                                    data-date="<?= $ymd ?>"
                                    data-periodo="P2"
-                                   <?= $p2disabled ? 'aria-disabled="true"' : '' ?>>
+                                   <?= $p2disabled ? 'onclick="return false;"' : '' ?>>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span>
                                             <i class="bi bi-clock"></i> 21:10 - 22:50
                                         </span>
                                         <?php if ($p2busy): ?>
-                                            <span class="badge bg-danger">Ocupado</span>
+                                            <span class="badge bg-danger text-white">Ocupado</span>
                                         <?php else: ?>
-                                            <span class="badge bg-success">Livre</span>
+                                            <span class="badge bg-success text-white">Livre</span>
                                         <?php endif; ?>
                                     </div>
                                 </a>

@@ -23,9 +23,13 @@
 }
 
 .legend-badge {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+    line-height: 14px;
+    font-size: 0;
 }
 
 /* ===== Container do Calendário ===== */
@@ -112,23 +116,39 @@
 
 /* ===== Badge de Disponibilidade ===== */
 .calendar-badge {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     padding: 0;
     display: inline-block;
+    flex-shrink: 0;
+    min-width: 12px;
+    min-height: 12px;
+}
+
+/* Garantir que badges do Bootstrap funcionem */
+.calendar-badge.bg-success,
+.calendar-badge.bg-warning,
+.calendar-badge.bg-danger,
+.calendar-badge.bg-light {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.calendar-badge.bg-light {
+    background-color: #e9ecef !important;
 }
 
 /* ===== Botão de Horários (Dropdown) ===== */
 .calendar-day-btn {
     margin-top: auto;
-    font-size: 0.7rem;
-    padding: 4px 6px;
+    font-size: 0.8rem;
+    padding: 6px 8px;
     border-radius: 4px;
     font-weight: 600;
     white-space: nowrap;
     transition: all 0.2s ease;
-    line-height: 1.2;
+    line-height: 1.3;
+    min-height: 32px;
 }
 
 .calendar-day-btn:not(.disabled):hover {
@@ -155,6 +175,19 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     font-size: 0.85rem;
+    z-index: 1050 !important;
+    position: absolute !important;
+}
+
+.calendar-day-wrapper .dropdown {
+    position: relative;
+    z-index: auto;
+}
+
+/* Quando o dropdown está aberto, aumentar z-index do wrapper */
+.calendar-day-wrapper:has(.dropdown-toggle[aria-expanded="true"]) {
+    z-index: 1040;
+    position: relative;
 }
 
 .slot-item {
@@ -168,9 +201,14 @@
 }
 
 .slot-item.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #f8f9fa;
+}
+
+.slot-item.disabled:hover {
+    background-color: #f9f9fa !important;
 }
 
 .slot-item.selected {
@@ -180,6 +218,13 @@
 
 .slot-item i {
     font-size: 0.85rem;
+}
+
+/* Garantir que badges dentro do dropdown sejam visíveis */
+.slot-item .badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    font-weight: 600;
 }
 
 /* ===== Datas Passadas/Inválidas ===== */

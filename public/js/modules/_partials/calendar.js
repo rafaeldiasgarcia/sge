@@ -37,8 +37,19 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.slot-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
 
-                if (item.classList.contains('disabled')) return;
+                // Verificar se o item está desabilitado
+                if (item.classList.contains('disabled')) {
+                    console.log('Horário desabilitado - não pode selecionar');
+                    return false;
+                }
+
+                // Verificar se tem o atributo onclick="return false"
+                if (item.getAttribute('onclick') === 'return false;') {
+                    console.log('Horário bloqueado - não pode selecionar');
+                    return false;
+                }
 
                 // Verificação adicional no lado do cliente para datas inválidas
                 const dateStr = item.dataset.date;
@@ -50,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     // Verifica se a data já passou
                     if (eventDate < today) {
-                        return;
+                        console.log('Data já passou - não pode selecionar');
+                        return false;
                     }
                     
                     const diffTime = eventDate.getTime() - today.getTime();
@@ -65,14 +77,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Para campeonatos: SEM NENHUMA restrição de data (exceto datas passadas)
                     if (!isCampeonato) {
                         if (diffDays < 4) {
-                            return;
+                            console.log('Antecedência insuficiente - não pode selecionar');
+                            return false;
                         }
                         
                         if (diffDays > 30) {
-                            return;
+                            console.log('Data muito distante - não pode selecionar');
+                            return false;
                         }
                     }
                 }
+
+                console.log('Horário selecionado com sucesso!');
 
                 // Remover seleção anterior
                 document.querySelectorAll('.slot-item.selected').forEach(i => i.classList.remove('selected'));
@@ -105,6 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Habilitar botão de envio
                 if (salvar) salvar.disabled = false;
+
+                return false;
             });
         });
 
