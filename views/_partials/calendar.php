@@ -282,7 +282,7 @@ function hasInsufficientAdvance($ymd, $isCampeonato = false) {
                             <small class="d-none d-sm-inline">Horários</small>
                             <small class="d-inline d-sm-none">Hora</small>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="<?= $dropdownId ?>">
+                        <ul class="dropdown-menu" aria-labelledby="<?= $dropdownId ?>">
                             <!-- Período 1 (19:15 - 20:55) -->
                             <li>
                                 <a class="dropdown-item slot-item <?= $p1disabled ? 'disabled' : '' ?>"

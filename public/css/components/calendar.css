@@ -177,6 +177,19 @@
     font-size: 0.85rem;
     z-index: 1050 !important;
     position: absolute !important;
+    transform: none !important;
+}
+
+/* Garantir que o dropdown possa abrir para cima ou para baixo SEM sobrepor o botão */
+.calendar-day-wrapper .dropdown-menu[style*="bottom: 100%"] {
+    top: auto !important;
+    margin-top: 0 !important;
+}
+
+/* Garantir que dropdowns para baixo também tenham espaçamento */
+.calendar-day-wrapper .dropdown-menu[style*="top: 100%"] {
+    bottom: auto !important;
+    margin-bottom: 0 !important;
 }
 
 .calendar-day-wrapper .dropdown {

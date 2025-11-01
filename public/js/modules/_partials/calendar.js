@@ -33,6 +33,97 @@ document.addEventListener("DOMContentLoaded", () => {
             salvar.disabled = false;
         }
 
+        // **NOVO: Ajustar posição do dropdown automaticamente baseado na posição**
+        document.querySelectorAll('.calendar-day-btn').forEach(btn => {
+            btn.addEventListener('show.bs.dropdown', function(e) {
+                const dropdown = this.nextElementSibling; // O dropdown-menu
+                if (!dropdown) return;
+
+                const wrapper = this.closest('.calendar-day-wrapper');
+                if (!wrapper) return;
+
+                const cell = wrapper.closest('.calendar-day-cell-grid');
+                if (!cell) return;
+
+                // Descobrir a posição da célula no grid
+                const gridWrapper = cell.parentElement;
+                const allCells = Array.from(gridWrapper.children);
+                const cellIndex = allCells.indexOf(cell);
+                const dayOfWeek = cellIndex % 7; // 0-6 = domingo a sábado
+
+                // Calcular em qual linha da semana o dia está (0 = primeira semana, etc)
+                const weekRow = Math.floor(cellIndex / 7);
+
+                // Encontrar qual é a última linha que TEM DIAS (células não vazias)
+                let lastRowWithDays = 0;
+                allCells.forEach((c, idx) => {
+                    // Verifica se a célula tem conteúdo (tem um wrapper com data)
+                    const hasContent = c.querySelector('.calendar-day-wrapper[data-date]');
+                    if (hasContent) {
+                        const row = Math.floor(idx / 7);
+                        if (row > lastRowWithDays) {
+                            lastRowWithDays = row;
+                        }
+                    }
+                });
+
+                // Detectar se é mobile (largura < 768px)
+                const isMobile = window.innerWidth < 768;
+
+                // Detectar se está na última linha com dias
+                const isLastRow = weekRow === lastRowWithDays;
+
+                // Remover classes e estilos anteriores
+                dropdown.classList.remove('dropdown-menu-end', 'dropdown-menu-start');
+                dropdown.style.removeProperty('left');
+                dropdown.style.removeProperty('right');
+                dropdown.style.removeProperty('top');
+                dropdown.style.removeProperty('bottom');
+                dropdown.style.removeProperty('transform');
+                dropdown.style.removeProperty('marginTop');
+                dropdown.style.removeProperty('marginBottom');
+
+                // Aplicar posicionamento vertical (PARA CIMA se última linha)
+                if (isLastRow) {
+                    // Está na última linha: abre PARA CIMA
+                    dropdown.style.top = 'auto';
+                    dropdown.style.bottom = '100%';
+                    dropdown.style.marginBottom = '8px';
+                } else {
+                    // Está nas outras linhas: abre PARA BAIXO (padrão)
+                    dropdown.style.top = '100%';
+                    dropdown.style.bottom = 'auto';
+                    dropdown.style.marginTop = '8px';
+                }
+
+                // Aplicar posicionamento horizontal
+                if (isMobile) {
+                    // MOBILE: alinhamento horizontal baseado na posição do dia
+                    if (dayOfWeek <= 2) {
+                        // Primeiros dias: alinha à esquerda
+                        dropdown.style.left = '0';
+                        dropdown.style.right = 'auto';
+                    } else if (dayOfWeek >= 4) {
+                        // Últimos dias: alinha à direita
+                        dropdown.style.left = 'auto';
+                        dropdown.style.right = '0';
+                    } else {
+                        // Meio: centraliza
+                        dropdown.style.left = '50%';
+                        dropdown.style.right = 'auto';
+                        dropdown.style.transform = 'translateX(-50%)';
+                    }
+                } else {
+                    // DESKTOP: alinhamento horizontal baseado na posição do dia
+                    if (dayOfWeek <= 2) {
+                        dropdown.classList.add('dropdown-menu-start');
+                    } else if (dayOfWeek >= 4) {
+                        dropdown.classList.add('dropdown-menu-end');
+                    }
+                }
+            });
+        });
+
         // Lógica para os itens do dropdown (slots)
         document.querySelectorAll('.slot-item').forEach(item => {
             item.addEventListener('click', (e) => {
